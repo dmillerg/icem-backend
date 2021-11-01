@@ -8,8 +8,10 @@ var usuario_controller = require('../controllers/usuarios');
 var roles_controller = require('../controllers/roles');
 var login_controller = require('../controllers/login');
 var document_controller = require('../controllers/documents');
-var managedb_controller = require('../database/manageDB');
-var superuser_controller = require('../database/superuser');
+var productos_controller = require('../controllers/productos');
+
+// var managedb_controller = require('../database/manageDB');
+// var superuser_controller = require('../database/superuser');
 var historico_controller = require('../controllers/historico');
 
 // Llamamos al router
@@ -51,14 +53,20 @@ api.delete('/documents/:id', document_controller.deleteDocument);
 api.post('/documents/:id', document_controller.updateDocument);
 
 //Rutas para manejar base de datos
-api.get('/database', managedb_controller.createTables);
+// api.get('/database', managedb_controller.createTables);
 
 //Rutas para crear el primer superuser
-api.get('/superuser', superuser_controller.createSuperUser);
-api.post('/superuser', superuser_controller.saveSuperUsuario);
-
+// api.get('/superuser', superuser_controller.createSuperUsexa
 //Rutas para historico
 api.post('/userhistory', historico_controller.saveActionAPI);
+
+// Rutas para los productos
+api.get('/productos', productos_controller.getProductos);
+api.get('/productoFoto/:id', productos_controller.getProductoFoto);
+api.post('/saveProducto', productos_controller.saveProducto);
+api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
+
+
 
 
 // Exportamos la configuración
