@@ -6,7 +6,7 @@ function getProductos(req, res) {
     var id = req.params.id;
     var limit = req.params.limit;
     var query = ``;
-    if(limit>0){
+    if (limit > 0) {
         query += ` LIMIT ${limit}`;
     }
 
@@ -47,15 +47,20 @@ function saveProducto(req, res) {
     var titulo = body.titulo;
     var descripcion = body.descripcion;
     var imagen = body.imagen;
-    var foto = { name: null };
-    if (req.files) foto = req.files.foto;
-    foto_name = titulo.replaceAll(' ','-') + '.jpg';;
+    var foto = { name: null };  
+    if (req.files) {
+        foto = req.files.foto;
+        foto_name = titulo.replaceAll(' ', '-') + '.jpg';
+        console.log(foto_name)
+    }
+    let date = new Date();
+    let fecha = date.getFullYear().toString() + '/' + (date.getMonth() + 1) + '/' + (date.getDate()) + ' ' + (date.getHours()) + ':' + (date.getMinutes()) + ':' + (date.getSeconds());
 
-    conexion.query(`INSERT INTO productos(id, titulo, descripcion, imagen) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}")`, function (error, results, fields) {
+    conexion.query(`INSERT INTO productos(id, titulo, descripcion, imagen, fecha) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}")`, function (error, results, fields) {
         if (error)
             return res.status(500).send({ message: error });
         if (results) {
-            saveFoto(foto, titulo);
+            if(req.files) saveFoto(foto, foto_name);
             return res.status(201).send({ message: 'producto guardado correctamente' });
         }
     });
@@ -64,7 +69,7 @@ function saveProducto(req, res) {
 
 function saveFoto(foto, titulo) {
     if (foto.name != null) {
-        foto.mv(`./public/productos/${titulo}.jpg`, function (err) { });
+        foto.mv(`./public/productos/${titulo}`, function (err) { });
     }
 }
 
@@ -113,7 +118,7 @@ function updateProducto(req, res) {
     console.log(foto.name, 'foto');
     // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
     var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}"`;
-    if (foto.name != null) query += `,imagen="${titulo.replaceAll(' ','-')}.jpg `;
+    if (foto.name != null) query += `,imagen="${titulo.replaceAll(' ', '-')}.jpg `;
     query += `WHERE id = ${id}`
 
     conexion.query(query, function (error, results, fields) {

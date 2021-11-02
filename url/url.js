@@ -61,7 +61,7 @@ api.post('/documents/:id', document_controller.updateDocument);
 api.post('/userhistory', historico_controller.saveActionAPI);
 
 // Rutas para los productos
-api.get('/productos', productos_controller.getProductos);
+api.get('/productos/:limit', productos_controller.getProductos);
 api.get('/productoFoto/:id', productos_controller.getProductoFoto);
 api.post('/saveProducto', productos_controller.saveProducto);
 api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
