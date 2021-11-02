@@ -65,6 +65,7 @@ api.get('/productos/:limit', productos_controller.getProductos);
 api.get('/productoFoto/:id', productos_controller.getProductoFoto);
 api.post('/saveProducto', productos_controller.saveProducto);
 api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
+api.get('/producto/:id', productos_controller.getProductoById);
 
 
 

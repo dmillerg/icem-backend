@@ -134,7 +134,18 @@ function updateProducto(req, res) {
             return res.status(404).send({ message: 'no existe ningun producto con ese id' });
         }
     });
+}
 
+function getProductoById(req, res){
+    let id = req.params.id;
+    let query = `SELECT * FROM productos WHERE id=${id}`;
+    conexion.query(query, function (err, result) {
+        if (err)
+            return res.status(500).send({ message: err });
+        if (result) {
+            return res.status(200).send({result});
+        }
+    });
 }
 
 module.exports = {
@@ -143,4 +154,5 @@ module.exports = {
     saveProducto,
     deleteProducto,
     updateProducto,
+    getProductoById,
 };
