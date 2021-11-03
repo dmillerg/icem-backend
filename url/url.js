@@ -10,7 +10,7 @@ var login_controller = require('../controllers/login');
 var document_controller = require('../controllers/documents');
 var productos_controller = require('../controllers/productos');
 
-// var managedb_controller = require('../database/manageDB');
+var managedb_controller = require('../database/manageDB');
 // var superuser_controller = require('../database/superuser');
 var historico_controller = require('../controllers/historico');
 
@@ -53,7 +53,7 @@ api.delete('/documents/:id', document_controller.deleteDocument);
 api.post('/documents/:id', document_controller.updateDocument);
 
 //Rutas para manejar base de datos
-// api.get('/database', managedb_controller.createTables);
+api.get('/database', managedb_controller.createTables);
 
 //Rutas para crear el primer superuser
 // api.get('/superuser', superuser_controller.createSuperUsexa
