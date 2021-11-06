@@ -2,7 +2,7 @@ const conexion = require('../database/database');
 const bcrypt = require('bcrypt');
 const { json } = require('body-parser');
 
-function getProductos(req, res) {
+function getNotcias(req, res) {
     var id = req.params.id;
     var limit = req.params.limit;
     var query = ``;
@@ -10,7 +10,7 @@ function getProductos(req, res) {
         query += ` LIMIT ${limit}`;
     }
 
-    conexion.query(`SELECT * FROM productos ` + query, function (error, results, fields) {
+    conexion.query(`SELECT * FROM noticias ` + query, function (error, results, fields) {
         if (error) {
             console.log(error);
             return res.status(500).send(error);
@@ -18,22 +18,22 @@ function getProductos(req, res) {
         if (results.length > 0) {
             return res.status(200).json(results);
         } else {
-            return res.status(200).send({ documents: 'no hay productos' });
+            return res.status(200).send({ documents: 'no hay noticias' });
         }
     });
 }
 
-function getProductoFoto(req, res) {
+function getNoticiaFoto(req, res) {
     try {
         var id = req.params.id;
-        conexion.query(`SELECT * FROM productos WHERE id = ${id}`, function (error, results, fields) {
+        conexion.query(`SELECT * FROM noticias WHERE id = ${id}`, function (error, results, fields) {
             if (error)
                 throw error;
             if (results.length > 0) {
                 var path = require('path');
-                res.sendFile(path.resolve('public/productos/' + results[0].imagen));
+                res.sendFile(path.resolve('public/noticias/' + results[0].imagen));
             } else {
-                return res.status(404).send({ documento: 'no existe ningun producto con ese id' });
+                return res.status(404).send({ documento: 'no existe ninguna noticia con ese id' });
             }
         });
     } catch (error) {
@@ -41,7 +41,7 @@ function getProductoFoto(req, res) {
     }
 }
 
-function saveProducto(req, res) {
+function saveNoticia(req, res) {
     var id = -1;
     var body = req.body;
     var titulo = body.titulo;
@@ -55,12 +55,12 @@ function saveProducto(req, res) {
     let date = new Date();
     let fecha = date.getFullYear().toString() + '/' + (date.getMonth() + 1) + '/' + (date.getDate()) + ' ' + (date.getHours()) + ':' + (date.getMinutes()) + ':' + (date.getSeconds());
 
-    conexion.query(`INSERT INTO productos(id, titulo, descripcion, imagen, fecha) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}")`, function (error, results, fields) {
+    conexion.query(`INSERT INTO noticias(id, titulo, descripcion, imagen, fecha) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}")`, function (error, results, fields) {
         if (error)
             return res.status(500).send({ message: error });
         if (results) {
             if(req.files) saveFoto(foto, foto_name);
-            return res.status(201).send({ message: 'producto guardado correctamente' });
+            return res.status(201).send({ message: 'noticia guardada correctamente' });
         }
     });
 }
@@ -68,20 +68,20 @@ function saveProducto(req, res) {
 
 function saveFoto(foto, titulo) {
     if (foto.name != null) {
-        foto.mv(`./public/productos/${titulo}`, function (err) { });
+        foto.mv(`./public/noticias/${titulo}`, function (err) { });
     }
 }
 
 
 
-function deleteProducto(req, res) {
+function deleteNoticia(req, res) {
     const id = req.params.id;
-    conexion.query(`SELECT * FROM productos WHERE id=${id}`, function (err, result) {
+    conexion.query(`SELECT * FROM noticias WHERE id=${id}`, function (err, result) {
         if (err)
             return res.status(500).send({ message: err });
         if (result) {
             deleteFoto(result[0].imagen);
-            conexion.query(`DELETE FROM productos WHERE id = ${id}`, function (error, results, fields) {
+            conexion.query(`DELETE FROM noticias WHERE id = ${id}`, function (error, results, fields) {
                 if (error)
                     return error;
                 if (results) {
@@ -94,7 +94,7 @@ function deleteProducto(req, res) {
 }
 
 function deleteFoto(imagen) {
-    const pathViejo = `./public/productos/${imagen}`;
+    const pathViejo = `./public/noticias/${imagen}`;
     // console.log(pathViejo);
     const fs = require("fs");
     if (fs.existsSync(pathViejo)) {
@@ -104,7 +104,7 @@ function deleteFoto(imagen) {
     return "borrardo correctamente";
 }
 
-function updateProducto(req, res) {
+function updateNoticia(req, res) {
     // Recogemos un parámetro por la url
     var id = req.params.id;
 
@@ -116,7 +116,7 @@ function updateProducto(req, res) {
     if (req.files) foto = req.files.foto;
     console.log(foto.name, 'foto');
     // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-    var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}"`;
+    var query = `UPDATE noticias SET titulo="${titulo}",descripcion="${descripcion}"`;
     if (foto.name != null) query += `,imagen="${titulo.replaceAll(' ', '-')}.jpg `;
     query += `WHERE id = ${id}`
 
@@ -130,14 +130,14 @@ function updateProducto(req, res) {
             }
             return res.status(201).send({ message: 'actualizado correctamente' });
         } else {
-            return res.status(404).send({ message: 'no existe ningun producto con ese id' });
+            return res.status(404).send({ message: 'no existe ninguna noticia con ese id' });
         }
     });
 }
 
-function getProductoById(req, res){
+function getNoticiaById(req, res){
     let id = req.params.id;
-    let query = `SELECT * FROM productos WHERE id=${id}`;
+    let query = `SELECT * FROM noticias WHERE id=${id}`;
     conexion.query(query, function (err, result) {
         if (err)
             return res.status(500).send({ message: err });
@@ -148,10 +148,10 @@ function getProductoById(req, res){
 }
 
 module.exports = {
-    getProductos,
-    getProductoFoto,
-    saveProducto,
-    deleteProducto,
-    updateProducto,
-    getProductoById,
+    getNotcias,
+    getNoticiaFoto,
+    saveNoticia,
+    deleteNoticia,
+    updateNoticia,
+    getNoticiaById,
 };
