@@ -5,13 +5,17 @@ const { json } = require("body-parser");
 function getProductos(req, res) {
   var id = req.params.id;
   var limit = req.params.limit;
+  var categoria = req.query.categoria;
   var query = ``;
+  if (categoria > -1) {
+    query += ` AND categoria=${categoria}`;
+  }
   if (limit > 0) {
     query += ` LIMIT ${limit}`;
   }
 
   conexion.query(
-    `SELECT * FROM productos ` + query,
+    `SELECT * FROM productos WHERE 1` + query,
     function (error, results, fields) {
       if (error) {
         console.log(error);
