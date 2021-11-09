@@ -9,6 +9,7 @@ var roles_controller = require('../controllers/roles');
 var login_controller = require('../controllers/login');
 var document_controller = require('../controllers/documents');
 var productos_controller = require('../controllers/productos');
+var categorias_controller = require('../controllers/categoria');
 
 var managedb_controller = require('../database/manageDB');
 // var superuser_controller = require('../database/superuser');
@@ -66,6 +67,13 @@ api.get('/productoFoto/:id', productos_controller.getProductoFoto);
 api.post('/saveProducto', productos_controller.saveProducto);
 api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
 api.get('/producto/:id', productos_controller.getProductoById);
+
+// Rutas para las Categorias
+api.get('/categorias', categorias_controller.getCategoria);
+// api.get('/productoFoto/:id', productos_controller.getProductoFoto);
+// api.post('/saveProducto', productos_controller.saveProducto);
+// api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
+// api.get('/producto/:id', productos_controller.getProductoById);
 
 
 

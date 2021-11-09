@@ -1,41 +1,48 @@
-const conexion = require('../database/database');
-const bcrypt = require('bcrypt');
-const { json } = require('body-parser');
+const conexion = require("../database/database");
+const bcrypt = require("bcrypt");
+const { json } = require("body-parser");
 
 function getProductos(req, res) {
     var id = req.params.id;
     var limit = req.params.limit;
     var query = ``;
-    if (limit > 0) {
-        query += ` LIMIT ${limit}`;
-    }
-
-    conexion.query(`SELECT * FROM productos ` + query, function (error, results, fields) {
-        if (error) {
-            console.log(error);
-            return res.status(500).send(error);
+    console.log(req.query)
+    if (req.query.categoria > -1) query += ` AND categoria=${req.query.categoria}`;
+    if (limit > 0) query += ` LIMIT ${limit}`;
+    console.log(`SELECT * FROM productos WHERE 1` + query)
+    conexion.query(
+        `SELECT * FROM productos WHERE 1` + query,
+        function(error, results, fields) {
+            if (error) {
+                console.log(error);
+                return res.status(500).send(error);
+            }
+            if (results.length > 0) {
+                return res.status(200).json(results);
+            } else {
+                return res.status(200).send({ documents: "no hay productos" });
+            }
         }
-        if (results.length > 0) {
-            return res.status(200).json(results);
-        } else {
-            return res.status(200).send({ documents: 'no hay productos' });
-        }
-    });
+    );
 }
 
 function getProductoFoto(req, res) {
     try {
         var id = req.params.id;
-        conexion.query(`SELECT * FROM productos WHERE id = ${id}`, function (error, results, fields) {
-            if (error)
-                throw error;
-            if (results.length > 0) {
-                var path = require('path');
-                res.sendFile(path.resolve('public/productos/' + results[0].imagen));
-            } else {
-                return res.status(404).send({ documento: 'no existe ningun producto con ese id' });
+        conexion.query(
+            `SELECT * FROM productos WHERE id = ${id}`,
+            function(error, results, fields) {
+                if (error) throw error;
+                if (results.length > 0) {
+                    var path = require("path");
+                    res.sendFile(path.resolve("public/productos/" + results[0].imagen));
+                } else {
+                    return res
+                        .status(404)
+                        .send({ documento: "no existe ningun producto con ese id" });
+                }
             }
-        });
+        );
     } catch (error) {
         console.log(error);
     }
@@ -43,54 +50,74 @@ function getProductoFoto(req, res) {
 
 function saveProducto(req, res) {
     var id = -1;
+    console.log(req.body);
     var body = req.body;
     var titulo = body.titulo;
     var descripcion = body.descripcion;
-    var foto = { name: null };  
+    var categoria = body.categoria;
+    var usos = body.usos;
+    var especificaciones = body.especificaciones;
+    var garantia = body.garantia;
+    var foto = { name: null };
     if (req.files) {
         foto = req.files.foto;
-        foto_name = titulo.replace(' ', '-') + '.jpg';
-        console.log(foto_name)
+        foto_name = titulo.replace(/ /g, "-") + ".jpg";
+        console.log(foto_name);
     }
     let date = new Date();
-    let fecha = date.getFullYear().toString() + '/' + (date.getMonth() + 1) + '/' + (date.getDate()) + ' ' + (date.getHours()) + ':' + (date.getMinutes()) + ':' + (date.getSeconds());
+    let fecha =
+        date.getFullYear().toString() +
+        "/" +
+        (date.getMonth() + 1) +
+        "/" +
+        date.getDate() +
+        " " +
+        date.getHours() +
+        ":" +
+        date.getMinutes() +
+        ":" +
+        date.getSeconds();
 
-    conexion.query(`INSERT INTO productos(id, titulo, descripcion, imagen, fecha) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}")`, function (error, results, fields) {
-        if (error)
-            return res.status(500).send({ message: error });
-        if (results) {
-            if(req.files) saveFoto(foto, foto_name);
-            return res.status(201).send({ message: 'producto guardado correctamente' });
+    conexion.query(
+        `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}")`,
+        function(error, results, fields) {
+            if (error) return res.status(500).send({ message: error });
+            if (results) {
+                if (req.files) saveFoto(foto, foto_name);
+                return res
+                    .status(201)
+                    .send({ message: "producto guardado correctamente" });
+            }
         }
-    });
+    );
 }
-
 
 function saveFoto(foto, titulo) {
     if (foto.name != null) {
-        foto.mv(`./public/productos/${titulo}`, function (err) { });
+        foto.mv(`./public/productos/${titulo}`, function(err) {});
     }
 }
 
-
-
 function deleteProducto(req, res) {
     const id = req.params.id;
-    conexion.query(`SELECT * FROM productos WHERE id=${id}`, function (err, result) {
-        if (err)
-            return res.status(500).send({ message: err });
-        if (result) {
-            deleteFoto(result[0].imagen);
-            conexion.query(`DELETE FROM productos WHERE id = ${id}`, function (error, results, fields) {
-                if (error)
-                    return error;
-                if (results) {
-                    return res.status(200).send({ results });
-                }
-            });
+    conexion.query(
+        `SELECT * FROM productos WHERE id=${id}`,
+        function(err, result) {
+            if (err) return res.status(500).send({ message: err });
+            if (result) {
+                deleteFoto(result[0].imagen);
+                conexion.query(
+                    `DELETE FROM productos WHERE id = ${id}`,
+                    function(error, results, fields) {
+                        if (error) return error;
+                        if (results) {
+                            return res.status(200).send({ results });
+                        }
+                    }
+                );
+            }
         }
-    });
-
+    );
 }
 
 function deleteFoto(imagen) {
@@ -112,37 +139,41 @@ function updateProducto(req, res) {
     var update = req.body;
     var titulo = update.titulo;
     var descripcion = update.descripcion;
+    var categoria = update.categoria;
+    var usos = update.usos;
+    var especificaciones = update.especificaciones;
+    var garantia = update.garantia;
     var foto = { name: null };
     if (req.files) foto = req.files.foto;
-    console.log(foto.name, 'foto');
+    console.log(foto.name, "foto");
     // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-    var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}"`;
-    if (foto.name != null) query += `,imagen="${titulo.replaceAll(' ', '-')}.jpg `;
-    query += `WHERE id = ${id}`
+    var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}"`;
+    if (foto.name != null) query += `,imagen="${titulo.replaceAll(" ", "-")}.jpg`;
+    query += `WHERE id = ${id}`;
 
-    conexion.query(query, function (error, results, fields) {
-        if (error)
-            return res.status(500).send({ message: 'error en el servidor' });
+    conexion.query(query, function(error, results, fields) {
+        if (error) return res.status(500).send({ message: "error en el servidor" });
         if (results) {
             if (foto.name != null) {
-                deleteFoto(title + '.jpg');
+                deleteFoto(title + ".jpg");
                 saveFoto(foto, title);
             }
-            return res.status(201).send({ message: 'actualizado correctamente' });
+            return res.status(201).send({ message: "actualizado correctamente" });
         } else {
-            return res.status(404).send({ message: 'no existe ningun producto con ese id' });
+            return res
+                .status(404)
+                .send({ message: "no existe ningun producto con ese id" });
         }
     });
 }
 
-function getProductoById(req, res){
+function getProductoById(req, res) {
     let id = req.params.id;
     let query = `SELECT * FROM productos WHERE id=${id}`;
-    conexion.query(query, function (err, result) {
-        if (err)
-            return res.status(500).send({ message: err });
+    conexion.query(query, function(err, result) {
+        if (err) return res.status(500).send({ message: err });
         if (result) {
-            return res.status(200).send({result});
+            return res.status(200).send({ result });
         }
     });
 }
