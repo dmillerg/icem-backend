@@ -10,6 +10,7 @@ var login_controller = require('../controllers/login');
 var document_controller = require('../controllers/documents');
 var productos_controller = require('../controllers/productos');
 var categorias_controller = require('../controllers/categoria');
+var noticias_controller = require('../controllers/noticias');
 
 var managedb_controller = require('../database/manageDB');
 // var superuser_controller = require('../database/superuser');
@@ -75,7 +76,12 @@ api.get('/categorias', categorias_controller.getCategoria);
 // api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
 // api.get('/producto/:id', productos_controller.getProductoById);
 
-
+// Rutas para las Noticias
+api.get('/noticias/:limit', noticias_controller.getNoticias);
+api.get('/noticiaFoto/:id', noticias_controller.getNoticiaFoto);
+api.post('/saveNoticia', noticias_controller.saveNoticia);
+api.delete('/deleteNoticia/:id', noticias_controller.deleteNoticia);
+api.get('/noticia/:id', noticias_controller.getNoticiaById);
 
 
 // Exportamos la configuración

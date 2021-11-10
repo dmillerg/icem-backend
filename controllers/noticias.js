@@ -1,41 +1,47 @@
-const conexion = require('../database/database');
-const bcrypt = require('bcrypt');
-const { json } = require('body-parser');
+const conexion = require("../database/database");
+const bcrypt = require("bcrypt");
+const { json } = require("body-parser");
 
-function getNotcias(req, res) {
-    var id = req.params.id;
+function getNoticias(req, res) {
     var limit = req.params.limit;
     var query = ``;
     if (limit > 0) {
         query += ` LIMIT ${limit}`;
     }
 
-    conexion.query(`SELECT * FROM noticias ` + query, function (error, results, fields) {
-        if (error) {
-            console.log(error);
-            return res.status(500).send(error);
+    conexion.query(
+        `SELECT * FROM noticias ` + query,
+        function(error, results, fields) {
+            if (error) {
+                console.log(error);
+                return res.status(500).send(error);
+            }
+            if (results.length > 0) {
+                return res.status(200).json(results);
+            } else {
+                return res.status(200).send({ documents: "no hay noticias" });
+            }
         }
-        if (results.length > 0) {
-            return res.status(200).json(results);
-        } else {
-            return res.status(200).send({ documents: 'no hay noticias' });
-        }
-    });
+    );
 }
 
 function getNoticiaFoto(req, res) {
     try {
         var id = req.params.id;
-        conexion.query(`SELECT * FROM noticias WHERE id = ${id}`, function (error, results, fields) {
-            if (error)
-                throw error;
-            if (results.length > 0) {
-                var path = require('path');
-                res.sendFile(path.resolve('public/noticias/' + results[0].imagen));
-            } else {
-                return res.status(404).send({ documento: 'no existe ninguna noticia con ese id' });
+        conexion.query(
+            `SELECT * FROM noticias WHERE id = ${id}`,
+            function(error, results, fields) {
+                if (error) throw error;
+                if (results.length > 0) {
+                    var path = require("path");
+                    res.sendFile(path.resolve("public/noticias/" + results[0].imagen));
+                } else {
+                    return res
+                        .status(404)
+                        .send({ documento: "no existe ninguna noticia con ese id" });
+                }
             }
-        });
+        );
     } catch (error) {
         console.log(error);
     }
@@ -43,54 +49,70 @@ function getNoticiaFoto(req, res) {
 
 function saveNoticia(req, res) {
     var id = -1;
+    console.log(req.body);
     var body = req.body;
     var titulo = body.titulo;
     var descripcion = body.descripcion;
-    var foto = { name: null };  
+    var foto = { name: null };
     if (req.files) {
         foto = req.files.foto;
-        foto_name = titulo.replace(' ', '-') + '.jpg';
-        console.log(foto_name)
+        foto_name = titulo.replace(/ /g, "-") + ".jpg";
+        console.log(foto_name);
     }
     let date = new Date();
-    let fecha = date.getFullYear().toString() + '/' + (date.getMonth() + 1) + '/' + (date.getDate()) + ' ' + (date.getHours()) + ':' + (date.getMinutes()) + ':' + (date.getSeconds());
+    let fecha =
+        date.getFullYear().toString() +
+        "/" +
+        (date.getMonth() + 1) +
+        "/" +
+        date.getDate() +
+        " " +
+        date.getHours() +
+        ":" +
+        date.getMinutes() +
+        ":" +
+        date.getSeconds();
 
-    conexion.query(`INSERT INTO noticias(id, titulo, descripcion, imagen, fecha) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}")`, function (error, results, fields) {
-        if (error)
-            return res.status(500).send({ message: error });
-        if (results) {
-            if(req.files) saveFoto(foto, foto_name);
-            return res.status(201).send({ message: 'noticia guardada correctamente' });
+    conexion.query(
+        `INSERT INTO noticias(id, titulo, descripcion, fecha, imagen) VALUES (NULL,"${titulo}","${descripcion}","${fecha}", "${foto_name}")`,
+        function(error, results, fields) {
+            if (error) return res.status(500).send({ message: error });
+            if (results) {
+                if (req.files) saveFoto(foto, foto_name);
+                return res
+                    .status(201)
+                    .send({ message: "noticia guardado correctamente" });
+            }
         }
-    });
+    );
 }
-
 
 function saveFoto(foto, titulo) {
     if (foto.name != null) {
-        foto.mv(`./public/noticias/${titulo}`, function (err) { });
+        foto.mv(`./public/noticias/${titulo}`, function(err) {});
     }
 }
 
-
-
 function deleteNoticia(req, res) {
     const id = req.params.id;
-    conexion.query(`SELECT * FROM noticias WHERE id=${id}`, function (err, result) {
-        if (err)
-            return res.status(500).send({ message: err });
-        if (result) {
-            deleteFoto(result[0].imagen);
-            conexion.query(`DELETE FROM noticias WHERE id = ${id}`, function (error, results, fields) {
-                if (error)
-                    return error;
-                if (results) {
-                    return res.status(200).send({ results });
-                }
-            });
+    conexion.query(
+        `SELECT * FROM noticias WHERE id=${id}`,
+        function(err, result) {
+            if (err) return res.status(500).send({ message: err });
+            if (result) {
+                deleteFoto(result[0].imagen);
+                conexion.query(
+                    `DELETE FROM noticias WHERE id = ${id}`,
+                    function(error, results, fields) {
+                        if (error) return error;
+                        if (results) {
+                            return res.status(200).send({ results });
+                        }
+                    }
+                );
+            }
         }
-    });
-
+    );
 }
 
 function deleteFoto(imagen) {
@@ -101,7 +123,7 @@ function deleteFoto(imagen) {
         console.log("borrado");
         fs.unlinkSync(pathViejo);
     }
-    return "borrardo correctamente";
+    return "borrado correctamente";
 }
 
 function updateNoticia(req, res) {
@@ -113,42 +135,46 @@ function updateNoticia(req, res) {
     var titulo = update.titulo;
     var descripcion = update.descripcion;
     var foto = { name: null };
-    if (req.files) foto = req.files.foto;
-    console.log(foto.name, 'foto');
+    var foto_name = '';
+    if (req.files) {
+        foto = req.files.foto;
+        foto_name = titulo.replace(/ /g, "-") + '.jpg';
+    }
+    console.log(foto.name, "foto");
     // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-    var query = `UPDATE noticias SET titulo="${titulo}",descripcion="${descripcion}"`;
-    if (foto.name != null) query += `,imagen="${titulo.replaceAll(' ', '-')}.jpg `;
-    query += `WHERE id = ${id}`
+    var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}"`;
+    if (foto.name != null) query += `,imagen="${foto_name}"`;
+    query += `WHERE id = ${id}`;
 
-    conexion.query(query, function (error, results, fields) {
-        if (error)
-            return res.status(500).send({ message: 'error en el servidor' });
+    conexion.query(query, function(error, results, fields) {
+        if (error) return res.status(500).send({ message: "error en el servidor" });
         if (results) {
             if (foto.name != null) {
-                deleteFoto(title + '.jpg');
-                saveFoto(foto, title);
+                deleteFoto(foto_name);
+                saveFoto(foto, foto_name);
             }
-            return res.status(201).send({ message: 'actualizado correctamente' });
+            return res.status(201).send({ message: "actualizado correctamente" });
         } else {
-            return res.status(404).send({ message: 'no existe ninguna noticia con ese id' });
+            return res
+                .status(404)
+                .send({ message: "no existe ninguna noticia con ese id" });
         }
     });
 }
 
-function getNoticiaById(req, res){
+function getNoticiaById(req, res) {
     let id = req.params.id;
     let query = `SELECT * FROM noticias WHERE id=${id}`;
-    conexion.query(query, function (err, result) {
-        if (err)
-            return res.status(500).send({ message: err });
+    conexion.query(query, function(err, result) {
+        if (err) return res.status(500).send({ message: err });
         if (result) {
-            return res.status(200).send({result});
+            return res.status(200).send({ result });
         }
     });
 }
 
 module.exports = {
-    getNotcias,
+    getNoticias,
     getNoticiaFoto,
     saveNoticia,
     deleteNoticia,
