@@ -138,7 +138,7 @@ function deleteFoto(imagen) {
 function updateProducto(req, res) {
     // Recogemos un parámetro por la url
     var id = req.params.id;
-console.log('asdasdasdasdasd');
+console.log('asdasdasdasdasd', req.body.categoria);
     // Recogemos los datos que nos llegen en el body de la petición
     var update = req.body;
     var titulo = update.titulo;
