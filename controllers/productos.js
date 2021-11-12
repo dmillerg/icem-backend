@@ -31,31 +31,25 @@ function getProductos(req, res) {
 }
 
 function getProductoFoto(req, res) {
-    try {
-        var id = req.params.id;
-        var limit = req.params.limit;
-        var query = ``;
-        console.log(req.query)
-        if (req.query.categoria > -1) query += ` AND categoria=${req.query.categoria}`;
-        if (limit > 0) query += ` LIMIT ${limit}`;
-        console.log(`SELECT * FROM productos WHERE 1` + query)
-        conexion.query(
-            `SELECT * FROM productos WHERE 1` + query,
-            function(error, results, fields) {
-                if (error) {
-                    console.log(error);
-                    return res.status(500).send(error);
-                }
-                if (results.length > 0) {
-                    return res.status(200).json(results);
-                } else {
-                    return res.status(200).send({ documents: "no hay productos" });
-                }
+  try {
+    var id = req.params.id;
+    conexion.query(
+        `SELECT * FROM productos WHERE id = ${id}`,
+        function(error, results, fields) {
+            if (error) throw error;
+            if (results.length > 0) {
+                var path = require("path");
+                res.sendFile(path.resolve("public/productos/" + results[0].imagen));
+            } else {
+                return res
+                    .status(404)
+                    .send({ documento: "no existe ningun producto con ese id" });
             }
-        );
-    } catch (error) {
-        console.log(error);
-    }
+        }
+    );
+} catch (error) {
+    console.log(error);
+}
 }
 
 function saveProducto(req, res) {
@@ -144,7 +138,7 @@ function deleteFoto(imagen) {
 function updateProducto(req, res) {
     // Recogemos un parámetro por la url
     var id = req.params.id;
-
+console.log('asdasdasdasdasd');
     // Recogemos los datos que nos llegen en el body de la petición
     var update = req.body;
     var titulo = update.titulo;

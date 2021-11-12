@@ -67,19 +67,22 @@ api.post('/userhistory', historico_controller.saveActionAPI);
 api.get('/productos/:limit', productos_controller.getProductos);
 api.get('/productoFoto/:id', productos_controller.getProductoFoto);
 api.post('/saveProducto', productos_controller.saveProducto);
+api.post('/productos/:id', productos_controller.updateProducto);
 api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
 api.get('/producto/:id', productos_controller.getProductoById);
 
 // Rutas para las Categorias
 api.get('/categorias', categorias_controller.getCategoria);
+api.post('/categorias/:id', categorias_controller.updateCategoria);
 // api.get('/productoFoto/:id', productos_controller.getProductoFoto);
-// api.post('/saveProducto', productos_controller.saveProducto);
-// api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
-// api.get('/producto/:id', productos_controller.getProductoById);
+api.post('/saveCategoria', categorias_controller.saveCategoria);
+api.delete('/deleteCategoria/:id', categorias_controller.deleteCategoria);
+api.get('/categoria/:id', categorias_controller.getCategoriaById);
 
 // Rutas para las Noticias
 api.get('/noticias/:limit', noticias_controller.getNoticias);
 api.get('/noticiaFoto/:id', noticias_controller.getNoticiaFoto);
+api.post('/noticias/:id', noticias_controller.updateNoticia);
 api.post('/saveNoticia', noticias_controller.saveNoticia);
 api.delete('/deleteNoticia/:id', noticias_controller.deleteNoticia);
 api.get('/noticia/:id', noticias_controller.getNoticiaById);
@@ -88,6 +91,7 @@ api.get('/noticia/:id', noticias_controller.getNoticiaById);
 api.get('/desarrollos/:limit', desarrollos_controller.getDesarrollos);
 api.get('/desarrolloFoto/:id', desarrollos_controller.getDesarrolloFoto);
 api.post('/saveDesarrollo', desarrollos_controller.saveDesarrollo);
+api.post('/desarrollos/:id', desarrollos_controller.updateDesarrollo);
 api.delete('/deleteDesarrollo/:id', desarrollos_controller.deleteDesarrollo);
 api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
 

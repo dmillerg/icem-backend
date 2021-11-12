@@ -95,6 +95,7 @@ function saveFoto(foto, titulo) {
 }
 
 function deleteDesarrollo(req, res) {
+  console.log('desarr');
   const id = req.params.id;
   conexion.query(
     `SELECT * FROM desarrollos WHERE id=${id}`,
@@ -103,7 +104,7 @@ function deleteDesarrollo(req, res) {
       if (result) {
         deleteFoto(result[0].imagen);
         conexion.query(
-          `DELETE FROM desarrollo WHERE id = ${id}`,
+          `DELETE FROM desarrollos WHERE id = ${id}`,
           function (error, results, fields) {
             if (error) return error;
             if (results) {

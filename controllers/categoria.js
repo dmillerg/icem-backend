@@ -29,8 +29,7 @@ function getCategoria(req, res) {
 function saveCategoria(req, res) {
   var id = -1;
   console.log(req.body);
-  var nombre = req.nombre;
-
+  var nombre = req.body.nombre;
   conexion.query(
     `INSERT INTO categorias(id, nombre) VALUES (NULL,"${nombre}")`,
     function (error, results, fields) {
@@ -74,21 +73,28 @@ function updateCategoria(req, res) {
   var nombre = update.nombre;
  
   // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-  var query = `UPDATE categoria SET nombre="${nombre}"`
+  var query = `UPDATE categorias SET nombre="${nombre}"`
   query += `WHERE id = ${id}`;
 
   conexion.query(query, function (error, results, fields) {
     if (error) return res.status(500).send({ message: "error en el servidor" });
     if (results) {
-      if (foto.name != null) {
-        deleteFoto(title + ".jpg");
-        saveFoto(foto, title);
-      }
       return res.status(201).send({ message: "actualizado correctamente" });
     } else {
       return res
         .status(404)
         .send({ message: "no existe ninguna categoria con ese id" });
+    }
+  });
+}
+
+function getCategoriaById(req, res) {
+  let id = req.params.id;
+  let query = `SELECT * FROM categorias WHERE id=${id}`;
+  conexion.query(query, function (err, result) {
+    if (err) return res.status(500).send({ message: err });
+    if (result) {
+      return res.status(200).send({ result });
     }
   });
 }
@@ -100,4 +106,5 @@ module.exports = {
   saveCategoria,
   deleteCategoria,
   updateCategoria,
+  getCategoriaById
 };
