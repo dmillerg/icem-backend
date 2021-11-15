@@ -6,7 +6,11 @@ function getProductos(req, res) {
     var id = req.params.id;
     var limit = req.params.limit;
     var categoria = req.query.categoria;
+    var excluir = req.query.excluir;
     var query = ``;
+    if(query > -1){
+        query += ` AND id <> ${excluir}`;
+    }
     if (categoria > -1) {
         query += ` AND categoria=${categoria}`;
     }

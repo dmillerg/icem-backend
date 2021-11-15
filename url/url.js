@@ -11,6 +11,7 @@ var noticias_controller = require('../controllers/noticias');
 var desarrollos_controller = require('../controllers/desarrollos');
 
 var managedb_controller = require('../database/manageDB');
+var login_controller = require('../controllers/login');
 // var superuser_controller = require('../database/superuser');
 
 // Llamamos al router
@@ -18,13 +19,10 @@ var api = express.Router();
 
 // Rutas para las api de usuario
 api.post('/saveUsuario', usuario_controller.saveUsuario);
-api.get('/usuarios', usuario_controller.getUsuarios);
-api.get('/usuarios/:id', usuario_controller.getUsuario);
+api.get('/usuarios/:limit', usuario_controller.getUsuarios);
+api.get('/usuario/:id', usuario_controller.getUsuario);
 api.post('/usuarios/:id', usuario_controller.updateUsuario);
-api.delete('/usuarios/:id', usuario_controller.deleteUsuario);
-api.get('/avatar/:id', usuario_controller.getAvatar);
-api.delete('/avatar/:id', usuario_controller.deleteAvatarApi);
-api.get('/userhistory/:id', usuario_controller.getUserHistory);
+api.delete('/deleteUsuario/:id', usuario_controller.deleteUsuario);
 
 //Rutas para manejar base de datos
 api.get('/database', managedb_controller.createTables);
@@ -61,7 +59,9 @@ api.post('/desarrollos/:id', desarrollos_controller.updateDesarrollo);
 api.delete('/deleteDesarrollo/:id', desarrollos_controller.deleteDesarrollo);
 api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
 
-
+// Rutas para login and logout
+api.post('/login',login_controller.login);
+api.post('/logout',login_controller.logout);
 
 // Exportamos la configuración
 module.exports = api;
