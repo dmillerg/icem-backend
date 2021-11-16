@@ -94,7 +94,7 @@ function getCategoriaById(req, res) {
   conexion.query(query, function (err, result) {
     if (err) return res.status(500).send({ message: err });
     if (result) {
-      return res.status(200).send({ result });
+      return res.status(200).send({ id: result[0].id, nombre: result[0].nombre });
     }
   });
 }
