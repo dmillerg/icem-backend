@@ -101,7 +101,19 @@ function tableProductos() {
     });
 }
 
+function isAuthenticated(token){
+    conexion.query(`SELECT * FROM tokens WHERE token=${token}`, function(err, result){
+        if(err){
+            console.log(err);
+            return false;
+        }
+        if(result){
+            return true;
+        }
+    });
+}
 
 module.exports = {
     createTables,
+    isAuthenticated,
 }

@@ -1,6 +1,7 @@
 const conexion = require("../database/database");
 const bcrypt = require("bcrypt");
 const { json } = require("body-parser");
+const { isAuthenticated } = require("../database/manageDB");
 
 function getProductos(req, res) {
   var id = req.params.id;
@@ -58,47 +59,51 @@ function getProductoFoto(req, res) {
 }
 
 function saveProducto(req, res) {
-  var id = -1;
-  console.log(req.body);
-  var body = req.body;
-  var titulo = body.titulo;
-  var descripcion = body.descripcion;
-  var categoria = body.categoria;
-  var usos = body.usos;
-  var especificaciones = body.especificaciones;
-  var garantia = body.garantia;
-  var foto = { name: null };
-  if (req.files) {
-    foto = req.files.foto;
-    foto_name = titulo.replace(/ /g, "-") + ".jpg";
-    console.log(foto_name);
-  }
-  let date = new Date();
-  let fecha =
-    date.getFullYear().toString() +
-    "/" +
-    (date.getMonth() + 1) +
-    "/" +
-    date.getDate() +
-    " " +
-    date.getHours() +
-    ":" +
-    date.getMinutes() +
-    ":" +
-    date.getSeconds();
-
-  conexion.query(
-    `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}")`,
-    function (error, results, fields) {
-      if (error) return res.status(500).send({ message: error });
-      if (results) {
-        if (req.files) saveFoto(foto, foto_name);
-        return res
-          .status(201)
-          .send({ message: "producto guardado correctamente" });
-      }
+  if (isAuthenticated(req.query.token)) {
+    var id = -1;
+    console.log(req.body);
+    var body = req.body;
+    var titulo = body.titulo;
+    var descripcion = body.descripcion;
+    var categoria = body.categoria;
+    var usos = body.usos;
+    var especificaciones = body.especificaciones;
+    var garantia = body.garantia;
+    var foto = { name: null };
+    if (req.files) {
+      foto = req.files.foto;
+      foto_name = titulo.replace(/ /g, "-") + ".jpg";
+      console.log(foto_name);
     }
-  );
+    let date = new Date();
+    let fecha =
+      date.getFullYear().toString() +
+      "/" +
+      (date.getMonth() + 1) +
+      "/" +
+      date.getDate() +
+      " " +
+      date.getHours() +
+      ":" +
+      date.getMinutes() +
+      ":" +
+      date.getSeconds();
+
+    conexion.query(
+      `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}")`,
+      function (error, results, fields) {
+        if (error) return res.status(500).send({ message: error });
+        if (results) {
+          if (req.files) saveFoto(foto, foto_name);
+          return res
+            .status(201)
+            .send({ message: "producto guardado correctamente" });
+        }
+      }
+    );
+  } else {
+    return res.status(405).send({ message: "usuario no autenticado" });
+  }
 }
 
 function saveFoto(foto, titulo) {
