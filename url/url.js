@@ -61,7 +61,7 @@ api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
 
 // Rutas para login and logout
 api.post('/login',login_controller.login);
-api.post('/logout',login_controller.logout);
+api.post('/logout/:id',login_controller.logout);
 
 // Exportamos la configuración
 module.exports = api;
