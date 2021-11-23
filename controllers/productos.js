@@ -222,6 +222,18 @@ function getProductoById(req, res) {
   });
 }
 
+function searchProductos(req, res){
+  let titulo = req.params.titulo;
+  let query = `SELECT * FROM productos WHERE titulo like"%${titulo}%"`;
+  console.log(query);
+  conexion.query(query, function (err, result) {
+    if (err) return res.status(500).send({ message: err });
+    if (result) {
+      return res.status(200).send({ result });
+    }
+  });
+}
+
 module.exports = {
   getProductos,
   getProductoFoto,
@@ -229,4 +241,5 @@ module.exports = {
   deleteProducto,
   updateProducto,
   getProductoById,
+  searchProductos
 };

@@ -13,7 +13,7 @@ const multiPartMiddleware = multipart({
 
 
 const app = express();
-const port = 3000;
+const port = 9706;
 
 app.use(cors());
 

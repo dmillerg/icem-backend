@@ -2,16 +2,9 @@ const conexion = require("../database/database");
 const bcrypt = require("bcrypt");
 const { json } = require("body-parser");
 
-function getDesarrollos(req, res) {
-  var id = req.params.id;
-  var limit = req.params.limit;
-  var query = ``;
-  if (limit > 0) {
-    query += ` LIMIT ${limit}`;
-  }
-
+function getMensajes(req, res) {
   conexion.query(
-    `SELECT * FROM desarrollos ` + query,
+    `SELECT * FROM chat WHERE 1 ORDER BY id ASC`,
     function (error, results, fields) {
       if (error) {
         console.log(error);
@@ -20,26 +13,26 @@ function getDesarrollos(req, res) {
       if (results.length > 0) {
         return res.status(200).json(results);
       } else {
-        return res.status(200).send({ documents: "no hay desarrollos" });
+        return res.status(200).send({ documents: "no hay mensajes" });
       }
     }
   );
 }
 
-function getDesarrolloFoto(req, res) {
+function getMensajeFoto(req, res) {
   try {
     var id = req.params.id;
     conexion.query(
-      `SELECT * FROM desarrollos WHERE id = ${id}`,
+      `SELECT * FROM chat WHERE id = ${id}`,
       function (error, results, fields) {
         if (error) throw error;
         if (results.length > 0) {
           var path = require("path");
-          res.sendFile(path.resolve("public/desarrollos/" + results[0].imagen));
+          res.sendFile(path.resolve("public/chat/" + results[0].imagen));
         } else {
           return res
             .status(404)
-            .send({ documento: "no existe ningun desarrollo con ese id" });
+            .send({ documento: "no existe ningun chat con ese id" });
         }
       }
     );
@@ -48,7 +41,7 @@ function getDesarrolloFoto(req, res) {
   }
 }
 
-function saveDesarrollo(req, res) {
+function saveMensaje(req, res) {
   conexion.query(
     `SELECT * FROM tokens WHERE token='${req.body.token}'`,
     function (err, result) {
@@ -59,37 +52,26 @@ function saveDesarrollo(req, res) {
         var id = -1;
         console.log(req.body);
         var body = req.body;
-        var titulo = body.titulo;
-        var descripcion = body.descripcion;
+        var nombre = body.nombre;
+        var sms = body.sms;
+        var fecha = body.fecha;
+        var foto_name = "";
         var foto = { name: null };
         if (req.files) {
           foto = req.files.foto;
-          foto_name = titulo.replace(/ /g, "-") + ".jpg";
+          foto_name = id.replace(/ /g, "-") + ".jpg";
           console.log(foto_name);
         }
-        let date = new Date();
-        let fecha =
-          date.getFullYear().toString() +
-          "/" +
-          (date.getMonth() + 1) +
-          "/" +
-          date.getDate() +
-          " " +
-          date.getHours() +
-          ":" +
-          date.getMinutes() +
-          ":" +
-          date.getSeconds();
 
         conexion.query(
-          `INSERT INTO desarrollos(id, titulo, descripcion, fecha, imagen) VALUES (NULL,"${titulo}","${descripcion}","${fecha}", "${foto_name}")`,
+          `INSERT INTO chat(id, sms, fecha, nombre, archivo) VALUES (NULL,"${sms}","${fecha}","${nombre}", "${foto_name}")`,
           function (error, results, fields) {
             if (error) return res.status(500).send({ message: error });
             if (results) {
               if (req.files) saveFoto(foto, foto_name);
               return res
                 .status(201)
-                .send({ message: "desarrollo guardado correctamente" });
+                .send({ message: "mensaje guardado correctamente" });
             }
           }
         );
@@ -100,11 +82,11 @@ function saveDesarrollo(req, res) {
 
 function saveFoto(foto, titulo) {
   if (foto.name != null) {
-    foto.mv(`./public/desarrollos/${titulo}`, function (err) {});
+    foto.mv(`./public/chat/${titulo}`, function (err) {});
   }
 }
 
-function deleteDesarrollo(req, res) {
+function deleteMensaje(req, res) {
   conexion.query(
     `SELECT * FROM tokens WHERE token='${req.query.token}'`,
     function (err, result) {
@@ -112,16 +94,15 @@ function deleteDesarrollo(req, res) {
         return res.status(405).send({ message: "usuario no autenticado" });
       }
       if (result.length > 0) {
-        console.log("desarr");
         const id = req.params.id;
         conexion.query(
-          `SELECT * FROM desarrollos WHERE id=${id}`,
+          `SELECT * FROM chat WHERE id=${id}`,
           function (err, result) {
             if (err) return res.status(500).send({ message: err });
             if (result) {
               deleteFoto(result[0].imagen);
               conexion.query(
-                `DELETE FROM desarrollos WHERE id = ${id}`,
+                `DELETE FROM chat WHERE id = ${id}`,
                 function (error, results, fields) {
                   if (error) return error;
                   if (results) {
@@ -138,7 +119,7 @@ function deleteDesarrollo(req, res) {
 }
 
 function deleteFoto(imagen) {
-  const pathViejo = `./public/desarrollos/${imagen}`;
+  const pathViejo = `./public/chat/${imagen}`;
   // console.log(pathViejo);
   const fs = require("fs");
   if (fs.existsSync(pathViejo)) {
@@ -148,7 +129,8 @@ function deleteFoto(imagen) {
   return "borrado correctamente";
 }
 
-function updateDesarrollo(req, res) {
+function updateMensaje(req, res) {
+  // Recogemos un parámetro por la url
   conexion.query(
     `SELECT * FROM tokens WHERE token='${req.body.token}'`,
     function (err, result) {
@@ -156,20 +138,20 @@ function updateDesarrollo(req, res) {
         return res.status(405).send({ message: "usuario no autenticado" });
       }
       if (result.length > 0) {
-        // Recogemos un parámetro por la url
         var id = req.params.id;
-
+        console.log("asdasdasdasdasd", req.body.categoria);
         // Recogemos los datos que nos llegen en el body de la petición
         var update = req.body;
-        var titulo = update.titulo;
-        var descripcion = update.descripcion;
+        var sms = update.sms;
+        var fecha = update.fecha;
+        var nombre = update.nombre;
         var foto = { name: null };
         if (req.files) foto = req.files.foto;
         console.log(foto.name, "foto");
         // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-        var query = `UPDATE desarrollos SET titulo="${titulo}",descripcion="${descripcion}"`;
+        var query = `UPDATE chat SET sms="${sms}",fecha="${fecha}", nombre="${nombre}"`;
         if (foto.name != null)
-          query += `,imagen="${titulo.replaceAll(" ", "-")}.jpg`;
+          query += `,archivo="${id.replace(/ /g, "-")}.jpg"`;
         query += `WHERE id = ${id}`;
 
         conexion.query(query, function (error, results, fields) {
@@ -186,7 +168,7 @@ function updateDesarrollo(req, res) {
           } else {
             return res
               .status(404)
-              .send({ message: "no existe ningun desarrollo con ese id" });
+              .send({ message: "no existe ningun mensaje con ese id" });
           }
         });
       }
@@ -194,9 +176,9 @@ function updateDesarrollo(req, res) {
   );
 }
 
-function getDesarrolloById(req, res) {
+function getMensajeById(req, res) {
   let id = req.params.id;
-  let query = `SELECT * FROM desarrollos WHERE id=${id}`;
+  let query = `SELECT * FROM chat WHERE id=${id}`;
   conexion.query(query, function (err, result) {
     if (err) return res.status(500).send({ message: err });
     if (result) {
@@ -206,10 +188,10 @@ function getDesarrolloById(req, res) {
 }
 
 module.exports = {
-  getDesarrollos,
-  getDesarrolloFoto,
-  saveDesarrollo,
-  deleteDesarrollo,
-  updateDesarrollo,
-  getDesarrolloById,
+  getMensajes,
+  getMensajeFoto,
+  saveMensaje,
+  deleteMensaje,
+  updateMensaje,
+  getMensajeById,
 };

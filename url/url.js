@@ -9,6 +9,7 @@ var productos_controller = require('../controllers/productos');
 var categorias_controller = require('../controllers/categoria');
 var noticias_controller = require('../controllers/noticias');
 var desarrollos_controller = require('../controllers/desarrollos');
+var mensaje_controller = require('../controllers/chat');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -34,6 +35,7 @@ api.post('/saveProducto', productos_controller.saveProducto);
 api.post('/productos/:id', productos_controller.updateProducto);
 api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
 api.get('/producto/:id', productos_controller.getProductoById);
+api.get('/searchProductos/:titulo',productos_controller.searchProductos);
 
 // Rutas para las Categorias
 api.get('/categorias', categorias_controller.getCategoria);
@@ -58,6 +60,14 @@ api.post('/saveDesarrollo', desarrollos_controller.saveDesarrollo);
 api.post('/desarrollos/:id', desarrollos_controller.updateDesarrollo);
 api.delete('/deleteDesarrollo/:id', desarrollos_controller.deleteDesarrollo);
 api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
+
+// Rutas para los Mensajes
+api.get('/chats/:limit', mensaje_controller.getMensajes);
+api.get('/chat/:id', mensaje_controller.getMensajeFoto);
+api.post('/saveChat', mensaje_controller.saveMensaje);
+api.post('/chat/:id', mensaje_controller.updateMensaje);
+api.delete('/deleteChat/:id', mensaje_controller.deleteMensaje);
+api.get('/chats/:id', mensaje_controller.getMensajeById);
 
 // Rutas para login and logout
 api.post('/login',login_controller.login);
