@@ -18,6 +18,9 @@ function createTables(req, res) {
   });
 }
 
+/**
+ * Crea todo lo relacionado con las categorias
+ */
 function tableCategorias() {
   var query = `CREATE TABLE categorias (
     id int(11) DEFAULT NULL COMMENT "Llave Primaria",
@@ -56,6 +59,9 @@ function tableCategorias() {
   });
 }
 
+/**
+ * Crea todo lo relacionado con los usuarios
+ */
 function tableUsuario() {
   var query = `CREATE TABLE usuarios (
     id int(11) DEFAULT NULL COMMENT "Llave Primaria",
@@ -97,13 +103,20 @@ function tableUsuario() {
   });
 }
 
+/**
+ * Crea todo lo relacionado con los productos
+ */
 function tableProductos() {
   var query = `CREATE TABLE productos (
         id int(11) DEFAULT NULL COMMENT "Llave Primaria",
         titulo varchar(255) NOT NULL,
         descripcion TEXT NOT NULL,
         imagen varchar(255) DEFAULT NULL,
-        fecha varchar(255) DEFAULT NULL
+        fecha varchar(255) DEFAULT NULL,
+        categoria int(11),
+        usos TEXT NOT NULL,
+        especificaciones TEXT NOT NULL,
+        garantia TEXT NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT`;
   conexion.query(query, function (error, results, fields) {
     if (error) errores += 1;
@@ -142,6 +155,9 @@ function tableProductos() {
   });
 }
 
+/**
+ * Crea todo lo relacionado con los desarrollos
+ */
 function tableDesarrollos() {
   var query = `CREATE TABLE desarrollos (
         id int(11) DEFAULT NULL COMMENT "Llave Primaria",
@@ -187,6 +203,9 @@ function tableDesarrollos() {
   });
 }
 
+/**
+ * Crea todo lo relacionado con las noticiass
+ */
 function tableNoticias() {
   var query = `CREATE TABLE noticias (
         id int(11) DEFAULT NULL COMMENT "Llave Primaria",
@@ -232,6 +251,9 @@ function tableNoticias() {
   });
 }
 
+/**
+ * Crea todo lo relacionado con los tokens
+ */
 function tableTokens() {
   var query = `CREATE TABLE tokens (
         id int(11) DEFAULT NULL COMMENT "Llave Primaria",
@@ -275,8 +297,11 @@ function tableTokens() {
   });
 }
 
+/**
+ * Crea todo lo relacionado con los chats
+ */
 function tableChats() {
-  var query = `CREATE TABLE chats (
+  var query = `CREATE TABLE chat (
         id int(11) DEFAULT NULL COMMENT "Llave Primaria",
         sms varchar(255) NOT NULL,
         nombre TEXT NOT NULL,
@@ -288,14 +313,14 @@ function tableChats() {
     if (results) resultados += 1;
   });
 
-  var query2 = `ALTER TABLE tokens
+  var query2 = `ALTER TABLE chat
     ADD PRIMARY KEY (id) USING BTREE`;
   conexion.query(query2, function (error, results, fields) {
     if (error) errores += 1;
     if (results) resultados += 1;
   });
 
-  var query3 = `ALTER TABLE tokens
+  var query3 = `ALTER TABLE chat
     MODIFY id int(11) NOT NULL AUTO_INCREMENT;`;
   conexion.query(query3, function (error, results, fields) {
     if (error) {
@@ -320,6 +345,9 @@ function tableChats() {
   });
 }
 
+/**
+ * Inerta al usuario admin de la pagina
+ */
 function insertAdmin() {
   var query = `INSERT INTO usuarios VALUES (1, 'kuroko', '$2b$10$dzs/n3VRV0GvJynX8SLZIe1TKoLOmgJObz15pe5IUUNfP6oxfdpjG', 'Daniel Miller González', '2021/11/23 19:2:6')`;
   conexion.query(query, function (error, results, fields) {

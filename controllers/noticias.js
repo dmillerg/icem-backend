@@ -5,6 +5,7 @@ const { json } = require("body-parser");
 function getNoticias(req, res) {
   var limit = req.params.limit;
   var query = ``;
+  query += ` ORDER BY id DESC`;
   if (limit > 0) {
     query += ` LIMIT ${limit}`;
   }

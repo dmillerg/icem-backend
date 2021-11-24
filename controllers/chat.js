@@ -28,7 +28,7 @@ function getMensajeFoto(req, res) {
         if (error) throw error;
         if (results.length > 0) {
           var path = require("path");
-          res.sendFile(path.resolve("public/chat/" + results[0].imagen));
+          res.sendFile(path.resolve("public/chat/" + results[0].archivo));
         } else {
           return res
             .status(404)
@@ -59,7 +59,7 @@ function saveMensaje(req, res) {
         var foto = { name: null };
         if (req.files) {
           foto = req.files.foto;
-          foto_name = id.replace(/ /g, "-") + ".jpg";
+          foto_name = fecha.toString() + ".jpg";
           console.log(foto_name);
         }
 
@@ -95,12 +95,14 @@ function deleteMensaje(req, res) {
       }
       if (result.length > 0) {
         const id = req.params.id;
+        console.log(`SELECT * FROM chat WHERE id=${id}`)
         conexion.query(
           `SELECT * FROM chat WHERE id=${id}`,
           function (err, result) {
             if (err) return res.status(500).send({ message: err });
             if (result) {
-              deleteFoto(result[0].imagen);
+              console.log(result)
+              deleteFoto(result[0].archivo);
               conexion.query(
                 `DELETE FROM chat WHERE id = ${id}`,
                 function (error, results, fields) {
@@ -151,7 +153,7 @@ function updateMensaje(req, res) {
         // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
         var query = `UPDATE chat SET sms="${sms}",fecha="${fecha}", nombre="${nombre}"`;
         if (foto.name != null)
-          query += `,archivo="${id.replace(/ /g, "-")}.jpg"`;
+          query += `,archivo="${id.toString().replace(/ /g, "-")}.jpg"`;
         query += `WHERE id = ${id}`;
 
         conexion.query(query, function (error, results, fields) {

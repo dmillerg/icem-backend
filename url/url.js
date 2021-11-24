@@ -63,7 +63,7 @@ api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
 
 // Rutas para los Mensajes
 api.get('/chats/:limit', mensaje_controller.getMensajes);
-api.get('/chat/:id', mensaje_controller.getMensajeFoto);
+api.get('/chatFoto/:id', mensaje_controller.getMensajeFoto);
 api.post('/saveChat', mensaje_controller.saveMensaje);
 api.post('/chat/:id', mensaje_controller.updateMensaje);
 api.delete('/deleteChat/:id', mensaje_controller.deleteMensaje);

@@ -33,7 +33,7 @@ function getApis(req, res) {
     p{
         height: 30px;
         border-radius: 5px;
-        background: #ea4908;
+        background: #08f;
         padding: 5px;
         box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.2);
         margin-top: 10px;
@@ -44,17 +44,20 @@ function getApis(req, res) {
         transition: 100ms;
       }
       p:hover{
-          margin-inline:10px;
+          transform: scale(1.1);
           cursor: pointer;
           transition: 100ms;
       }
       .container{
           display:block;
       }
+      a{
+          color: rgba(0,0,0,0.6);
+      }
   </style>
   <div class="example-loading-shade">
   <div class="container">
-  <h1 style="color: white;">Bienvenido al servidor de APis de la CTC</h1>
+  <h1 style="color: white;">Bienvenido al servidor de APis del ICEM</h1>
     <div id="lista" name="lista" style="overflow-y: scroll; height: 350px;scrollbar-width: none;">
         ${item}
     </div>
