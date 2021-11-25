@@ -180,6 +180,7 @@ function deleteUsuario(req, res) {
                       .status(500)
                       .send({ message: "error en el servidor" });
                   if (results) {
+                    // conexion.query(`DELETE FROM tokens WHERE usuario_id=${id}`);
                     return res.status(200).json(results);
                   } else {
                     return res

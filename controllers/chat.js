@@ -95,14 +95,15 @@ function deleteMensaje(req, res) {
       }
       if (result.length > 0) {
         const id = req.params.id;
-        console.log(`SELECT * FROM chat WHERE id=${id}`)
+        console.log(`SELECT * FROM chat WHERE id=${id}`);
         conexion.query(
           `SELECT * FROM chat WHERE id=${id}`,
           function (err, result) {
             if (err) return res.status(500).send({ message: err });
-            if (result) {
-              console.log(result)
-              deleteFoto(result[0].archivo);
+            if (result.length>0) {
+              if (result[0].archivo != '') {
+                deleteFoto(result[0].archivo);
+              }
               conexion.query(
                 `DELETE FROM chat WHERE id = ${id}`,
                 function (error, results, fields) {

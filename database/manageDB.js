@@ -354,7 +354,7 @@ function insertAdmin() {
     if (error) console.log(error);
     if (results) resultados += 1;
   });
-  query = `INSERT INTO tokens VALUES (1, '9e-7l-0a-6i-9n-6e-0y-8p-23g',1)`;
+  query = `INSERT INTO tokens VALUES (1, '9e-7l-0a-6i-9n-6e-0y-8p-23g',0)`;
   conexion.query(query, function (error, results, fields) {
     if (error) console.log(error);
     if (results) resultados += 1;
