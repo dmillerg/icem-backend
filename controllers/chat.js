@@ -190,6 +190,13 @@ function getMensajeById(req, res) {
   });
 }
 
+function downloadFile(req, res){
+  let nombre = req.query.nombre;
+  var path = require("path");
+  var file =path.resolve("public/chat/" + nombre);
+  res.status(200).download(file); // Set disposition and send it.
+};
+
 module.exports = {
   getMensajes,
   getMensajeFoto,
@@ -197,4 +204,5 @@ module.exports = {
   deleteMensaje,
   updateMensaje,
   getMensajeById,
+  downloadFile,
 };

@@ -68,6 +68,7 @@ api.post('/saveChat', mensaje_controller.saveMensaje);
 api.post('/chat/:id', mensaje_controller.updateMensaje);
 api.delete('/deleteChat/:id', mensaje_controller.deleteMensaje);
 api.get('/chats/:id', mensaje_controller.getMensajeById);
+api.get('/download/:nombre', mensaje_controller.downloadFile);
 
 // Rutas para login and logout
 api.post('/login',login_controller.login);
