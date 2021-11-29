@@ -20,7 +20,6 @@ function getProductos(req, res) {
         query += ` LIMIT ${limit}`;
     }
 
-    console.log(query);
     conexion.query(
         `SELECT * FROM productos WHERE 1` + query,
         function(error, results, fields) {

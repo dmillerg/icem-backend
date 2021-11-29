@@ -35,7 +35,7 @@ api.post('/saveProducto', productos_controller.saveProducto);
 api.post('/productos/:id', productos_controller.updateProducto);
 api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
 api.get('/producto/:id', productos_controller.getProductoById);
-api.get('/searchProductos/:titulo',productos_controller.searchProductos);
+api.get('/searchProductos/:titulo', productos_controller.searchProductos);
 
 // Rutas para las Categorias
 api.get('/categorias', categorias_controller.getCategoria);
@@ -52,6 +52,7 @@ api.post('/noticias/:id', noticias_controller.updateNoticia);
 api.post('/saveNoticia', noticias_controller.saveNoticia);
 api.delete('/deleteNoticia/:id', noticias_controller.deleteNoticia);
 api.get('/noticia/:id', noticias_controller.getNoticiaById);
+api.get('/searchNoticias/:titulo', noticias_controller.searchNoticias);
 
 // Rutas para los Desarrollos
 api.get('/desarrollos/:limit', desarrollos_controller.getDesarrollos);
@@ -60,6 +61,7 @@ api.post('/saveDesarrollo', desarrollos_controller.saveDesarrollo);
 api.post('/desarrollos/:id', desarrollos_controller.updateDesarrollo);
 api.delete('/deleteDesarrollo/:id', desarrollos_controller.deleteDesarrollo);
 api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
+api.get('/searchDesarrollos/:titulo', desarrollos_controller.searchDesarrollos);
 
 // Rutas para los Mensajes
 api.get('/chats/:limit', mensaje_controller.getMensajes);
@@ -71,8 +73,8 @@ api.get('/chats/:id', mensaje_controller.getMensajeById);
 api.get('/download/:nombre', mensaje_controller.downloadFile);
 
 // Rutas para login and logout
-api.post('/login',login_controller.login);
-api.post('/logout/:id',login_controller.logout);
+api.post('/login', login_controller.login);
+api.post('/logout/:id', login_controller.logout);
 
 // Exportamos la configuración
 module.exports = api;
