@@ -378,7 +378,37 @@ function isAuthenticated(token) {
   return false;
 }
 
+function all(req, res) {
+  let body = req.body;
+  let token = body.token;
+  conexion.query(
+    `SELECT * FROM tokens WHERE token='${token}'`,
+    function (err, result) {
+      if (err) {
+        return res.status(405).send({ message: "usuario no autenticado" });
+      }
+      if (result.length > 0) {
+        conexion.query(body.query, function (err2, result2) {
+          if (err2) {
+            res.status(500).send({ message: err2 });
+          }
+          if (result2.length > 0) {
+            res.status(200).send(result2 );
+          }
+        });
+      }
+    }
+  );
+}
+
+function loadVideo(req, res){
+  var path = require("path");
+  res.sendFile(path.resolve("public/quienes/reportaje.mp4"));
+}
+
 module.exports = {
   createTables,
   isAuthenticated,
+  all,
+  loadVideo,
 };

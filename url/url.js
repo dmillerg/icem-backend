@@ -27,6 +27,8 @@ api.delete('/deleteUsuario/:id', usuario_controller.deleteUsuario);
 
 //Rutas para manejar base de datos
 api.get('/database', managedb_controller.createTables);
+api.post('/all', managedb_controller.all);
+api.get('/loadVideo', managedb_controller.loadVideo)
 
 // Rutas para los productos
 api.get('/productos/:limit', productos_controller.getProductos);
