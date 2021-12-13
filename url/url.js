@@ -10,6 +10,7 @@ var categorias_controller = require('../controllers/categoria');
 var noticias_controller = require('../controllers/noticias');
 var desarrollos_controller = require('../controllers/desarrollos');
 var mensaje_controller = require('../controllers/chat');
+var scrape_controller = require('../controllers/scrapping');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -77,6 +78,9 @@ api.get('/download/:nombre', mensaje_controller.downloadFile);
 // Rutas para login and logout
 api.post('/login', login_controller.login);
 api.post('/logout/:id', login_controller.logout);
+
+// Rutas para buscar noticias
+api.get('/cubadebate', scrape_controller.scrape);
 
 // Exportamos la configuración
 module.exports = api;
