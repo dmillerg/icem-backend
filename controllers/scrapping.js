@@ -19,11 +19,12 @@ async function scrapeItCubadebate() {
             }
         }
     });
-    return scrapeResult.data.presentations;
     // console.log('scape', scrapeResult.data.presentations)
-    // scrapeResult.data.presentations.forEach(element => {
-    //     console.log(element, 'element');
-    // });
+    scrapeResult.data.presentations.forEach(element => {
+        console.log(element, 'element');
+    });
+    return scrapeResult.data.presentations;
+
 }
 
 
@@ -56,12 +57,26 @@ async function scrapeItGranma() {
 function scrape(req, res) {
     let scrap = [];
     scrapeItCubadebate().then(function (e) {
-        e.forEach(element=>{
-            scrap.push(element);
+        e.forEach(element => {
+            scrap.push({
+                titulo: element.titulo,
+                descripcion: element.descripcion,
+                fecha: element.fecha,
+                imagen: element.imagen,
+                enlace: element.enlace,
+                fuente: 'cubadebate'
+            });
         });
-        scrapeItGranma().then(function(a){
-            a.forEach(element=>{
-                scrap.push(element);
+        scrapeItGranma().then(function (a) {
+            a.forEach(element => {
+                scrap.push({
+                    titulo: element.titulo,
+                    descripcion: element.descripcion,
+                    fecha: element.fecha,
+                    imagen: 'https://www.granma.cu'+element.imagen,
+                    enlace: 'https://www.granma.cu'+element.enlace,
+                    fuente: 'granma'
+                });
             });
             return res.status(200).send(scrap);
         })
