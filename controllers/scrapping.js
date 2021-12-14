@@ -1,90 +1,86 @@
 const scrapeIt = require("scrape-it");
+const conexion = require("../database/database");
 
-async function scrapeItCubadebate() {
-    const scrapeResult = await scrapeIt('http://www.cubadebate.cu/', {
-        presentations: {
-            listItem: 'div.bigimage_post.noticias',
-            data: {
-                titulo: 'div.title a',
-                descripcion: 'div.excerpt p',
-                fecha: 'time',
-                enlace: {
-                    selector: "div.title a",
-                    attr: 'href'
-                },
-                imagen: {
-                    selector: "a.media img",
-                    attr: 'src'
-                }
+function recogidaNoticia(req, res) {
+    conexion.query(
+        `SELECT * FROM noticias `,
+        function (error, results, fields) {
+            if (error) {
+                console.log(error);
+                return res.status(500).send(error);
+            }
+            if (results.length > 0) {
+                return res.status(200).json(results);
+            } else {
+                return res.status(200).send({ documents: "no hay noticias" });
             }
         }
-    });
-    // console.log('scape', scrapeResult.data.presentations)
-    scrapeResult.data.presentations.forEach(element => {
-        console.log(element, 'element');
-    });
-    return scrapeResult.data.presentations;
-
+    );
 }
 
-
-async function scrapeItGranma() {
-    const scrapeResult = await scrapeIt('https://www.granma.cu/', {
-        presentations: {
-            listItem: 'div#column_0 article',
-            data: {
-                titulo: 'article h2 a',
-                descripcion: 'article div.sumario p',
-                // time: '',
-                enlace: {
-                    selector: "article h2 a",
-                    attr: 'href'
-                },
-                imagen: {
-                    selector: "article figure img.img-responsive",
-                    attr: 'src'
-                }
-            }
-        }
-    });
-    return scrapeResult.data.presentations;
-    // console.log('scape', scrapeResult.data.presentations)
-    // scrapeResult.data.presentations.forEach(element => {
-    //     console.log(element, 'element');
-    // });
-}
-
-function scrape(req, res) {
-    let scrap = [];
-    scrapeItCubadebate().then(function (e) {
-        e.forEach(element => {
-            scrap.push({
-                titulo: element.titulo,
-                descripcion: element.descripcion,
-                fecha: element.fecha,
-                imagen: element.imagen,
-                enlace: element.enlace,
-                fuente: 'cubadebate'
-            });
-        });
-        scrapeItGranma().then(function (a) {
-            a.forEach(element => {
-                scrap.push({
-                    titulo: element.titulo,
-                    descripcion: element.descripcion,
-                    fecha: element.fecha,
-                    imagen: 'https://www.granma.cu'+element.imagen,
-                    enlace: 'https://www.granma.cu'+element.enlace,
-                    fuente: 'granma'
+async function recogida() {
+    let scrape = [];
+    conexion.query(`DELETE FROM noticias`);
+    conexion.query(`SELECT * FROM scrap`, function (error, results, fields) {
+        if (results.length > 0) {
+            results.forEach(ele => {
+                scrapeItAll(ele).then(function (e) {
+                    scrape = [];
+                    e.forEach(el => {
+                        if (ele.fuente == 'granma') {
+                            el.enlace = 'https://www.granma.cu' + el.enlace;
+                            el.imagen = 'https://www.granma.cu' + el.imagen;
+                        }
+                        scrape.push({
+                            titulo: el.titulo,
+                            descripcion: el.descripcion,
+                            fecha: el.fecha,
+                            imagen: el.imagen,
+                            enlace: el.enlace,
+                            fuente: ele.fuente,
+                            logo: ele.logo
+                        });
+                    });
+                    scrape.forEach((e, index, array) => {
+                        conexion.query(`INSERT INTO noticias(id, titulo, descripcion, fecha, imagen, enlace, fuente, logo) VALUES (NULL, '${e.titulo}', '${e.descripcion}', '${e.fecha}', '${e.imagen}', '${e.enlace}', '${e.fuente}', '${e.logo}')`, function (error, resultado, fieldss) {
+                            if (index === array.length - 1) return;
+                            if (resultado) {
+                                // console.log('success', e);
+                            }
+                            if (error) {
+                                // console.error('ERROR', error);
+                            }
+                        });
+                    });
                 });
             });
-            return res.status(200).send(scrap);
-        })
+        }
     });
-
 }
 
+async function scrapeItAll(elemet) {
+    const scrapeResult = await scrapeIt(elemet.url, {
+        presentations: {
+            listItem: elemet.contenedor,
+            data: {
+                titulo: elemet.titulo,
+                descripcion: elemet.descripcion,
+                fecha: elemet.fecha,
+                enlace: {
+                    selector: elemet.enlace_selector,
+                    attr: elemet.enlace_attr
+                },
+                imagen: {
+                    selector: elemet.imagen_selector,
+                    attr: elemet.imagen_attr
+                }
+            }
+        }
+    });
+    return scrapeResult.data.presentations;
+}
 
 module.exports = {
-    scrape
+    recogidaNoticia,
+    recogida
 }
