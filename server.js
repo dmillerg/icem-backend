@@ -35,14 +35,9 @@ app.get('/apis', inicio.getApis);
 
 module.exports = app;
 
-const recor  = require('./controllers/scrapping');
-recor.recogida().then(()=>{
-    console.log('SUCCESS', 'Se han recogido los datos de las paginas correctamente');
-})
+
 
 const conexion = require('./database/database');
-const api = require('./url/url');
-const { recogida } = require('./controllers/scrapping');
 conexion.connect(function(err) {
     if (err) {
         console.error(err);

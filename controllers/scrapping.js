@@ -1,6 +1,8 @@
 const scrapeIt = require("scrape-it");
 const conexion = require("../database/database");
 
+let interval = 0;
+
 function recogidaNoticia(req, res) {
     conexion.query(
         `SELECT * FROM noticias `,
@@ -80,7 +82,23 @@ async function scrapeItAll(elemet) {
     return scrapeResult.data.presentations;
 }
 
+function iniciarScrapping(req, res) {
+    interval = setInterval(() => {
+        recogida().then(() => {
+            console.log('SUCCESS', 'Se han recogido los datos de las paginas correctamente');
+        });
+    }, req.params.time);
+    return res.status(200).send({ message: `intervalo creado en ${req.params.time}` })
+}
+
+function detenerScrapping(req, res){
+    clearInterval(interval);
+    return res.status(200).send({message: 'intervalo detenido'})
+}
+
 module.exports = {
     recogidaNoticia,
-    recogida
+    recogida,
+    iniciarScrapping,
+    detenerScrapping
 }

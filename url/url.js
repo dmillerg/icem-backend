@@ -80,7 +80,9 @@ api.post('/login', login_controller.login);
 api.post('/logout/:id', login_controller.logout);
 
 // Rutas para buscar noticias
-api.get('/cubadebate', scrape_controller.recogidaNoticia);
+api.get('/scrapping', scrape_controller.recogidaNoticia);
+api.get('/iniciarScrap/:time', scrape_controller.iniciarScrapping);
+api.get('/detenerScrap', scrape_controller.detenerScrapping);
 
 // Exportamos la configuración
 module.exports = api;
