@@ -84,9 +84,12 @@ async function scrapeItAll(elemet) {
 
 function iniciarScrapping(req, res) {
     interval = setInterval(() => {
+        try{
         recogida().then(() => {
             console.log('SUCCESS', 'Se han recogido los datos de las paginas correctamente');
-        });
+        });}catch(e){
+            console.log('En estos momentos no se puede acceder por favor intente mas tarde');
+        }
     }, req.params.time);
     return res.status(200).send({ message: `intervalo creado en ${req.params.time}` })
 }
@@ -95,6 +98,22 @@ function detenerScrapping(req, res){
     clearInterval(interval);
     return res.status(200).send({message: 'intervalo detenido'})
 }
+
+// function saveScrap(req, res){
+//     let body = req.body;
+//     let contenedor = body.contenedor;
+//     let titulo = body.titulo;
+//     let fecha = body.fecha;
+//     let descripcion = body.descripcion;
+//     let enlace_selector = body.enlace_selector;
+//     let enlace_attr = body.enlace_attr;
+//     let imagen_selector = body.imagen_selector
+//     let imagen_attr = body.imagen_selector
+//     let url = body.url;
+//     let fuente = body.fuente;
+//     let logo = body.logo;
+//     let query = `INSERT INTO scrap (id, titulo, fecha, descripcion, enlace_selector)`
+// }
 
 module.exports = {
     recogidaNoticia,
