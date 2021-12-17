@@ -11,6 +11,7 @@ var noticias_controller = require('../controllers/noticias');
 var desarrollos_controller = require('../controllers/desarrollos');
 var mensaje_controller = require('../controllers/chat');
 var scrape_controller = require('../controllers/scrapping');
+var quienes_controller = require('../controllers/quienes');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -83,6 +84,14 @@ api.post('/logout/:id', login_controller.logout);
 api.get('/scrapping', scrape_controller.recogidaNoticia);
 api.get('/iniciarScrap/:time', scrape_controller.iniciarScrapping);
 api.get('/detenerScrap', scrape_controller.detenerScrapping);
+
+// Rutas para el quienes somos
+api.get('/quienes/:limit', quienes_controller.getQuienes);
+api.get('/quienFoto/:id', quienes_controller.getQuienesFoto);
+api.post('/saveQuienes', quienes_controller.saveQuienes);
+api.post('/quienes/:id', quienes_controller.updateQuienes);
+api.delete('/deleteQuienes/:id', quienes_controller.deleteQuienes);
+api.get('/quien/:id', quienes_controller.getQuienesById);
 
 // Exportamos la configuración
 module.exports = api;

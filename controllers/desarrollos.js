@@ -169,7 +169,7 @@ function updateDesarrollo(req, res) {
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
                 var query = `UPDATE desarrollos SET titulo="${titulo}",descripcion="${descripcion}"`;
                 if (foto.name != null)
-                    query += `,imagen="${titulo.replaceAll(" ", "-")}.jpg`;
+                query += `,imagen="${titulo.replace(/ /g, "-") + ".jpg"}"`;
                 query += `WHERE id = ${id}`;
 
                 conexion.query(query, function(error, results, fields) {
@@ -177,8 +177,8 @@ function updateDesarrollo(req, res) {
                         return res.status(500).send({ message: "error en el servidor" });
                     if (results) {
                         if (foto.name != null) {
-                            deleteFoto(title + ".jpg");
-                            saveFoto(foto, title);
+                            deleteFoto(titulo.replace(/ /g, "-") + ".jpg");
+                            saveFoto(foto, titulo.replace(/ /g, "-") + ".jpg");
                         }
                         return res
                             .status(201)

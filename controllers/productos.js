@@ -171,7 +171,6 @@ function updateProducto(req, res) {
             }
             if (result.length > 0) {
                 var id = req.params.id;
-                console.log("asdasdasdasdasd", req.body.categoria);
                 // Recogemos los datos que nos llegen en el body de la petición
                 var update = req.body;
                 var titulo = update.titulo;
@@ -182,11 +181,11 @@ function updateProducto(req, res) {
                 var garantia = update.garantia;
                 var foto = { name: null };
                 if (req.files) foto = req.files.foto;
-                console.log(foto.name, "foto");
+                console.log(foto.name, "foto", update.imagen);
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
                 var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}"`;
                 if (foto.name != null)
-                    query += `,imagen="${titulo.replaceAll(" ", "-")}.jpg`;
+                    query += `,imagen="${titulo.replace(/ /g, "-") + ".jpg"}"`;
                 query += `WHERE id = ${id}`;
 
                 conexion.query(query, function(error, results, fields) {
@@ -194,8 +193,8 @@ function updateProducto(req, res) {
                         return res.status(500).send({ message: "error en el servidor" });
                     if (results) {
                         if (foto.name != null) {
-                            deleteFoto(title + ".jpg");
-                            saveFoto(foto, title);
+                            deleteFoto(titulo.replace(/ /g, "-") + ".jpg");
+                            saveFoto(foto, titulo.replace(/ /g, "-") + ".jpg");
                         }
                         return res
                             .status(201)
