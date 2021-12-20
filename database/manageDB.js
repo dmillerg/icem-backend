@@ -393,7 +393,7 @@ function all(req, res) {
             res.status(500).send({ message: err2 });
           }
           if (result2.length > 0) {
-            res.status(200).send(result2 );
+            res.status(200).send(result2);
           }
         });
       }
@@ -401,9 +401,27 @@ function all(req, res) {
   );
 }
 
-function loadVideo(req, res){
+function loadVideo(req, res) {
   var path = require("path");
   res.sendFile(path.resolve("public/quienes/reportaje.mp4"));
+}
+
+function loadSQL(req, res) {
+  var fs = require('fs');
+  var readline = require('readline');
+  var rl = readline.createInterface({
+    input: fs.createReadStream('./'),
+    terminal: false
+  });
+  rl.on('line', function (chunk) {
+    conexion.query(chunk.toString('ascii'), function (err, sets, fields) {
+      if (err) console.log(err);
+    });
+  });
+  rl.on('close', function () {
+    console.log("finished");
+    conexion.end();
+  });
 }
 
 module.exports = {
@@ -411,4 +429,5 @@ module.exports = {
   isAuthenticated,
   all,
   loadVideo,
+  loadSQL,
 };

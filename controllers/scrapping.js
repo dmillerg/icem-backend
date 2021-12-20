@@ -99,25 +99,119 @@ function detenerScrapping(req, res){
     return res.status(200).send({message: 'intervalo detenido'})
 }
 
-// function saveScrap(req, res){
-//     let body = req.body;
-//     let contenedor = body.contenedor;
-//     let titulo = body.titulo;
-//     let fecha = body.fecha;
-//     let descripcion = body.descripcion;
-//     let enlace_selector = body.enlace_selector;
-//     let enlace_attr = body.enlace_attr;
-//     let imagen_selector = body.imagen_selector
-//     let imagen_attr = body.imagen_selector
-//     let url = body.url;
-//     let fuente = body.fuente;
-//     let logo = body.logo;
-//     let query = `INSERT INTO scrap (id, titulo, fecha, descripcion, enlace_selector)`
-// }
+function saveScrap(req, res){
+    let body = req.body;
+    let contenedor = body.contenedor;
+    let titulo = body.titulo;
+    let fecha = body.fecha;
+    let descripcion = body.descripcion;
+    let enlace_selector = body.enlace_selector;
+    let enlace_attr = body.enlace_attr;
+    let imagen_selector = body.imagen_selector
+    let imagen_attr = body.imagen_selector
+    let url = body.url;
+    let fuente = body.fuente;
+    let logo = body.logo;
+    let query = `INSERT INTO scrap (id, contenedor, titulo, fecha, descripcion, enlace_selector, enlace_attr, imagen_selector, imagen_attr, url, fuente, logo) VALUES (NULL, "${contenedor}", "${titulo}", "${fecha}","${descripcion}","${enlace_selector}","${enlace_attr}","${imagen_selector}","${imagen_attr}","${url}","${fuente}","${logo}")`;
+    conexion.query(query, function(error, results, fields){
+        if(error){
+            return res.status(500).send({message: error});
+        }
+        if(results){
+            return res.status(200).send({message: results});
+        }
+    });
+}
+
+function deleteScrap(req, res){
+    let id = req.params.id;
+    conexion.query(`DELETE FROM scrap WHERE id=${id}`, function(error, results, fields){
+        if(error){
+            return res.status(500).send({message: error});
+        }
+        if(results){
+            return res.status(200).send({message: results});
+        }
+    })
+}
+
+function getScraps(req, res) {
+    var limit = req.params.limit;
+    var query = ``;
+    query += ` ORDER BY id DESC`;
+    if (limit > 0) {
+        query += ` LIMIT ${limit}`;
+    }
+
+    conexion.query(
+        `SELECT * FROM scrap WHERE 1` + query,
+        function(error, results, fields) {
+            if (error) {
+                console.log(error);
+                return res.status(500).send(error);
+            }
+            if (results.length > 0) {
+                return res.status(200).json(results);
+            } else {
+                return res.status(200).send({ message: "no hay scraps" });
+            }
+        }
+    );
+}
+
+function updateScrap(req, res) {
+    // Recogemos un parámetro por la url
+    conexion.query(
+        `SELECT * FROM tokens WHERE token='${req.body.token}'`,
+        function(err, result) {
+            if (err) {
+                return res.status(405).send({ message: "usuario no autenticado" });
+            }
+            if (result.length > 0) {
+                var id = req.params.id;
+                // Recogemos los datos que nos llegen en el body de la petición
+                var update = req.body;
+                var contenedor = update.contenedor;
+                var titulo = update.titulo;
+                var fecha = update.fecha;
+                var descripcion = update.descripcion;
+                var enlace_selector = update.enlace_selector;
+                var enlace_attr = update.enlace_attr;
+                var imagen_selector = update.imagen_selector;
+                var imagen_attr = update.imagen_attr;
+                var url = update.url;
+                var fuente = update.fuente;
+                var logo = update.logo;
+                // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
+                var query = `UPDATE scrap SET contenedor="${contenedor}" titulo="${titulo}", fecha="${fecha}" descripcion="${descripcion}", enlace_selector="${enlace_selector}" , enlace_attr="${enlace_attr}", imagen_selector="${imagen_selector}", imagen_attr="${imagen_attr}", url="${url}", fuente="${fuente}, logo="${logo}" `;
+                query += `WHERE id = ${id}`;
+
+                conexion.query(query, function(error, results, fields) {
+                    if (error)
+                        return res.status(500).send({ message: "error en el servidor" });
+                    if (results) {
+                        return res
+                            .status(201)
+                            .send({ message: "actualizado correctamente" });
+                    } else {
+                        return res
+                            .status(404)
+                            .send({ message: "no existe ningun scrap con ese id" });
+                    }
+                });
+            }
+        }
+    );
+}
+
 
 module.exports = {
     recogidaNoticia,
     recogida,
     iniciarScrapping,
-    detenerScrapping
+    detenerScrapping,
+    saveScrap,
+    deleteScrap,
+    getScraps,
+    updateScrap,
 }

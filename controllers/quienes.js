@@ -28,7 +28,6 @@ function getQuienes(req, res) {
 
 function getQuienesFoto(req, res) {
   try {
-    console.log(req.params)
     var id = req.params.id;
     conexion.query(
       `SELECT * FROM quienes WHERE id = ${id}`,

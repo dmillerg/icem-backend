@@ -30,7 +30,8 @@ api.delete('/deleteUsuario/:id', usuario_controller.deleteUsuario);
 //Rutas para manejar base de datos
 api.get('/database', managedb_controller.createTables);
 api.post('/all', managedb_controller.all);
-api.get('/loadVideo', managedb_controller.loadVideo)
+api.get('/loadVideo', managedb_controller.loadVideo);
+api.get('/loadSQL', managedb_controller.loadSQL);
 
 // Rutas para los productos
 api.get('/productos/:limit', productos_controller.getProductos);
@@ -80,10 +81,14 @@ api.get('/download/:nombre', mensaje_controller.downloadFile);
 api.post('/login', login_controller.login);
 api.post('/logout/:id', login_controller.logout);
 
-// Rutas para buscar noticias
+// Rutas para buscar noticias(scrap)
 api.get('/scrapping', scrape_controller.recogidaNoticia);
 api.get('/iniciarScrap/:time', scrape_controller.iniciarScrapping);
 api.get('/detenerScrap', scrape_controller.detenerScrapping);
+api.post('/saveScrap', scrape_controller.saveScrap);
+api.delete('/deleteScrap/:id', scrape_controller.deleteScrap);
+api.get('/scrap/:limit', scrape_controller.getScraps);
+api.post('/scrap/:id', scrape_controller.updateScrap);
 
 // Rutas para el quienes somos
 api.get('/quienes/:limit', quienes_controller.getQuienes);
