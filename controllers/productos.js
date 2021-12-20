@@ -75,6 +75,7 @@ function saveProducto(req, res) {
                 var usos = body.usos;
                 var especificaciones = body.especificaciones;
                 var garantia = body.garantia;
+                var precio = body.precio;
                 var foto = { name: null };
                 if (req.files) {
                     foto = req.files.foto;
@@ -96,7 +97,7 @@ function saveProducto(req, res) {
                     date.getSeconds();
 
                 conexion.query(
-                    `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}")`,
+                    `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio})`,
                     function(error, results, fields) {
                         if (error) return res.status(500).send({ message: error });
                         if (results) {
@@ -179,11 +180,12 @@ function updateProducto(req, res) {
                 var usos = update.usos;
                 var especificaciones = update.especificaciones;
                 var garantia = update.garantia;
+                var precio = update.precio;
                 var foto = { name: null };
                 if (req.files) foto = req.files.foto;
                 console.log(foto.name, "foto", update.imagen);
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}"`;
+                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}`;
                 if (foto.name != null)
                     query += `,imagen="${titulo.replace(/ /g, "-") + ".jpg"}"`;
                 query += `WHERE id = ${id}`;
