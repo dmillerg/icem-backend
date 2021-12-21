@@ -410,12 +410,15 @@ function loadSQL(req, res) {
   var fs = require('fs');
   var readline = require('readline');
   var rl = readline.createInterface({
-    input: fs.createReadStream('./'),
+    input: fs.createReadStream('./../icem2021.12.20.sql'),
     terminal: false
   });
+  // console.log('HOLAS' ,rl);
   rl.on('line', function (chunk) {
+    // console.log(chunk);
     conexion.query(chunk.toString('ascii'), function (err, sets, fields) {
-      if (err) console.log(err);
+     
+      if (err) return res.status(500).send({message: 'ERROR: ', err})
     });
   });
   rl.on('close', function () {
