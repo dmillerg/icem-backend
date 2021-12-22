@@ -12,6 +12,7 @@ var desarrollos_controller = require('../controllers/desarrollos');
 var mensaje_controller = require('../controllers/chat');
 var scrape_controller = require('../controllers/scrapping');
 var quienes_controller = require('../controllers/quienes');
+var posts_controller = require('../controllers/posts');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -30,7 +31,6 @@ api.delete('/deleteUsuario/:id', usuario_controller.deleteUsuario);
 //Rutas para manejar base de datos
 api.get('/database', managedb_controller.createTables);
 api.post('/all', managedb_controller.all);
-api.get('/loadVideo', managedb_controller.loadVideo);
 api.get('/loadSQL', managedb_controller.loadSQL);
 
 // Rutas para los productos
@@ -97,6 +97,11 @@ api.post('/saveQuienes', quienes_controller.saveQuienes);
 api.post('/quienes/:id', quienes_controller.updateQuienes);
 api.delete('/deleteQuienes/:id', quienes_controller.deleteQuienes);
 api.get('/quien/:id', quienes_controller.getQuienesById);
+
+// Rutas para los posts
+api.get('/posts/:limit', posts_controller.getPosts);
+api.post('/savePosts', posts_controller.savePosts);
+api.delete('/deletePosts/:id', posts_controller.deletePosts);
 
 // Exportamos la configuración
 module.exports = api;

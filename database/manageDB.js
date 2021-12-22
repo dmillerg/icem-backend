@@ -1,363 +1,249 @@
 const conexion = require("./database");
 var errores = 0;
 var error_msg;
-var resultados = 0;
+var success = 0;
 
 function createTables(req, res) {
-  tableUsuario();
-  tableCategorias();
-  tableDesarrollos();
-  tableNoticias();
-  tableTokens();
-  tableChats();
-  insertAdmin();
-  tableProductos().then(() => {
-    return res
-      .status(200)
-      .send({ errores: errores, resultados: resultados, error: error_msg });
+  tableUsuario().then(() => {
+    tableCategorias().then(() => {
+      tableDesarrollos().then(() => {
+        tableNoticias().then(() => {
+          tableTokens().then(() => {
+            tableChats().then(() => {
+              tableQuienes().then(() => {
+                tableScraps().then(() => {
+                  tablePosts().then(() => {
+                    tableProductos().then(p => {
+                      insertAdmin().then(admin => {
+                        return res.status(200).send({ 'ERROR': errores, 'SUCCESS': success });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   });
+}
+
+function aumentar(arg) {
+  console.log(arg)
 }
 
 /**
  * Crea todo lo relacionado con las categorias
  */
-function tableCategorias() {
-  var query = `CREATE TABLE categorias (
-    id int(11) DEFAULT NULL COMMENT "Llave Primaria",
-    nombre varchar(255) NOT NULL
-  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT`;
+async function tableCategorias() {
+  var query = `DROP TABLE IF EXISTS categorias;
+  CREATE TABLE categorias  (
+    id int NOT NULL AUTO_INCREMENT COMMENT "Llave Primaria",
+    nombre varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
-    if (error) console.log(error);
-    if (results) resultados += 1;
-  });
-
-  var query2 = `ALTER TABLE categorias
-    ADD PRIMARY KEY (id) USING BTREE;
-    ;`;
-  conexion.query(query2, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query3 = `ALTER TABLE categorias
-    MODIFY id int(11) NOT NULL AUTO_INCREMENT COMMENT "Llave Primaria";`;
-  conexion.query(query3, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  var query4 = `COMMIT;`;
-  conexion.query(query4, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
+    if (error) return errores++;
+    if (results) return success++;
   });
 }
 
 /**
  * Crea todo lo relacionado con los usuarios
  */
-function tableUsuario() {
-  var query = `CREATE TABLE usuarios (
-    id int(11) DEFAULT NULL COMMENT "Llave Primaria",
-    usuario varchar(255) NOT NULL,
-    password TEXT NOT NULL,
-    nombre varchar(255) DEFAULT NULL,
-    fecha varchar(255) DEFAULT NULL
-  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT`;
+async function tableUsuario() {
+  var query = `DROP TABLE IF EXISTS usuarios;
+  CREATE TABLE usuarios  (
+    id int NOT NULL AUTO_INCREMENT COMMENT "Llave Primaria",
+    usuario varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    password text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    nombre varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    fecha varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    ultsesion varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query2 = `ALTER TABLE usuarios
-    ADD PRIMARY KEY (id) USING BTREE;
-    ;`;
-  conexion.query(query2, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query3 = `ALTER TABLE usuarios
-    MODIFY id int(11) NOT NULL AUTO_INCREMENT COMMENT "Llave Primaria";`;
-  conexion.query(query3, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  var query4 = `COMMIT;`;
-  conexion.query(query4, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
+    if (error) return errores++;
+    if (results) return success++;
   });
 }
 
 /**
  * Crea todo lo relacionado con los productos
  */
-function tableProductos() {
-  var query = `CREATE TABLE productos (
-        id int(11) DEFAULT NULL COMMENT "Llave Primaria",
-        titulo varchar(255) NOT NULL,
-        descripcion TEXT NOT NULL,
-        imagen varchar(255) DEFAULT NULL,
-        fecha varchar(255) DEFAULT NULL,
-        categoria int(11),
-        usos TEXT NOT NULL,
-        especificaciones TEXT NOT NULL,
-        garantia TEXT NOT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT`;
+async function tableProductos() {
+  var query = `DROP TABLE IF EXISTS productos;
+  CREATE TABLE productos  (
+    id int NOT NULL AUTO_INCREMENT,
+    titulo varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    descripcion text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    imagen varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    fecha varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    categoria int NULL DEFAULT NULL,
+    usos text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    especificaciones text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    garantia text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    precio double NOT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query2 = `ALTER TABLE productos
-    ADD PRIMARY KEY (id) USING BTREE`;
-  conexion.query(query2, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query3 = `ALTER TABLE productos
-    MODIFY id int(11) NOT NULL AUTO_INCREMENT;`;
-  conexion.query(query3, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  var query4 = `COMMIT;`;
-  conexion.query(query4, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  return new Promise((resolve, rejected) => {
-    resolve("resuelto");
-    rejected("error");
+    if (error) return errores++;
+    if (results) return success++;
   });
 }
 
 /**
  * Crea todo lo relacionado con los desarrollos
  */
-function tableDesarrollos() {
-  var query = `CREATE TABLE desarrollos (
-        id int(11) DEFAULT NULL COMMENT "Llave Primaria",
-        titulo varchar(255) NOT NULL,
-        descripcion TEXT NOT NULL,
-        fecha varchar(255) DEFAULT NULL,
-        imagen varchar(255) DEFAULT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT`;
+async function tableDesarrollos() {
+  var query = `DROP TABLE IF EXISTS desarrollos;
+  CREATE TABLE desarrollos  (
+    id int NOT NULL AUTO_INCREMENT,
+    titulo varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    descripcion text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    fecha varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    imagen varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query2 = `ALTER TABLE desarrollos
-    ADD PRIMARY KEY (id) USING BTREE`;
-  conexion.query(query2, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query3 = `ALTER TABLE desarrollos
-    MODIFY id int(11) NOT NULL AUTO_INCREMENT;`;
-  conexion.query(query3, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  var query4 = `COMMIT;`;
-  conexion.query(query4, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  return new Promise((resolve, rejected) => {
-    resolve("resuelto");
-    rejected("error");
+    if (error) return errores++;
+    if (results) return success++;
   });
 }
 
 /**
  * Crea todo lo relacionado con las noticiass
  */
-function tableNoticias() {
-  var query = `CREATE TABLE noticias (
-        id int(11) DEFAULT NULL COMMENT "Llave Primaria",
-        titulo varchar(255) NOT NULL,
-        descripcion TEXT NOT NULL,
-        fecha varchar(255) DEFAULT NULL,
-        imagen varchar(255) DEFAULT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT`;
+async function tableNoticias() {
+  var query = `DROP TABLE IF EXISTS noticias;
+  CREATE TABLE noticias  (
+    id int NOT NULL AUTO_INCREMENT,
+    titulo text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    descripcion text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    fecha varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    imagen varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    enlace varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    fuente varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    logo varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 19197 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;
+  `;
   conexion.query(query, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query2 = `ALTER TABLE noticias
-    ADD PRIMARY KEY (id) USING BTREE`;
-  conexion.query(query2, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query3 = `ALTER TABLE noticias
-    MODIFY id int(11) NOT NULL AUTO_INCREMENT;`;
-  conexion.query(query3, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  var query4 = `COMMIT;`;
-  conexion.query(query4, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  return new Promise((resolve, rejected) => {
-    resolve("resuelto");
-    rejected("error");
+    if (error) return errores++;
+    if (results) return success++;
   });
 }
 
 /**
  * Crea todo lo relacionado con los tokens
  */
-function tableTokens() {
-  var query = `CREATE TABLE tokens (
-        id int(11) DEFAULT NULL COMMENT "Llave Primaria",
-        token varchar(255) NOT NULL,
-        usuario_id TEXT NOT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT`;
+async function tableTokens() {
+  var query = `DROP TABLE IF EXISTS tokens;
+  CREATE TABLE tokens  (
+    id int NOT NULL AUTO_INCREMENT,
+    token varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    usuario_id text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query2 = `ALTER TABLE tokens
-    ADD PRIMARY KEY (id) USING BTREE`;
-  conexion.query(query2, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
-  });
-
-  var query3 = `ALTER TABLE tokens
-    MODIFY id int(11) NOT NULL AUTO_INCREMENT;`;
-  conexion.query(query3, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  var query4 = `COMMIT;`;
-  conexion.query(query4, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
-
-  return new Promise((resolve, rejected) => {
-    resolve("resuelto");
-    rejected("error");
+    if (error) return errores++;
+    if (results) return success++;
   });
 }
 
 /**
  * Crea todo lo relacionado con los chats
  */
-function tableChats() {
-  var query = `CREATE TABLE chat (
-        id int(11) DEFAULT NULL COMMENT "Llave Primaria",
-        sms varchar(255) NOT NULL,
-        nombre TEXT NOT NULL,
-        fecha TEXT NOT NULL,
-        archivo TEXT NOT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT`;
+async function tableChats() {
+  var query = `DROP TABLE IF EXISTS chat;
+  CREATE TABLE chat  (
+    id int NOT NULL AUTO_INCREMENT,
+    sms varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    nombre text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    fecha text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    archivo text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 164 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
+    if (error) return errores++;
+    if (results) return success++;
   });
+}
 
-  var query2 = `ALTER TABLE chat
-    ADD PRIMARY KEY (id) USING BTREE`;
-  conexion.query(query2, function (error, results, fields) {
-    if (error) errores += 1;
-    if (results) resultados += 1;
+/**
+ * Crea todo lo relacionado con los Integrantes
+ */
+async function tableQuienes() {
+  var query = `DROP TABLE IF EXISTS quienes;
+  CREATE TABLE quienes  (
+    id int NOT NULL AUTO_INCREMENT,
+    nombre varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    cargo varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    imagen varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    orden int NULL DEFAULT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;`;
+  conexion.query(query, function (error, results, fields) {
+    if (error) return errores++;
+    if (results) return success++;
   });
+}
 
-  var query3 = `ALTER TABLE chat
-    MODIFY id int(11) NOT NULL AUTO_INCREMENT;`;
-  conexion.query(query3, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
+/**
+ * Crea todo lo relacionado con los scraps
+ */
+async function tableScraps() {
+  var query = `DROP TABLE IF EXISTS scrap;
+  CREATE TABLE scrap  (
+    id int NOT NULL AUTO_INCREMENT,
+    contenedor varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    titulo text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+    fecha varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    descripcion text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+    enlace_selector varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    imagen_selector varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    fuente varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    logo varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    enlace_attr varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    imagen_attr varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    url varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;`;
+  conexion.query(query, function (error, results, fields) {
+    if (error) return errores++;
+    if (results) return success++;
   });
+}
 
-  var query4 = `COMMIT;`;
-  conexion.query(query4, function (error, results, fields) {
-    if (error) {
-      error += 1;
-      error_msg = error;
-    }
-    if (results) resultados += 1;
-  });
 
-  return new Promise((resolve, rejected) => {
-    resolve("resuelto");
-    rejected("error");
+/**
+ * Crea todo lo relacionado con los posts
+ */
+async function tablePosts() {
+  var query = `DROP TABLE IF EXISTS posts;
+  CREATE TABLE posts  (
+    id int NOT NULL AUTO_INCREMENT,
+    alias varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    correo varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    comentario text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;`;
+  conexion.query(query, function (error, results, fields) {
+    if (error) return errores++;
+    if (results) return success++;
   });
 }
 
 /**
  * Inerta al usuario admin de la pagina
  */
-function insertAdmin() {
-  var query = `INSERT INTO usuarios VALUES (1, 'kuroko', '$2b$10$dzs/n3VRV0GvJynX8SLZIe1TKoLOmgJObz15pe5IUUNfP6oxfdpjG', 'Daniel Miller González', '2021/11/23 19:2:6')`;
+async function insertAdmin() {
+  var query = `INSERT INTO usuarios VALUES (0, "kuroko", "$2b$10$dzs/n3VRV0GvJynX8SLZIe1TKoLOmgJObz15pe5IUUNfP6oxfdpjG", "Daniel Miller González", "2021/11/23 19:2:6", "Fri Dec 17 2021 09:49:11 GMT-0500 (hora estándar de Cuba)");
+  INSERT INTO tokens VALUES (1, '9e-7l-0a-6i-9n-6e-0y-8p-23g',0)`;
   conexion.query(query, function (error, results, fields) {
-    if (error) console.log(error);
-    if (results) resultados += 1;
-  });
-  query = `INSERT INTO tokens VALUES (1, '9e-7l-0a-6i-9n-6e-0y-8p-23g',0)`;
-  conexion.query(query, function (error, results, fields) {
-    if (error) console.log(error);
-    if (results) resultados += 1;
+    if (error) return errores++;
+    if (results) return success++;
   });
 }
 
@@ -381,13 +267,16 @@ function isAuthenticated(token) {
 function all(req, res) {
   let body = req.body;
   let token = body.token;
+  console.log(token)
   conexion.query(
     `SELECT * FROM tokens WHERE token='${token}'`,
     function (err, result) {
       if (err) {
+        console.log(err);
         return res.status(405).send({ message: "usuario no autenticado" });
       }
       if (result.length > 0) {
+        console.log(body.query);
         conexion.query(body.query, function (err2, result2) {
           if (err2) {
             res.status(500).send({ message: err2 });
@@ -401,24 +290,23 @@ function all(req, res) {
   );
 }
 
-function loadVideo(req, res) {
-  var path = require("path");
-  res.sendFile(path.resolve("public/quienes/reportaje.mp4"));
-}
-
 function loadSQL(req, res) {
   var fs = require('fs');
   var readline = require('readline');
   var rl = readline.createInterface({
-    input: fs.createReadStream('./../icem2021.12.20.sql'),
+    input: fs.createReadStream('./icem2021.12.21.sql'),
     terminal: false
   });
   // console.log('HOLAS' ,rl);
   rl.on('line', function (chunk) {
-    // console.log(chunk);
-    conexion.query(chunk.toString('ascii'), function (err, sets, fields) {
-     
-      if (err) return res.status(500).send({message: 'ERROR: ', err})
+    // console.log(chunk.toString('ascii'));
+    chunk = chunk.replace(/`/g, "");
+    chunk = chunk.replace(/'/g, `"`);
+    // chunk = chunk.slice(chunk.indexOf('*/'), -2);
+    console.log(chunk);
+    conexion.query(`${chunk}`, function (err, sets, fields) {
+
+      if (err) return res.status(500).send({ message: 'ERROR: ', err })
     });
   });
   rl.on('close', function () {
@@ -431,6 +319,5 @@ module.exports = {
   createTables,
   isAuthenticated,
   all,
-  loadVideo,
   loadSQL,
 };

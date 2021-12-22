@@ -22,7 +22,7 @@ function getProductos(req, res) {
 
     conexion.query(
         `SELECT * FROM productos WHERE 1` + query,
-        function(error, results, fields) {
+        function (error, results, fields) {
             if (error) {
                 console.log(error);
                 return res.status(500).send(error);
@@ -41,7 +41,7 @@ function getProductoFoto(req, res) {
         var id = req.params.id;
         conexion.query(
             `SELECT * FROM productos WHERE id = ${id}`,
-            function(error, results, fields) {
+            function (error, results, fields) {
                 if (error) throw error;
                 if (results.length > 0) {
                     var path = require("path");
@@ -61,7 +61,7 @@ function getProductoFoto(req, res) {
 function saveProducto(req, res) {
     conexion.query(
         `SELECT * FROM tokens WHERE token='${req.body.token}'`,
-        function(err, result) {
+        function (err, result) {
             if (err) {
                 return res.status(405).send({ message: "usuario no autenticado" });
             }
@@ -98,7 +98,7 @@ function saveProducto(req, res) {
 
                 conexion.query(
                     `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio})`,
-                    function(error, results, fields) {
+                    function (error, results, fields) {
                         if (error) return res.status(500).send({ message: error });
                         if (results) {
                             if (req.files) saveFoto(foto, foto_name);
@@ -115,14 +115,14 @@ function saveProducto(req, res) {
 
 function saveFoto(foto, titulo) {
     if (foto.name != null) {
-        foto.mv(`./public/productos/${titulo}`, function(err) {});
+        foto.mv(`./public/productos/${titulo}`, function (err) { });
     }
 }
 
 function deleteProducto(req, res) {
     conexion.query(
         `SELECT * FROM tokens WHERE token='${req.query.token}'`,
-        function(err, result) {
+        function (err, result) {
             if (err) {
                 return res.status(405).send({ message: "usuario no autenticado" });
             }
@@ -130,13 +130,13 @@ function deleteProducto(req, res) {
                 const id = req.params.id;
                 conexion.query(
                     `SELECT * FROM productos WHERE id=${id}`,
-                    function(err, result) {
+                    function (err, result) {
                         if (err) return res.status(500).send({ message: err });
                         if (result) {
                             deleteFoto(result[0].imagen);
                             conexion.query(
                                 `DELETE FROM productos WHERE id = ${id}`,
-                                function(error, results, fields) {
+                                function (error, results, fields) {
                                     if (error) return error;
                                     if (results) {
                                         return res.status(200).send({ results });
@@ -166,7 +166,7 @@ function updateProducto(req, res) {
     // Recogemos un parámetro por la url
     conexion.query(
         `SELECT * FROM tokens WHERE token='${req.body.token}'`,
-        function(err, result) {
+        function (err, result) {
             if (err) {
                 return res.status(405).send({ message: "usuario no autenticado" });
             }
@@ -183,16 +183,13 @@ function updateProducto(req, res) {
                 var precio = update.precio;
                 var foto = { name: null };
                 if (req.files) foto = req.files.foto;
-                console.log(foto.name, "foto", update.imagen);
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}`;
-                if (foto.name != null)
-                    query += `,imagen="${titulo.replace(/ /g, "-") + ".jpg"}"`;
+                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio} `;
                 query += `WHERE id = ${id}`;
-
-                conexion.query(query, function(error, results, fields) {
+                console.log(query)
+                conexion.query(query, function (error, results, fields) {
                     if (error)
-                        return res.status(500).send({ message: "error en el servidor" });
+                        return res.status(500).send({ message: "error en el servidor" + error });
                     if (results) {
                         if (foto.name != null) {
                             deleteFoto(titulo.replace(/ /g, "-") + ".jpg");
@@ -215,7 +212,7 @@ function updateProducto(req, res) {
 function getProductoById(req, res) {
     let id = req.params.id;
     let query = `SELECT * FROM productos WHERE id=${id}`;
-    conexion.query(query, function(err, result) {
+    conexion.query(query, function (err, result) {
         if (err) return res.status(500).send({ message: err });
         if (result) {
             return res.status(200).send({ result });
@@ -227,7 +224,7 @@ function searchProductos(req, res) {
     let titulo = req.params.titulo;
     let query = `SELECT * FROM productos WHERE titulo like"%${titulo}%"`;
     console.log(query);
-    conexion.query(query, function(err, result) {
+    conexion.query(query, function (err, result) {
         if (err) return res.status(500).send({ message: err });
         if (result) {
             return res.status(200).send({ result });
