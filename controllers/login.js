@@ -29,7 +29,7 @@ function login(req, res) {
       if (bcrypt.compareSync(password, result[0].password)) {
         let token = generarToken(usuario);
         console.log(result)
-        conexion.query(`UPDATE usuarios SET ultima_sesion='${date}' WHERE id=${result[0].id}`)
+        conexion.query(`UPDATE usuarios SET ultsession='${date}' WHERE id=${result[0].id}`)
         saveToken(token, result[0].id);
         return res.status(200).json({
           message: "usuario autenticado correctamente",
