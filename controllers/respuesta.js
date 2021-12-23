@@ -6,8 +6,9 @@ function getRespuesta(req, res) {
   var id_post = req.params.id_post;
   var query = ``;
   if (id_post > -1) {
-    query += ` WHERE id_post=${id_post}`;
+    query += ` WHERE id_post=${id_post} `;
   }
+  query += `ORDER BY fecha DESC`;
 
   conexion.query(
     `SELECT * FROM respuesta ` + query,

@@ -13,10 +13,11 @@ function createTables(req, res) {
               tableQuienes().then(() => {
                 tableScraps().then(() => {
                   tablePosts().then(() => {
-                    tableProductos().then(p => {
+                    tableProductos().then(() => {
+                      tableRespuesta().then(()=>{
                       insertAdmin().then(admin => {
                         return res.status(200).send({ 'ERROR': errores, 'SUCCESS': success });
-                      });
+                      });});
                     });
                   });
                 });
@@ -227,8 +228,29 @@ async function tablePosts() {
     alias varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
     correo varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
     comentario text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+    fecha varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    id_producto int NULL DEFAULT NULL,
     PRIMARY KEY (id) USING BTREE
-  ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;`;
+  ) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+  `;
+  conexion.query(query, function (error, results, fields) {
+    if (error) return errores++;
+    if (results) return success++;
+  });
+}
+
+/**
+ * Crea todo lo relacionado con las respuestas
+ */
+async function tableRespuesta(){
+  var query = `DROP TABLE IF EXISTS respuesta;
+  CREATE TABLE respuesta  (
+    id int NOT NULL AUTO_INCREMENT,
+    respuesta text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+    id_post int NULL DEFAULT NULL,
+    fecha varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    PRIMARY KEY (id) USING BTREE
+  ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;`;
   conexion.query(query, function (error, results, fields) {
     if (error) return errores++;
     if (results) return success++;

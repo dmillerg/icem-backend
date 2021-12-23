@@ -6,8 +6,9 @@ function getPosts(req, res) {
   var id_producto = req.params.id_producto;
   var query = ``;
   if (id_producto > -1) {
-    query += ` WHERE id_producto=${id_producto}`;
+    query += ` WHERE id_producto=${id_producto} `;
   }
+  query += `ORDER BY fecha DESC`;
 
   conexion.query(
     `SELECT * FROM posts ` + query,
