@@ -13,6 +13,7 @@ var mensaje_controller = require('../controllers/chat');
 var scrape_controller = require('../controllers/scrapping');
 var quienes_controller = require('../controllers/quienes');
 var posts_controller = require('../controllers/posts');
+var respuesta_controller = require('../controllers/respuesta');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -99,9 +100,15 @@ api.delete('/deleteQuienes/:id', quienes_controller.deleteQuienes);
 api.get('/quien/:id', quienes_controller.getQuienesById);
 
 // Rutas para los posts
-api.get('/posts/:limit', posts_controller.getPosts);
+api.get('/posts/:id_producto', posts_controller.getPosts);
 api.post('/savePosts', posts_controller.savePosts);
 api.delete('/deletePosts/:id', posts_controller.deletePosts);
+api.get('/respbypost/:idpost', posts_controller.searchRespuestas);
+
+// Rutas para las respuestas
+api.get('/respuesta/:id_post', respuesta_controller.getRespuesta);
+api.post('/saveRespuesta', respuesta_controller.saveRespuesta);
+api.delete('/deleteRespuesta/:id', respuesta_controller.deleteRespuesta);
 
 // Exportamos la configuración
 module.exports = api;
