@@ -3,19 +3,25 @@ const bcrypt = require("bcrypt");
 const { json } = require("body-parser");
 
 function getMensajes(req, res) {
-  conexion.query(
-    `SELECT * FROM chat WHERE 1 ORDER BY id ASC`,
-    function (error, results, fields) {
-      if (error) {
-        console.log(error);
-        return res.status(500).send(error);
-      }
-      if (results.length > 0) {
-        return res.status(200).json(results);
-      } else {
-        return res.status(200).send({ documents: "no hay mensajes" });
-      }
+  let id = req.params.id;
+  console.log(id)
+  let query = `SELECT * FROM chat WHERE 1 `;
+  if (id > -1) {
+    query += `AND id>${id} `
+  }
+  query += ` ORDER BY id ASC`;
+  console.log('ssssssss',query);
+  conexion.query(query, function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      return res.status(500).send(error);
     }
+    if (results.length > 0) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(200).send({ documents: "no hay mensajes" });
+    }
+  }
   );
 }
 
@@ -82,7 +88,7 @@ function saveMensaje(req, res) {
 
 function saveFoto(foto, titulo) {
   if (foto.name != null) {
-    foto.mv(`./public/chat/${titulo}`, function (err) {});
+    foto.mv(`./public/chat/${titulo}`, function (err) { });
   }
 }
 
@@ -100,7 +106,7 @@ function deleteMensaje(req, res) {
           `SELECT * FROM chat WHERE id=${id}`,
           function (err, result) {
             if (err) return res.status(500).send({ message: err });
-            if (result.length>0) {
+            if (result.length > 0) {
               if (result[0].archivo != '') {
                 deleteFoto(result[0].archivo);
               }
@@ -190,10 +196,10 @@ function getMensajeById(req, res) {
   });
 }
 
-function downloadFile(req, res){
+function downloadFile(req, res) {
   let nombre = req.query.nombre;
   var path = require("path");
-  var file =path.resolve("public/chat/" + nombre);
+  var file = path.resolve("public/chat/" + nombre);
   res.status(200).download(file); // Set disposition and send it.
 };
 
