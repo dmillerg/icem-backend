@@ -90,6 +90,7 @@ api.post('/saveScrap', scrape_controller.saveScrap);
 api.delete('/deleteScrap/:id', scrape_controller.deleteScrap);
 api.get('/scrap/:limit', scrape_controller.getScraps);
 api.post('/scrap/:id', scrape_controller.updateScrap);
+api.post('/probarScrap/:id', scrape_controller.probarScrap);
 
 // Rutas para el quienes somos
 api.get('/quienes/:limit', quienes_controller.getQuienes);
