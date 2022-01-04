@@ -61,25 +61,31 @@ async function recogida() {
 }
 
 async function scrapeItAll(elemet) {
-    const scrapeResult = await scrapeIt(elemet.url, {
-        presentations: {
-            listItem: elemet.contenedor,
-            data: {
-                titulo: elemet.titulo,
-                descripcion: elemet.descripcion,
-                fecha: elemet.fecha,
-                enlace: {
-                    selector: elemet.enlace_selector,
-                    attr: elemet.enlace_attr
-                },
-                imagen: {
-                    selector: elemet.imagen_selector,
-                    attr: elemet.imagen_attr
+    try {
+        const scrapeResult = await scrapeIt(elemet.url, {
+            presentations: {
+                listItem: elemet.contenedor,
+                data: {
+                    titulo: elemet.titulo,
+                    descripcion: elemet.descripcion,
+                    fecha: elemet.fecha,
+                    enlace: {
+                        selector: elemet.enlace_selector,
+                        attr: elemet.enlace_attr
+                    },
+                    imagen: {
+                        selector: elemet.imagen_selector,
+                        attr: elemet.imagen_attr
+                    }
                 }
             }
-        }
-    });
-    return scrapeResult.data.presentations;
+        });
+        return scrapeResult.data.presentations;
+    }
+    catch (e) {
+        console.log(e);
+        return [];
+    }
 }
 
 function iniciarScrapping(req, res) {
@@ -239,7 +245,7 @@ function updateScrap(req, res) {
                 query += `WHERE id = ${id}`;
                 conexion.query(query, function (error, results, fields) {
                     if (error)
-                        return res.status(500).send({ message: "error en el servidor "+ error });
+                        return res.status(500).send({ message: "error en el servidor " + error });
                     if (results) {
                         return res
                             .status(201)
