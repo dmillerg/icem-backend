@@ -14,10 +14,11 @@ function createTables(req, res) {
                 tableScraps().then(() => {
                   tablePosts().then(() => {
                     tableProductos().then(() => {
-                      tableRespuesta().then(()=>{
-                      insertAdmin().then(admin => {
-                        return res.status(200).send({ 'ERROR': errores, 'SUCCESS': success });
-                      });});
+                      tableRespuesta().then(() => {
+                        insertAdmin().then(admin => {
+                          return res.status(200).send({ 'ERROR': errores, 'SUCCESS': success });
+                        });
+                      });
                     });
                   });
                 });
@@ -61,9 +62,9 @@ async function tableUsuario() {
     password text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
     nombre varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
     fecha varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
-    ultsesion varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
+    ultsession varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
     PRIMARY KEY (id) USING BTREE
-  ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
+  ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT`;
   conexion.query(query, function (error, results, fields) {
     if (error) return errores++;
     if (results) return success++;
@@ -128,8 +129,7 @@ async function tableNoticias() {
     fuente varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
     logo varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
     PRIMARY KEY (id) USING BTREE
-  ) ENGINE = InnoDB AUTO_INCREMENT = 19197 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;
-  `;
+  ) ENGINE = InnoDB AUTO_INCREMENT = 26440 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
     if (error) return errores++;
     if (results) return success++;
@@ -146,7 +146,7 @@ async function tableTokens() {
     token varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
     usuario_id text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
     PRIMARY KEY (id) USING BTREE
-  ) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
+  ) ENGINE = InnoDB AUTO_INCREMENT = 50 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
     if (error) return errores++;
     if (results) return success++;
@@ -165,7 +165,7 @@ async function tableChats() {
     fecha text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
     archivo text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
     PRIMARY KEY (id) USING BTREE
-  ) ENGINE = InnoDB AUTO_INCREMENT = 164 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
+  ) ENGINE = InnoDB AUTO_INCREMENT = 176 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
     if (error) return errores++;
     if (results) return success++;
@@ -209,6 +209,7 @@ async function tableScraps() {
     enlace_attr varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
     imagen_attr varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
     url varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    activo tinyint NOT NULL,
     PRIMARY KEY (id) USING BTREE
   ) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;`;
   conexion.query(query, function (error, results, fields) {
@@ -231,8 +232,7 @@ async function tablePosts() {
     fecha varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
     id_producto int NULL DEFAULT NULL,
     PRIMARY KEY (id) USING BTREE
-  ) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
-  `;
+  ) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;`;
   conexion.query(query, function (error, results, fields) {
     if (error) return errores++;
     if (results) return success++;
@@ -242,7 +242,7 @@ async function tablePosts() {
 /**
  * Crea todo lo relacionado con las respuestas
  */
-async function tableRespuesta(){
+async function tableRespuesta() {
   var query = `DROP TABLE IF EXISTS respuesta;
   CREATE TABLE respuesta  (
     id int NOT NULL AUTO_INCREMENT,
@@ -250,7 +250,7 @@ async function tableRespuesta(){
     id_post int NULL DEFAULT NULL,
     fecha varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
     PRIMARY KEY (id) USING BTREE
-  ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;`;
+  ) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;`;
   conexion.query(query, function (error, results, fields) {
     if (error) return errores++;
     if (results) return success++;
