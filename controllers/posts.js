@@ -42,7 +42,7 @@ function savePosts(req, res) {
         var id_producto = req.body.id_producto;
         console.log('so', id_producto);
         conexion.query(
-          `INSERT INTO posts(id, alias, correo, comentario, fecha, id_producto) VALUES (NULL,"${alias}", "${correo}", "${comentario}", "${fecha}", "${id_producto}")`,
+          `INSERT INTO posts(id, alias, correo, comentario, fecha, id_producto, cant_resp) VALUES (NULL,"${alias}", "${correo}", "${comentario}", "${fecha}", "${id_producto}", 0)`,
           function (error, results, fields) {
             if (error) return res.status(500).send({ message: error });
             if (results) {
@@ -138,13 +138,20 @@ function deletePosts(req, res) {
 //   });
 // }
 
+function getPostsById(req, res) {
+  let idpost = req.params.idpost;
+  conexion.query(`SELECT * FROM posts WHERE id= ${idpost}`, function (error, result) {
+    return res.status(200).send(result[0]);
+  });
+}
+
 function searchRespuestas(req, res) {
   let idpost = req.params.idpost;
-  conexion.query(`SELECT * FROM respuesta WHERE id_post=${idpost}`, function(error, result, field){
-    if(error){
-      return res.status(500).send({message: error});
+  conexion.query(`SELECT * FROM respuesta WHERE id_post=${idpost}`, function (error, result, field) {
+    if (error) {
+      return res.status(500).send({ message: error });
     }
-    if(result){
+    if (result) {
       return res.status(200).send(result);
     }
   })
@@ -155,4 +162,5 @@ module.exports = {
   savePosts,
   deletePosts,
   searchRespuestas,
+  getPostsById,
 };

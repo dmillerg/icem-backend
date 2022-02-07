@@ -32,6 +32,7 @@ api.delete('/deleteUsuario/:id', usuario_controller.deleteUsuario);
 //Rutas para manejar base de datos
 api.get('/database', managedb_controller.createTables);
 api.post('/all', managedb_controller.all);
+api.get('/fechaultima', managedb_controller.fechaUltima);
 api.get('/loadSQL', managedb_controller.loadSQL);
 
 // Rutas para los productos
@@ -102,6 +103,7 @@ api.get('/quien/:id', quienes_controller.getQuienesById);
 
 // Rutas para los posts
 api.get('/posts/:id_producto', posts_controller.getPosts);
+api.get('/postsByID/:idpost', posts_controller.getPostsById);
 api.post('/savePosts', posts_controller.savePosts);
 api.delete('/deletePosts/:id', posts_controller.deletePosts);
 api.get('/respbypost/:idpost', posts_controller.searchRespuestas);

@@ -9,7 +9,7 @@ function getRespuesta(req, res) {
     query += ` WHERE id_post=${id_post} `;
   }
   query += `ORDER BY fecha DESC`;
-
+  
   conexion.query(
     `SELECT * FROM respuesta ` + query,
     function (error, results, fields) {
@@ -38,6 +38,9 @@ function saveRespuesta(req, res) {
         var respuesta = req.body.respuesta;
         var fecha = new Date();
         var id_post = req.body.id_post;
+        conexion.query(`SELECT * FROM posts WHERE id=${id_post}`, function (err1, res1) {
+          conexion.query(`UPDATE posts SET cant_resp="${res1[0].cant_resp+1}" WHERE id=${id_post}`, function (error, result) { });
+        });
         conexion.query(
           `INSERT INTO respuesta(id, respuesta, fecha, id_post) VALUES (NULL,"${respuesta}", "${fecha}", "${id_post}")`,
           function (error, results, fields) {
