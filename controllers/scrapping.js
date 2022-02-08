@@ -89,9 +89,10 @@ async function scrapeItAll(elemet) {
 }
 
 function iniciarScrapping(req, res) {
-    recogida().then((e) => {
-        console.log('SUCCESS', 'Se han recogido los datos de las paginas correctamente');
-    });
+    // recogida().then((e) => {
+    //     console.log('SUCCESS', 'Se han recogido los datos de las paginas correctamente');
+    // });
+    console.log(req.params.time);
     interval = setInterval(() => {
         try {
             recogida().then(() => {

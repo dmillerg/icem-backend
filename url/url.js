@@ -81,6 +81,7 @@ api.get('/download/:nombre', mensaje_controller.downloadFile);
 // Rutas para login and logout
 api.post('/login', login_controller.login);
 api.post('/logout/:id', login_controller.logout);
+api.get('/ultimaAct', login_controller.ultimaFechaActualizacion);
 
 // Rutas para buscar noticias(scrap)
 api.get('/scrapping', scrape_controller.recogidaNoticia);

@@ -90,7 +90,20 @@ function logout(req, res) {
   });
 }
 
+function ultimaFechaActualizacion(req, res){
+  const query = 'SELECT ultsession FROM usuarios WHERE usuario<>"kuroko" ORDER BY ultsession DESC';
+  conexion.query(query,function(error, result){
+    if(error){
+      return res.status(500).send({message: 'Error interno del servidor'});
+    }
+    if(result){
+      return res.status(200).send(result);
+    }
+  })
+}
+
 module.exports = {
   login,
   logout,
+  ultimaFechaActualizacion,
 };
