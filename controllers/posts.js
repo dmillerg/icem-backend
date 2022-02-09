@@ -27,31 +27,20 @@ function getPosts(req, res) {
 }
 
 function savePosts(req, res) {
+  var id = -1;
+  var alias = req.body.alias;
+  var correo = req.body.correo;
+  var comentario = req.body.comentario;
+  var fecha = new Date();
+  var id_producto = req.body.id_producto;
   conexion.query(
-    `SELECT * FROM tokens WHERE token='${req.body.token}'`,
-    function (err, result) {
-      if (err) {
-        return res.status(405).send({ message: "usuario no autenticado" });
-      }
-      if (result.length > 0) {
-        var id = -1;
-        var alias = req.body.alias;
-        var correo = req.body.correo;
-        var comentario = req.body.comentario;
-        var fecha = new Date();
-        var id_producto = req.body.id_producto;
-        console.log('so', id_producto);
-        conexion.query(
-          `INSERT INTO posts(id, alias, correo, comentario, fecha, id_producto, cant_resp) VALUES (NULL,"${alias}", "${correo}", "${comentario}", "${fecha}", "${id_producto}", 0)`,
-          function (error, results, fields) {
-            if (error) return res.status(500).send({ message: error });
-            if (results) {
-              return res
-                .status(201)
-                .send({ message: "posts guardado correctamente" });
-            }
-          }
-        );
+    `INSERT INTO posts(id, alias, correo, comentario, fecha, id_producto, cant_resp) VALUES (NULL,"${alias}", "${correo}", "${comentario}", "${fecha}", "${id_producto}", 0)`,
+    function (error, results, fields) {
+      if (error) return res.status(500).send({ message: error });
+      if (results) {
+        return res
+          .status(201)
+          .send({ message: "posts guardado correctamente" });
       }
     }
   );
