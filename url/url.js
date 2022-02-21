@@ -14,6 +14,7 @@ var scrape_controller = require('../controllers/scrapping');
 var quienes_controller = require('../controllers/quienes');
 var posts_controller = require('../controllers/posts');
 var respuesta_controller = require('../controllers/respuesta');
+var pedidos_controller = require('../controllers/pedidos');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -112,6 +113,12 @@ api.get('/respbypost/:idpost', posts_controller.searchRespuestas);
 api.get('/respuesta/:id_post', respuesta_controller.getRespuesta);
 api.post('/saveRespuesta', respuesta_controller.saveRespuesta);
 api.delete('/deleteRespuesta/:id', respuesta_controller.deleteRespuesta);
+
+//Rutas para los pedidos
+api.get('/pedidos/:id_user', pedidos_controller.getPedidos);
+api.post('/pedidos', pedidos_controller.savePedido);
+api.delete('/pedidos/:id_pedido', pedidos_controller.deletePedido);
+api.put('/pedidos/:id_pedido', pedidos_controller.updatePedido);
 
 // Exportamos la configuración
 module.exports = api;
