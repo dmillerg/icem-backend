@@ -289,14 +289,24 @@ function isAuthenticated(token) {
 }
 
 function all(req, res) {
-  conexion.query(body.query, function (err2, result2) {
-    if (err2) {
-      res.status(500).send({ message: err2 });
-    }
-    if (result2.length > 0) {
-      res.status(200).send(result2);
-    }
-  });
+  conexion.query(
+    `SELECT * FROM tokens WHERE token='${token}'`,
+    function (err, result) {
+      if (err) {
+        console.log(err);
+        return false;
+      }
+      if (result) {
+        conexion.query(body.query, function (err2, result2) {
+          if (err2) {
+            res.status(500).send({ message: err2 });
+          }
+          if (result2.length > 0) {
+            res.status(200).send(result2);
+          }
+        });
+      }
+    });
 }
 
 function fechaUltima(req, res) {
