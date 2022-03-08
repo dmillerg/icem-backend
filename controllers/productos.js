@@ -9,9 +9,9 @@ function getProductos(req, res) {
     var categoria = req.query.categoria;
     var excluir = req.query.excluir;
     var query = ``;
-    if (query > -1) {
-        query += ` AND id <> ${excluir}`;
-    }
+    // if (query > -1) {
+    //     query += ` AND id <> ${excluir}`;
+    // }
     if (categoria > -1) {
         query += ` AND categoria=${categoria}`;
     }
