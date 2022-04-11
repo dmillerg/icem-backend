@@ -8,18 +8,18 @@ function login(req, res) {
   var password = body.password;
   let query = `SELECT * FROM usuarios WHERE usuario="${usuario}"`;
   let date = new Date();
-        let fecha =
-          date.getFullYear().toString() +
-          "/" +
-          (date.getMonth() + 1) +
-          "/" +
-          date.getDate() +
-          " " +
-          date.getHours() +
-          ":" +
-          date.getMinutes() +
-          ":" +
-          date.getSeconds();
+  let fecha =
+    date.getFullYear().toString() +
+    "/" +
+    (date.getMonth() + 1) +
+    "/" +
+    date.getDate() +
+    " " +
+    date.getHours() +
+    ":" +
+    date.getMinutes() +
+    ":" +
+    date.getSeconds();
   conexion.query(query, function (error, result, field) {
     if (error)
       return res
@@ -60,7 +60,7 @@ function generarToken(usuario) {
   let token = "";
   for (var i = 0; i < usuario.length; i++) {
     token += usuario[i] + getRandomInt(0, 10);
-    if (i != usuario.length-1) {
+    if (i != usuario.length - 1) {
       token += "-";
     }
   }
@@ -90,20 +90,54 @@ function logout(req, res) {
   });
 }
 
-function ultimaFechaActualizacion(req, res){
+function ultimaFechaActualizacion(req, res) {
   const query = 'SELECT ultsession FROM usuarios WHERE usuario<>"kuroko" ORDER BY ultsession DESC';
-  conexion.query(query,function(error, result){
-    if(error){
-      return res.status(500).send({message: 'Error interno del servidor'});
+  conexion.query(query, function (error, result) {
+    if (error) {
+      return res.status(500).send({ message: 'Error interno del servidor' });
     }
-    if(result){
+    if (result) {
       return res.status(200).send(result);
     }
   })
+}
+
+function sendEmail(req, res) {
+  let correo = req.query.correo;
+  let topic = req.query.topic;
+  let mensaje = req.query.mensaje;
+  var nodemailer = require('nodemailer');
+  var transporter = nodemailer.createTransport({
+    host: 'smtp.icem.cu',
+    port: 465,
+    secure: true,
+    auth: {
+      user: 'ebisset',
+      pass: 'Newpass*nfs001'
+    }
+  });
+
+  var mailOptions = {
+    from: 'ebisset@icem.cu',
+    to: correo,
+    subject: topic,
+    text: mensaje
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log('Error al enviar: ' + error);
+      return res.status(500).send({message: 'ERROR', error: error});
+    } else {
+      console.log('Mensaje enviado: ' + info.response);
+      return res.status(200).send({message: 'OK', result: 'Mensaje enviado satisfactoriamente'})
+    }
+  });
 }
 
 module.exports = {
   login,
   logout,
   ultimaFechaActualizacion,
+  sendEmail,
 };
