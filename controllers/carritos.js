@@ -34,41 +34,59 @@ function saveCarrito(req, res) {
             let producto_id = req.body.producto_id;
             let precio = req.body.precio;
             var cantidad = req.body.cantidad;
-            let query = `INSERT INTO carrito(id, user_id, precio, cantidad, producto_id) VALUES (NULL, ${user_id}, ${precio}, ${cantidad}, ${producto_id}) `
-
-            conexion.query(query, function (err, result) {
-                if (err) {
-                    return res.status(500).send({ message: err });
+            let query_add = `INSERT INTO carrito(id, user_id, precio, cantidad, producto_id) VALUES (NULL, ${user_id}, ${precio}, ${cantidad}, ${producto_id}) `
+            let query_update = `UPDATE carrito SET cantidad`;
+            let query_test = `SELECT * FROM carrito WHERE producto_id=${producto_id}`;
+            conexion.query(query_test, function (errt, resultt) {
+                if (errt) {
+                    return res.status(500).send({ message: errt });
                 }
-                if (result) {
-                    disponibilidad('agregar', producto_id, cantidad);
-                    return res.status(200).send(result);
+                if (resultt.length > 0) {
+                    console.log(parseInt(resultt[0].cantidad) + parseInt(cantidad), 'cantidad');
+                    conexion.query(query_update + `=${parseInt(resultt[0].cantidad) + parseInt(cantidad)} WHERE id=${resultt[0].id}`, function (e, r) {
+                        if (e) {
+                            return res.status(500).send({ message: e });
+                        }
+                        if (r) {
+                            disponibilidad('agregar', producto_id, parseInt(cantidad));
+                            return res.status(200).send(r);
+                        }
+                    });
+                } else {
+                    conexion.query(query_add, function (err, result) {
+                        if (err) {
+                            return res.status(500).send({ message: err });
+                        }
+                        if (result) {
+                            disponibilidad('agregar', producto_id, cantidad);
+                            return res.status(200).send(result);
+                        }
+                    })
                 }
             })
+
         }
     })
 }
 
 function deleteCarrito(req, res) {
-    conexion.query(`SELECT * FROM tokens WHERE token = ${req.query.token}`, function (error, resultado) {
+    conexion.query(`SELECT * FROM tokens WHERE token = '${req.query.token}'`, function (error, resultado) {
         if (error) {
             return res.status(500).send({ message: error });
-        } S
+        }
         if (resultado.length > 0) {
             let id_carrito = req.params.id_carrito;
             let query = `DELETE FROM carrito WHERE id = ${id_carrito}`;
-
-
             conexion.query(`SELECT * FROM carrito WHERE id = ${id_carrito} `, function (err, result) {
                 if (err) { }
                 if (result) {
+                    disponibilidad('delete', result[0].producto_id, result[0].cantidad);
                     conexion.query(query, function (error, resul) {
                         if (error) {
-                            return req.status(500).send({ message: error });
+                            return res.status(500).send({ message: error });
                         }
                         if (resul) {
-                            disponibilidad('delete', resul.producto_id, cantidad);
-                            return req.status(200).send(resul);
+                            return res.status(200).send(resul);
                         }
                     })
                 }
@@ -110,7 +128,7 @@ function disponibilidad(action, id_producto, cant_productos) {
             conexion.query(`SELECT disponibilidad FROM productos WHERE id = ${id_producto}`, function (error, resul) {
                 if (error) { }
                 if (resul) {
-                    conexion.query(`UPDATE productos SET disponibilidad = ${resul[0] - cant_productos} WHERE id = ${id_producto}`,
+                    conexion.query(`UPDATE productos SET disponibilidad = ${resul[0].disponibilidad - cant_productos} WHERE id = ${id_producto}`,
                         function (err, result) {
                             if (err) { }
                             if (result) { }
@@ -122,7 +140,9 @@ function disponibilidad(action, id_producto, cant_productos) {
             conexion.query(`SELECT disponibilidad FROM productos WHERE id = ${id_producto}`, function (error, resul) {
                 if (error) { }
                 if (resul) {
-                    conexion.query(`UPDATE productos SET disponibilidad = ${resul[0] + cant_productos} WHERE id = ${id_producto}`,
+                    console.log(resul[0], cant_productos);
+
+                    conexion.query(`UPDATE productos SET disponibilidad = ${resul[0].disponibilidad + cant_productos} WHERE id = ${id_producto}`,
                         function (err, result) {
                             if (err) { }
                             if (result) { }

@@ -83,18 +83,7 @@ function saveProducto(req, res) {
                     console.log(foto_name);
                 }
                 let date = new Date();
-                let fecha =
-                    date.getFullYear().toString() +
-                    "/" +
-                    (date.getMonth() + 1) +
-                    "/" +
-                    date.getDate() +
-                    " " +
-                    date.getHours() +
-                    ":" +
-                    date.getMinutes() +
-                    ":" +
-                    date.getSeconds();
+                let fecha = new Date();
 
                 conexion.query(
                     `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio})`,
