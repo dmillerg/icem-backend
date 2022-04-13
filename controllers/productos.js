@@ -36,6 +36,7 @@ function getProductos(req, res) {
     );
 }
 
+
 function getProductoFoto(req, res) {
     try {
         var id = req.params.id;
@@ -171,9 +172,13 @@ function updateProducto(req, res) {
                 var garantia = update.garantia;
                 var precio = update.precio;
                 var foto = { name: null };
-                if (req.files) foto = req.files.foto;
+                if (req.files) {
+                    foto = req.files.foto;
+                    foto_name = titulo.replace(/ /g, "-") + ".jpg";
+                    console.log(foto_name);
+                }
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio} `;
+                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${foto_name}' `;
                 query += `WHERE id = ${id}`;
                 console.log(query)
                 conexion.query(query, function (error, results, fields) {
@@ -204,7 +209,7 @@ function getProductoById(req, res) {
     conexion.query(query, function (err, result) {
         if (err) return res.status(500).send({ message: err });
         if (result) {
-            return res.status(200).send({ result });
+            return res.status(200).send(result[0]);
         }
     });
 }

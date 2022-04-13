@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const { json } = require("body-parser");
 
 function getPedidos(req, res) {
-    conexion.query(`SELECT * FROM tokens WHERE token = ${req.query.token}`, function (error, resul) {
+    conexion.query(`SELECT * FROM tokens WHERE token = '${req.query.token}'`, function (error, resul) {
         if (error) {
             return res.status(500).send({ message: error });
         }
@@ -11,7 +11,7 @@ function getPedidos(req, res) {
             let id_user = req.params.id_user;
 
             let query = `SELECT * FROM pedidos WHERE user_id = ${id_user}`
-
+console.log(query);
             conexion.query(query, function (err, result) {
                 if (err) {
                     return res.status(500).send({ message: err })
@@ -25,23 +25,25 @@ function getPedidos(req, res) {
 }
 
 function savePedido(req, res) {
-    conexion.query(`SELECT * FROM tokens WHERE token = ${req.body.token}`, function (error, resul) {
+    conexion.query(`SELECT * FROM tokens WHERE token = '${req.body.token}'`, function (error, resul) {
         if (error) {
             return res.status(500).send({ message: error });
         }
         if (resul.length > 0) {
-            let id_user = req.params.id_user;
-            let id_producto = req.body.id_producto;
-            var cant_productos = req.body.cant_productos;
-            let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado) VALUES (NULL, ${id_user}, ${id_producto}, ${cant_productos}, NULL) `
+            let user_id = req.body.user_id;
+            let producto_id = req.body.producto_id;
+            let cantidad = req.body.cantidad;
+            let estado = req.body.estado;
+            let fecha = new Date();
+            let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${fecha}') `
 
             conexion.query(query, function (err, result) {
                 if (err) {
-                    return req.status(500).send({ message: err });
+                    return res.status(500).send({ message: err });
                 }
                 if (result) {
-                    disponibilidad('agregar', id_producto, cant_productos);
-                    return req.status(200).send(result);
+                    disponibilidad('agregar', producto_id, user_id);
+                    return res.status(200).send(result);
                 }
             })
         }
