@@ -34,6 +34,7 @@ function savePedido(req, res) {
             let producto_id = req.body.producto_id;
             let cantidad = req.body.cantidad;
             let estado = req.body.estado;
+            let id_carrito = req.body.id_carrito;
             let fecha = new Date();
             let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${fecha}') `
 
@@ -42,8 +43,15 @@ function savePedido(req, res) {
                     return res.status(500).send({ message: err });
                 }
                 if (result) {
-                    disponibilidad('agregar', producto_id, user_id);
-                    return res.status(200).send(result);
+                    let query2 = `DELETE FROM carrito WHERE id=${id_carrito}`;
+                    conexion.query(query2, function(er, rets){
+                        if (er) {
+                            return res.status(500).send({ message: er });
+                        }
+                        if(rets){
+                            return res.status(200).send(result);
+                        }
+                    })
                 }
             })
         }
@@ -51,25 +59,28 @@ function savePedido(req, res) {
 }
 
 function deletePedido(req, res) {
-    conexion.query(`SELECT * FROM tokens WHERE token = ${req.query.token}`, function (error, resultado) {
+    conexion.query(`SELECT * FROM tokens WHERE token = '${req.query.token}'`, function (error, resultado) {
         if (error) {
             return res.status(500).send({ message: error });
-        }S
+        }
         if (resultado.length > 0) {
             let id_pedido = req.params.id_pedido;
             let query = `DELETE FROM pedidos WHERE id = ${id_pedido}`;
 
 
             conexion.query(`SELECT * FROM pedidos WHERE id = ${id_pedido} `, function (err, result) {
-                if (err) { }
+                if (err) {
+                    console.log(err);
+                 }
                 if (result) {
+                    console.log(result);
                     conexion.query(query, function (error, resul) {
                         if (error) {
-                            return req.status(500).send({ message: error });
+                            return res.status(500).send({ message: error });
                         }
                         if (resul) {
-                            disponibilidad('delete', id_producto, cant_productos);
-                            return req.status(200).send(resul);
+                            disponibilidad('delete', result[0].producto_id, result[0].cantidad);
+                            return res.status(200).send(resul);
                         }
                     })
                 }
@@ -123,10 +134,15 @@ function disponibilidad(action, id_producto, cant_productos) {
             conexion.query(`SELECT disponibilidad FROM productos WHERE id = ${id_producto}`, function (error, resul) {
                 if (error) { }
                 if (resul) {
-                    conexion.query(`UPDATE productos SET disponibilidad = ${resul[0] + cant_productos} WHERE id = ${id_producto}`,
+                    console.log(resul);
+                    conexion.query(`UPDATE productos SET disponibilidad = ${resul[0].disponibilidad + cant_productos} WHERE id = ${id_producto}`,
                         function (err, result) {
-                            if (err) { }
-                            if (result) { }
+                            if (err) { 
+                                console.log(err);
+                            }
+                            if (result) {
+                                console.log(result, ' disponibilidad');
+                             }
                         })
                 }
             })
