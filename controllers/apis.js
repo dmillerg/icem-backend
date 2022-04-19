@@ -51,13 +51,14 @@ function getApis(req, res) {
             document.getElementById('${idIn}').click();
         });
         </script>`
-        } else
+        } else {
             var arg = element.route.path.substring(element.route.path.indexOf(':') + 1, element.route.path.length);
-        var ruta = element.route.path;
-        var idform = ruta.split('/')[1] + 'form';
-        var idIn = ruta.split('/')[1] + 'in';
-        var idbtn = ruta.split('/')[1] + 'btn';
-        item += `<form id="${idform}" action="apis/${ruta}" method="${method}">
+            var ruta = element.route.path;
+            var idform = ruta.split('/')[1] + 'form';
+            var idIn = ruta.split('/')[1] + 'in';
+            var idbtn = ruta.split('/')[1] + 'btn';
+            console.log(idbtn, "idbtn");
+            item += `<form id="${idform}" action="apis/${ruta}" method="${method}">
         <div class="form-in"><label>Metodo: ${method}</label></div>
         <div class="form-in"><a href="${element.route.path}" disabled>Url: ${element.route.path}</a></div>
         <div class="form-in"><textarea type="text" id="${idIn}" name="" placeholder="${arg}..." rows="1" disabled></textarea></div>
@@ -68,7 +69,7 @@ function getApis(req, res) {
         document.getElementById('${idform}').action ='apis/'+ ${ruta};
         document.getElementById('${idform}').submit();
     });
-    </script>`
+    </script>`}
     });
     const resp = `
     <style type="text/css">
@@ -155,19 +156,36 @@ function getApis(req, res) {
         color: rgb(210,210,210);
         transition: all 0.3s;
     }
+
+    .footer-version{
+        width: 94%;
+        margin-left: 3%;
+        position: absolute;
+        bottom: 0;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 136, 255, 0.363);
+        color: white;
+        z-index: 999;
+        font-family: Arial, Helvetica, sans-serif;
+        text-shadow: 2px 2px 6px #000000;
+    }
   </style>
   <div class="example-loading-shade">
   <div class="container" style="text-align: center; color: white;font-family: Arial, Helvetica, sans-serif;">
   <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-laptop" viewBox="0 0 16 16">
   <path d="M13.5 3a.5.5 0 0 1 .5.5V11H2V3.5a.5.5 0 0 1 .5-.5h11zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11zM0 12.5h16a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5z"/>
 </svg>
-  <h1>Bienvenido al servidor de APis del ICEM</h1>
+  <h1>Bienvenido al servidor de APis de la ICEM</h1>
   <p>Solo no se pueden probar desde aqui las api de tipo POST, que esta en desarrollo</p>
     <div id="lista" class="lista" name="lista" style="overflow-y: scroll;height: 350px">
         ${item}
     </div>
     </div>
     </div>
+    <div class="footer-version">© Copyright 2022 version de backend 2.0.2</div>
    `
     return res.status(200).send(resp);
 }
