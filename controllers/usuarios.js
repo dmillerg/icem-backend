@@ -12,27 +12,37 @@ function saveUsuario(req, res) {
   var correo = body.correo;
   var rol = body.rol;
   let date = new Date();
-  bcrypt.hash(password, 10, (err, encrypted) => {
-    if (err) {
-      console.log(err);
-    } else {
-      conexion.query(
-        `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, rol) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${rol}")`,
-        function (error, results, fields) {
-          if (error) return res.status(500).send({ message: error });
-          if (results) {
-            return res
-              .status(201)
-              .send({ message: "agregado correctamente" });
-          } else {
-            return res
-              .status(400)
-              .send({ message: "Datos mal insertados" });
-          }
-        }
-      );
+  conexion.query(`SELECT * FROM usuarios WHERE usuario='${usuario}'`, function (errr, ress) {
+    if (errr) {
+      return res.status(500).send({ message: error });
     }
-  });
+    if (ress.length > 0) {
+      return res.status(405).send({ message: 'usuario ya existe' });
+    } else {
+      bcrypt.hash(password, 10, (err, encrypted) => {
+        if (err) {
+          console.log(err);
+        } else {
+          conexion.query(
+            `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, rol) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${rol}")`,
+            function (error, results, fields) {
+              if (error) return res.status(500).send({ message: error });
+              if (results) {
+                return res
+                  .status(201)
+                  .send({ message: "agregado correctamente" });
+              } else {
+                return res
+                  .status(400)
+                  .send({ message: "Datos mal insertados" });
+              }
+            }
+          );
+        }
+      });
+    }
+  })
+
 
 }
 
@@ -177,10 +187,39 @@ function deleteUsuario(req, res) {
   );
 }
 
+function adminResetPassword(req, res) {
+  conexion.query(
+    `SELECT * FROM tokens WHERE token='${req.body.token}'`,
+    function (err, result) {
+      if (err) {
+        return res.status(405).send({ message: "usuario no autenticado" });
+      }
+      if (result.length > 0) {
+        let id_usuario = req.body.id_usuario;
+        let new_password = req.body.new_password;
+
+        bcrypt.hash(new_password, 10, (err, encrypted) => {
+          if (err) {
+            console.log(err);
+          } else {
+            let query = `UPDATE usuarios SET password = '${encrypted}' WHERE id=${id_usuario}`;
+            conexion.query(query, function (error, resultado) {
+              if (error) { return res.status(500).send({ message: "ERROR", error: error }); }
+              if (resultado) {
+                return res.status(200).send({ message: "SUCCESS, passsword cambiada correctamente" });
+              }
+            })
+          }
+        });
+      }
+    });
+}
+
 module.exports = {
   saveUsuario,
   getUsuarios,
   getUsuario,
   updateUsuario,
   deleteUsuario,
+  adminResetPassword,
 };
