@@ -3,14 +3,19 @@ const bcrypt = require("bcrypt");
 const { json } = require("body-parser");
 
 function getMensajes(req, res) {
-  let id = req.params.id;
+  let id = ''
+  if (req.query.onlyid != undefined) {
+    id = '(' + req.query.onlyid.toString() + ')';
+  }
+
   console.log(id)
   let query = `SELECT * FROM chat WHERE 1 `;
-  if (id > -1) {
-    query += `AND id>${id} `
+  if (id.length > 2) {
+    query += `AND id NOT IN ${id}`
   }
+  console.log(query)
+
   query += ` ORDER BY id ASC`;
-  console.log('ssssssss',query);
   conexion.query(query, function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -61,6 +66,8 @@ function saveMensaje(req, res) {
         var nombre = body.nombre;
         var sms = body.sms;
         var fecha = body.fecha;
+        var respondido = body.respondido;
+        var id_respondido = body.id_respondido;
         var foto_name = "";
         var foto = { name: null };
         if (req.files) {
@@ -70,7 +77,7 @@ function saveMensaje(req, res) {
         }
 
         conexion.query(
-          `INSERT INTO chat(id, sms, fecha, nombre, archivo) VALUES (NULL,"${sms}","${fecha}","${nombre}", "${foto_name}")`,
+          `INSERT INTO chat(id, sms, fecha, nombre, archivo, respondido, id_respondido) VALUES (NULL,"${sms}","${fecha}","${nombre}", "${foto_name}", ${respondido}, ${id_respondido})`,
           function (error, results, fields) {
             if (error) return res.status(500).send({ message: error });
             if (results) {
@@ -84,6 +91,17 @@ function saveMensaje(req, res) {
       }
     }
   );
+}
+
+function getChatbyID(req, res) {
+  conexion.query(`SELECT * FROM chat WHERE id = ${req.query.id}`, function (err, result) {
+    if (err) {
+      return res.status(500).send({ message: "Error", error: err });
+    }
+    if (result) {
+      return res.status(200).send(result[0]);
+    }
+  })
 }
 
 function saveFoto(foto, titulo) {
@@ -211,4 +229,5 @@ module.exports = {
   updateMensaje,
   getMensajeById,
   downloadFile,
+  getChatbyID,
 };

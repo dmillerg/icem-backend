@@ -74,13 +74,14 @@ api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
 api.get('/searchDesarrollos/:titulo', desarrollos_controller.searchDesarrollos);
 
 // Rutas para los Mensajes
-api.get('/chats/:id', mensaje_controller.getMensajes);
+api.get('/chats', mensaje_controller.getMensajes);
 api.get('/chatFoto/:id', mensaje_controller.getMensajeFoto);
 api.post('/saveChat', mensaje_controller.saveMensaje);
 api.post('/chat/:id', mensaje_controller.updateMensaje);
 api.delete('/deleteChat/:id', mensaje_controller.deleteMensaje);
 api.get('/chats/:id', mensaje_controller.getMensajeById);
 api.get('/download/:nombre', mensaje_controller.downloadFile);
+api.get('/chat', mensaje_controller.getChatbyID);
 
 // Rutas para login and logout
 api.post('/login', login_controller.login);
