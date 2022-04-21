@@ -77,17 +77,17 @@ function saveProducto(req, res) {
                 var especificaciones = body.especificaciones;
                 var garantia = body.garantia;
                 var precio = body.precio;
+                var disponibilidad = body.disponibilidad;
                 var foto = { name: null };
                 if (req.files) {
                     foto = req.files.foto;
                     foto_name = titulo.replace(/ /g, "-") + ".jpg";
                     console.log(foto_name);
                 }
-                let date = new Date();
                 let fecha = new Date();
 
                 conexion.query(
-                    `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio})`,
+                    `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
                     function (error, results, fields) {
                         if (error) return res.status(500).send({ message: error });
                         if (results) {

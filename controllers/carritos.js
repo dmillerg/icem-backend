@@ -10,7 +10,7 @@ function getCarritos(req, res) {
         if (resul.length > 0) {
             let id_user = req.params.id_user;
 
-            let query = `SELECT * FROM carrito WHERE user_id = ${id_user}`
+            let query = `SELECT * FROM carrito WHERE user_id = ${id_user} ORDER BY fecha DESC`
 
             conexion.query(query, function (err, result) {
                 if (err) {
@@ -34,7 +34,8 @@ function saveCarrito(req, res) {
             let producto_id = req.body.producto_id;
             let precio = req.body.precio;
             var cantidad = req.body.cantidad;
-            let query_add = `INSERT INTO carrito(id, user_id, precio, cantidad, producto_id) VALUES (NULL, ${user_id}, ${precio}, ${cantidad}, ${producto_id}) `
+            var fecha = new Date();
+            let query_add = `INSERT INTO carrito(id, user_id, precio, cantidad, producto_id, fecha) VALUES (NULL, ${user_id}, ${precio}, ${cantidad}, ${producto_id}, "${fecha}") `
             let query_update = `UPDATE carrito SET cantidad`;
             let query_test = `SELECT * FROM carrito WHERE producto_id=${producto_id}`;
             conexion.query(query_test, function (errt, resultt) {
@@ -157,9 +158,49 @@ function disponibilidad(action, id_producto, cant_productos) {
 
 }
 
+function getCarritoByID(req, res) {
+    conexion.query(`SELECT * FROM tokens WHERE token = '${req.query.token}'`, function (error, resultado) {
+        if (error) {
+            return res.status(500).send({ message: error });
+        }
+        if (resultado.length > 0) {
+            let id = req.query.id;
+            conexion.query(`SELECT * FROM carrito WHERE id=${id}`, function (err, succes) {
+                if (err) {
+                    return res.status(500).send({ message: 'ERROR', error: err });
+                }
+                if (succes) {
+                    return res.status(200).send(succes[0])
+                }
+            });
+        }
+    });
+}
+
+function getFechaCarritoRestante(req, res) {
+    conexion.query(`SELECT * FROM tokens WHERE token = '${req.body.token}'`, function (error, resultado) {
+        if (error) {
+            return res.status(500).send({ message: error });
+        }
+        if (resultado.length > 0) { 
+            let query = `SELECT TIMESTAMPDIFF(SECOND,'${req.body.fecha}',NOW()) as tiempo`
+            conexion.query(query, function(err, result){
+                if(err){
+                    return res.status(500).send({ message: 'ERROR', error: err });
+                }
+                if(result){
+                    return res.status(200).send(result[0])
+                }
+            })
+        }
+    });
+}
+
 module.exports = {
     getCarritos,
     saveCarrito,
     deleteCarrito,
+    getCarritoByID,
+    getFechaCarritoRestante,
     // updatePedido,
 }

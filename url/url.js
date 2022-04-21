@@ -129,6 +129,8 @@ api.put('/pedidos/:id_pedido', pedidos_controller.updatePedido);
 api.get('/carrito/:id_user', carritos_controller.getCarritos);
 api.post('/carrito', carritos_controller.saveCarrito);
 api.delete('/carrito/:id_carrito', carritos_controller.deleteCarrito);
+api.get('/carrito', carritos_controller.getCarritoByID);
+api.post('/carritotimerestante', carritos_controller.getFechaCarritoRestante);
 // api.put('/carrito/:id_pedido', carritos_controller.updateCarrito);
 
 // Exportamos la configuración
