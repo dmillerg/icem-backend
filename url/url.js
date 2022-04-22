@@ -16,6 +16,7 @@ var posts_controller = require('../controllers/posts');
 var respuesta_controller = require('../controllers/respuesta');
 var pedidos_controller = require('../controllers/pedidos');
 var carritos_controller = require('../controllers/carritos');
+var configuracion_controller = require('../controllers/configuracion');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -132,6 +133,10 @@ api.delete('/carrito/:id_carrito', carritos_controller.deleteCarrito);
 api.get('/carrito', carritos_controller.getCarritoByID);
 api.post('/carritotimerestante', carritos_controller.getFechaCarritoRestante);
 // api.put('/carrito/:id_pedido', carritos_controller.updateCarrito);
+
+// Rutas para las configuraciones
+api.get('/configuracion', configuracion_controller.getConfiguraciones);
+api.post('/configuracion', configuracion_controller.getConfiguracion);
 
 // Exportamos la configuración
 module.exports = api;
