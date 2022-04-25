@@ -25,7 +25,7 @@ function getProductos(req, res) {
         function (error, results, fields) {
             if (error) {
                 console.log(error);
-                return res.status(500).send(error);
+                return res.status(500).send({error: error});
             }
             if (results.length > 0) {
                 return res.status(200).json(results);
