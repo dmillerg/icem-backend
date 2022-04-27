@@ -215,6 +215,46 @@ function adminResetPassword(req, res) {
     });
 }
 
+function changePassword(req, res) {
+  console.log(req.body);
+  conexion.query(
+    `SELECT * FROM tokens WHERE token='${req.body.token}'`,
+    function (err, result) {
+      if (err) {
+        return res.status(405).send({ message: "usuario no autenticado" });
+      }
+      if (result.length > 0) {
+        let query = `SELECT * FROM usuarios WHERE usuario="${req.body.usuario}"`;
+        conexion.query(query, function (error, result, field) {
+          if (error)
+            return res
+              .status(500)
+              .send({ message: "error en el servidor", status: 500, err: error });
+          if (result.length > 0) {
+            if (bcrypt.compareSync(req.body.pass_old, result[0].password)) {
+              let id_usuario = req.body.id_usuario;
+              let new_password = req.body.new_password;
+      
+              bcrypt.hash(new_password, 10, (err, encrypted) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  let query = `UPDATE usuarios SET password = '${encrypted}' WHERE id=${id_usuario}`;
+                  conexion.query(query, function (error, resultado) {
+                    if (error) { return res.status(500).send({ message: "ERROR", error: error }); }
+                    if (resultado) {
+                      return res.status(200).send({ message: "SUCCESS, passsword cambiada correctamente" });
+                    }
+                  })
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+}
+
 module.exports = {
   saveUsuario,
   getUsuarios,
@@ -222,4 +262,5 @@ module.exports = {
   updateUsuario,
   deleteUsuario,
   adminResetPassword,
+  changePassword,
 };

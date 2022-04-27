@@ -10,8 +10,8 @@ function getPedidos(req, res) {
         if (resul.length > 0) {
             let id_user = req.params.id_user;
 
-            let query = `SELECT * FROM pedidos WHERE user_id = ${id_user}`
-console.log(query);
+            let query = `SELECT * FROM pedidos WHERE user_id = ${id_user} ORDER BY fecha DESC`
+            console.log(query);
             conexion.query(query, function (err, result) {
                 if (err) {
                     return res.status(500).send({ message: err })
@@ -44,11 +44,11 @@ function savePedido(req, res) {
                 }
                 if (result) {
                     let query2 = `DELETE FROM carrito WHERE id=${id_carrito}`;
-                    conexion.query(query2, function(er, rets){
+                    conexion.query(query2, function (er, rets) {
                         if (er) {
                             return res.status(500).send({ message: er });
                         }
-                        if(rets){
+                        if (rets) {
                             return res.status(200).send(result);
                         }
                     })
@@ -71,7 +71,7 @@ function deletePedido(req, res) {
             conexion.query(`SELECT * FROM pedidos WHERE id = ${id_pedido} `, function (err, result) {
                 if (err) {
                     console.log(err);
-                 }
+                }
                 if (result) {
                     console.log(result);
                     conexion.query(query, function (error, resul) {
@@ -90,26 +90,26 @@ function deletePedido(req, res) {
 }
 
 function updatePedido(req, res) {
-    conexion.query(`SELECT * FROM tokens WHERE token = ${req.body.token}`, function(error, result){
-        if(error){
-            return res.status(500).send({message: error});
+    conexion.query(`SELECT * FROM tokens WHERE token = ${req.body.token}`, function (error, result) {
+        if (error) {
+            return res.status(500).send({ message: error });
         }
-        if(result){
-            conexion.query(`SELECT * FROM pedidos WHERE id = ${req.params.id_pedido}`, function(err, resul){
-                if(err){
-                    return res.status(500).send({message: err})
+        if (result) {
+            conexion.query(`SELECT * FROM pedidos WHERE id = ${req.params.id_pedido}`, function (err, resul) {
+                if (err) {
+                    return res.status(500).send({ message: err })
                 }
-                if(resul){
+                if (resul) {
                     conexion.query(`UPDATE pedidos SET cantidad = ${req.body.cant_producto} WHERE id = ${req.params.id_pedido}`,
-                    function(er,resultado){
-                        if(er){
-                            return res.status(500).send({message: er})
-                        }
-                        if(resultado){
-                            disponibilidad('update', resul[0].producto_id,req.body.cant_producto);
-                            return res.status(200).send(resultado);
-                        }
-                    })
+                        function (er, resultado) {
+                            if (er) {
+                                return res.status(500).send({ message: er })
+                            }
+                            if (resultado) {
+                                disponibilidad('update', resul[0].producto_id, req.body.cant_producto);
+                                return res.status(200).send(resultado);
+                            }
+                        })
                 }
             })
         }
@@ -137,12 +137,12 @@ function disponibilidad(action, id_producto, cant_productos) {
                     console.log(resul);
                     conexion.query(`UPDATE productos SET disponibilidad = ${resul[0].disponibilidad + cant_productos} WHERE id = ${id_producto}`,
                         function (err, result) {
-                            if (err) { 
+                            if (err) {
                                 console.log(err);
                             }
                             if (result) {
                                 console.log(result, ' disponibilidad');
-                             }
+                            }
                         })
                 }
             })

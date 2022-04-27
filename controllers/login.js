@@ -8,18 +8,6 @@ function login(req, res) {
   var password = body.password;
   let query = `SELECT * FROM usuarios WHERE usuario="${usuario}"`;
   let date = new Date();
-  let fecha =
-    date.getFullYear().toString() +
-    "/" +
-    (date.getMonth() + 1) +
-    "/" +
-    date.getDate() +
-    " " +
-    date.getHours() +
-    ":" +
-    date.getMinutes() +
-    ":" +
-    date.getSeconds();
   conexion.query(query, function (error, result, field) {
     if (error)
       return res
