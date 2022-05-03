@@ -30,6 +30,7 @@ api.post('/saveUsuario', usuario_controller.saveUsuario);
 api.get('/usuarios/:limit', usuario_controller.getUsuarios);
 api.get('/usuario/:id', usuario_controller.getUsuario);
 api.post('/usuarios/:id', usuario_controller.updateUsuario);
+api.post('/usuario/:id', usuario_controller.updateUsuarioWithOutPass);
 api.post('/adminreset', usuario_controller.adminResetPassword);
 api.post('/changepass', usuario_controller.changePassword);
 api.delete('/deleteUsuario/:id', usuario_controller.deleteUsuario);

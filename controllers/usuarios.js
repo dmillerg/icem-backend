@@ -116,7 +116,7 @@ function updateUsuario(req, res) {
                   if (err) {
                   } else {
                     conexion.query(
-                      `UPDATE usuarios SET usuario="${usuario}",password="${encrypted}",nombre="${nombre}" WHERE id = ${id}`,
+                      `UPDATE usuarios SET usuario="${usuario}",password="${encrypted}",nombre="${nombre}", correo="${correo}" WHERE id = ${id}`,
                       function (error, results, fields) {
                         if (error)
                           return res
@@ -146,6 +146,48 @@ function updateUsuario(req, res) {
       }
     }
   );
+}
+
+
+function updateUsuarioWithOutPass(req, res) {
+  conexion.query(
+    `SELECT * FROM tokens WHERE token='${req.body.token}'`,
+    function (err, result) {
+      if (err) {
+        return res.status(405).send({ message: "usuario no autenticado" });
+      }
+      if (result.length > 0) {
+        // Recogemos un parámetro por la url
+        var id = req.params.id;
+
+        // Recogemos los datos que nos llegen en el body de la petición
+        var update = req.body;
+        var usuario = update.usuario;
+        var nombre = update.nombre;
+        var correo = update.correo;
+
+        // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
+
+        conexion.query(
+          `UPDATE usuarios SET usuario="${usuario}",nombre="${nombre}", correo="${correo}" WHERE id = ${id}`,
+          function (error, results, fields) {
+            if (error)
+              return res
+                .status(500)
+                .send({ message: "error en el servidor" });
+            if (results) {
+              return res
+                .status(201)
+                .send({ message: "agregado correctamente" });
+            } else {
+              return res.status(404).send({
+                message: "no existe ningun usuario con ese id",
+              });
+            }
+          }
+        );
+      }
+    });
 }
 
 function deleteUsuario(req, res) {
@@ -197,7 +239,6 @@ function adminResetPassword(req, res) {
       if (result.length > 0) {
         let id_usuario = req.body.id_usuario;
         let new_password = req.body.new_password;
-
         bcrypt.hash(new_password, 10, (err, encrypted) => {
           if (err) {
             console.log(err);
@@ -206,6 +247,7 @@ function adminResetPassword(req, res) {
             conexion.query(query, function (error, resultado) {
               if (error) { return res.status(500).send({ message: "ERROR", error: error }); }
               if (resultado) {
+                console.log(resultado);
                 return res.status(200).send({ message: "SUCCESS, passsword cambiada correctamente" });
               }
             })
@@ -234,7 +276,7 @@ function changePassword(req, res) {
             if (bcrypt.compareSync(req.body.pass_old, result[0].password)) {
               let id_usuario = req.body.id_usuario;
               let new_password = req.body.new_password;
-      
+
               bcrypt.hash(new_password, 10, (err, encrypted) => {
                 if (err) {
                   console.log(err);
@@ -243,11 +285,13 @@ function changePassword(req, res) {
                   conexion.query(query, function (error, resultado) {
                     if (error) { return res.status(500).send({ message: "ERROR", error: error }); }
                     if (resultado) {
-                      return res.status(200).send({ message: "SUCCESS, passsword cambiada correctamente" });
+                      return res.status(200).send({ message: "passsword cambiada correctamente" });
                     }
                   })
                 }
               });
+            } else {
+              return res.status(400).send({ message: "ERROR, la contrasenna anterior no es correcta" });
             }
           }
         });
@@ -260,6 +304,7 @@ module.exports = {
   getUsuarios,
   getUsuario,
   updateUsuario,
+  updateUsuarioWithOutPass,
   deleteUsuario,
   adminResetPassword,
   changePassword,
