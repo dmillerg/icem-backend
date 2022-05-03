@@ -10,7 +10,7 @@ function getPedidos(req, res) {
         if (resul.length > 0) {
             let id_user = req.params.id_user;
 
-            let query = `SELECT * FROM pedidos WHERE user_id = ${id_user} ORDER BY fecha DESC`
+            let query = `SELECT * FROM pedidos WHERE user_id = ${id_user} ORDER BY fecha ASC`
             console.log(query);
             conexion.query(query, function (err, result) {
                 if (err) {
@@ -20,7 +20,7 @@ function getPedidos(req, res) {
                     return res.status(200).send(result)
                 }
             })
-        } else return req.status(401).send({ message: error });
+        } else return res.status(401).send({ message: error });
     })
 }
 

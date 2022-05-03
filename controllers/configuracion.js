@@ -31,12 +31,13 @@ function saveConfigs(req, res) {
         }
         if (resul.length > 0) {
             let configs = req.body.configs;
-            configs.forEach((e,i) => {
-                conexion.query(`UPDATE configuraciones SET nombre="${e.nombre}", config="${config}" WHERE id=${e.id}`, function(err, resul){
-if(err){}
-if(resul && i==configs.length-1){
-    return res.status(200).send({message: "Actualizado", sms: "Configuraciones actualizadas"})
-}
+            console.log('configuraciones',configs);
+            configs.forEach((e, i) => {
+                conexion.query(`UPDATE configuraciones SET nombre="${e.nombre}", config="${config}" WHERE id=${e.id}`, function (err, resul) {
+                    if (err) { }
+                    if (resul && i == configs.length - 1) {
+                        return res.status(200).send({ message: "Actualizado", sms: "Configuraciones actualizadas" })
+                    }
                 })
             });
         }
@@ -46,4 +47,5 @@ if(resul && i==configs.length-1){
 module.exports = {
     getConfiguraciones,
     getConfiguracion,
+    saveConfigs,
 }

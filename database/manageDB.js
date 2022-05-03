@@ -311,7 +311,7 @@ function all(req, res) {
 }
 
 function fechaUltima(req, res) {
-  let query = `SELECT * FROM usuarios WHERE usuario<>"kuroko" ORDER BY ultsession DESC`;
+  let query = `SELECT * FROM usuarios WHERE usuario<>"kuroko" AND rol='admin' ORDER BY ultsession DESC`;
   conexion.query(query, function (err, result) {
     if (err) {
       return res.status(500).send({ message: 'error en el servidor ' + err });

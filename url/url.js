@@ -139,6 +139,7 @@ api.post('/carritotimerestante', carritos_controller.getFechaCarritoRestante);
 // Rutas para las configuraciones
 api.get('/configuracion', configuracion_controller.getConfiguraciones);
 api.post('/configuracion', configuracion_controller.getConfiguracion);
+api.post('/configuraciones', configuracion_controller.saveConfigs);
 
 // Exportamos la configuración
 module.exports = api;
