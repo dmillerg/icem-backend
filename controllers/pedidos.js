@@ -10,13 +10,13 @@ function getPedidos(req, res) {
         if (resul.length > 0) {
             let id_user = req.params.id_user;
 
-            let query = `SELECT * FROM pedidos WHERE user_id = ${id_user} ORDER BY fecha ASC`
-            console.log(query);
+            let query = `SELECT pedidos.*, (SELECT TIMESTAMPDIFF(DAY,pedidos.fecha,NOW())) as tiempo, productos.titulo, productos.precio FROM pedidos INNER JOIN productos ON producto_id = productos.id WHERE user_id = ${id_user} ORDER BY pedidos.fecha DESC`
             conexion.query(query, function (err, result) {
                 if (err) {
                     return res.status(500).send({ message: err })
                 }
                 if (result) {
+                    console.log(result);
                     return res.status(200).send(result)
                 }
             })
@@ -35,9 +35,10 @@ function savePedido(req, res) {
             let cantidad = req.body.cantidad;
             let estado = req.body.estado;
             let id_carrito = req.body.id_carrito;
-            let fecha = new Date();
+            const isoDate = new Date();
+            const fecha = isoDate.toJSON().slice(0, 19).replace('T', ' ');
             let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${fecha}') `
-
+            console.log(query);
             conexion.query(query, function (err, result) {
                 if (err) {
                     return res.status(500).send({ message: err });
