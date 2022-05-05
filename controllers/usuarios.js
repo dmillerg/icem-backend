@@ -10,8 +10,12 @@ function saveUsuario(req, res) {
   var password = body.password;
   var nombre = body.nombre;
   var correo = body.correo;
+  var pais = body.pais;
+  var telefono = body.telefono;
+  var direccion = body.direccion;
   var rol = body.rol;
-  let date = new Date();
+  const isoDate = new Date();
+  const date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
   conexion.query(`SELECT * FROM usuarios WHERE usuario='${usuario}'`, function (errr, ress) {
     if (errr) {
       return res.status(500).send({ message: error });
@@ -24,7 +28,7 @@ function saveUsuario(req, res) {
           console.log(err);
         } else {
           conexion.query(
-            `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, rol) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${rol}")`,
+            `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}")`,
             function (error, results, fields) {
               if (error) return res.status(500).send({ message: error });
               if (results) {
@@ -102,6 +106,11 @@ function updateUsuario(req, res) {
         var pass_old = update.pass_old;
         var password = update.password;
         var nombre = update.nombre;
+        var correo = update.correo;
+        var pais = update.pais;
+        var direccion = update.direccion;
+        var telefono = update.telefono;
+        var rol = update.rol;
 
         // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
         conexion.query(
@@ -116,7 +125,7 @@ function updateUsuario(req, res) {
                   if (err) {
                   } else {
                     conexion.query(
-                      `UPDATE usuarios SET usuario="${usuario}",password="${encrypted}",nombre="${nombre}", correo="${correo}" WHERE id = ${id}`,
+                      `UPDATE usuarios SET usuario="${usuario}",password="${encrypted}",nombre="${nombre}", correo="${correo}", pais="${pais}", direccion="${direccion}", telefono="${telefono}", rol="${rol}" WHERE id = ${id}`,
                       function (error, results, fields) {
                         if (error)
                           return res
@@ -165,11 +174,15 @@ function updateUsuarioWithOutPass(req, res) {
         var usuario = update.usuario;
         var nombre = update.nombre;
         var correo = update.correo;
+        var pais = update.pais;
+        var direccion = update.direccion;
+        var telefono = update.telefono;
+        var rol = update.rol;
 
         // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
 
         conexion.query(
-          `UPDATE usuarios SET usuario="${usuario}",nombre="${nombre}", correo="${correo}" WHERE id = ${id}`,
+          `UPDATE usuarios SET usuario="${usuario}",nombre="${nombre}", correo="${correo}", pais="${pais}", direccion="${direccion}", telefono="${telefono}", rol="${rol}" WHERE id = ${id}`,
           function (error, results, fields) {
             if (error)
               return res
@@ -178,7 +191,7 @@ function updateUsuarioWithOutPass(req, res) {
             if (results) {
               return res
                 .status(201)
-                .send({ message: "agregado correctamente" });
+                .send({ message: "actualizado correctamente" });
             } else {
               return res.status(404).send({
                 message: "no existe ningun usuario con ese id",

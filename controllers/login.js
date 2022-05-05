@@ -7,7 +7,8 @@ function login(req, res) {
   var usuario = body.usuario;
   var password = body.password;
   let query = `SELECT * FROM usuarios WHERE usuario="${usuario}"`;
-  let date = new Date();
+  const isoDate = new Date();
+  const date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
   conexion.query(query, function (error, result, field) {
     if (error)
       return res
@@ -115,10 +116,10 @@ function sendEmail(req, res) {
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log('Error al enviar: ' + error);
-      return res.status(500).send({message: 'ERROR', error: error});
+      return res.status(500).send({ message: 'ERROR', error: error });
     } else {
       console.log('Mensaje enviado: ' + info.response);
-      return res.status(200).send({message: 'OK', result: 'Mensaje enviado satisfactoriamente'})
+      return res.status(200).send({ message: 'OK', result: 'Mensaje enviado satisfactoriamente' })
     }
   });
 }

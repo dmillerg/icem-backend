@@ -61,6 +61,7 @@ async function recogida() {
 }
 
 async function scrapeItAll(elemet) {
+    console.log(elemet);
     try {
         const scrapeResult = await scrapeIt(elemet.url, {
             presentations: {
@@ -121,6 +122,7 @@ function probarScrap(req, res) {
                 let id = req.params.id;
                 if (id == -1) {
                     scrapeItAll(req.body).then((e) => {
+                        console.log('scrap',e);
                         return res.status(200).send(e);
                     });
                 } else {
@@ -129,6 +131,7 @@ function probarScrap(req, res) {
                             return res.status(500).send({ message: error });
                         } else {
                             scrapeItAll(result[0]).then((e) => {
+                                console.log(e);
                                 return res.status(200).send(e);
                             });
                         }
