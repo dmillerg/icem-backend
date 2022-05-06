@@ -34,6 +34,7 @@ api.post('/usuario/:id', usuario_controller.updateUsuarioWithOutPass);
 api.post('/adminreset', usuario_controller.adminResetPassword);
 api.post('/changepass', usuario_controller.changePassword);
 api.delete('/deleteUsuario/:id', usuario_controller.deleteUsuario);
+api.get('/activarUsuario/:id', usuario_controller.activarUsuario);
 
 //Rutas para manejar base de datos
 api.get('/database', managedb_controller.createTables);

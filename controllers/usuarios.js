@@ -28,7 +28,7 @@ function saveUsuario(req, res) {
           console.log(err);
         } else {
           conexion.query(
-            `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}")`,
+            `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol, activo) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}", true)`,
             function (error, results, fields) {
               if (error) return res.status(500).send({ message: error });
               if (results) {
@@ -312,6 +312,19 @@ function changePassword(req, res) {
     });
 }
 
+function activarUsuario(req, res) {
+  let id = req.params.id;
+  let query = `UPDATE usuarios SET activo=true WHERE id=${id}`;
+  conexion.query(query, function (error, result) {
+    if (error) {
+      return res.status(500).send({ message: 'ERROR', error: error });
+    }
+    if (result) {
+      return res.status(200).send({ message: 'OK', success: 'usuario activado correctamente' });
+    }
+  });
+}
+
 module.exports = {
   saveUsuario,
   getUsuarios,
@@ -321,4 +334,5 @@ module.exports = {
   deleteUsuario,
   adminResetPassword,
   changePassword,
+  activarUsuario,
 };

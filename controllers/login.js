@@ -6,7 +6,7 @@ function login(req, res) {
   var body = req.body;
   var usuario = body.usuario;
   var password = body.password;
-  let query = `SELECT * FROM usuarios WHERE usuario="${usuario}"`;
+  let query = `SELECT * FROM usuarios WHERE usuario="${usuario}" AND activo=true`;
   const isoDate = new Date();
   const date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
   conexion.query(query, function (error, result, field) {
