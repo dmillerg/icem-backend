@@ -28,7 +28,7 @@ function saveUsuario(req, res) {
           console.log(err);
         } else {
           conexion.query(
-            `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol, activo) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}", true)`,
+            `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol, activo) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}", false)`,
             function (error, results, fields) {
               if (error) return res.status(500).send({ message: error });
               if (results) {
@@ -79,11 +79,11 @@ function getUsuario(req, res) {
     function (error, results, fields) {
       if (error) throw error;
       if (results.length > 0) {
-        return res.status(302).json(results);
+        return res.status(200).json(results[0]);
       } else {
         return res
-          .status(200)
-          .send({ canal: "no existe ningun usuario con ese id" });
+          .status(302)
+          .send({ message: "no existe ningun usuario con ese id" });
       }
     }
   );
@@ -320,7 +320,14 @@ function activarUsuario(req, res) {
       return res.status(500).send({ message: 'ERROR', error: error });
     }
     if (result) {
-      return res.status(200).send({ message: 'OK', success: 'usuario activado correctamente' });
+      conexion.query(`SELECT * FROM usuarios WHERE id=${id}`, function(err, resul){
+        if(err){
+          return res.status(500).send({ message: 'ERROR', error: error, sms: 'usuario activado pero no pudimos obtener sus datos' });
+        }
+        if(resul){
+          return res.status(200).send({ message: 'OK', success: 'usuario activado correctamente',usuario: resul[0]});
+        }
+      });
     }
   });
 }

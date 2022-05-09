@@ -93,24 +93,22 @@ function ultimaFechaActualizacion(req, res) {
 
 function sendEmail(req, res) {
   let correo = req.query.correo;
-  let topic = req.query.topic;
+  let asunto = req.query.asunto;
   let mensaje = req.query.mensaje;
   var nodemailer = require('nodemailer');
   var transporter = nodemailer.createTransport({
-    host: 'smtp.icem.cu',
-    port: 465,
-    secure: true,
+    service: 'gmail',
     auth: {
-      user: 'ebisset',
-      pass: 'Newpass*nfs001'
+      user: 'dmillergg@gmail.com',
+      pass: 'mqvwoenxlwhrvyge'
     }
   });
 
   var mailOptions = {
-    from: 'ebisset@icem.cu',
+    from: 'ICEM',
     to: correo,
-    subject: topic,
-    text: mensaje
+    subject: asunto,
+    text: mensaje,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
