@@ -34,7 +34,7 @@ function saveUsuario(req, res) {
               if (results) {
                 return res
                   .status(201)
-                  .send({ message: "agregado correctamente" });
+                  .send({ message: "agregado correctamente", result: results });
               } else {
                 return res
                   .status(400)
