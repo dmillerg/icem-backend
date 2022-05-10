@@ -89,6 +89,42 @@ function getUsuario(req, res) {
   );
 }
 
+function getUsuarioByUser(req, res) {
+  // Recogemos un parametro por la url
+  var usuario = req.params.usuario;
+  conexion.query(
+    `SELECT * FROM usuarios WHERE usuario LIKE "${usuario}"`,
+    function (error, results, fields) {
+      if (error) throw error;
+      if (results.length > 0) {
+        return res.status(200).json(results[0]);
+      } else {
+        return res
+          .status(302)
+          .send({ message: "no existe ningun usuario con ese usuario" });
+      }
+    }
+  );
+}
+
+function getUsuarioByEmail(req, res) {
+  // Recogemos un parametro por la url
+  var email = req.params.email;
+  conexion.query(
+    `SELECT * FROM usuarios WHERE correo LIKE "${email}"`,
+    function (error, results, fields) {
+      if (error) throw error;
+      if (results.length > 0) {
+        return res.status(200).json(results[0]);
+      } else {
+        return res
+          .status(302)
+          .send({ message: "no existe ningun usuario con ese email" });
+      }
+    }
+  );
+}
+
 function updateUsuario(req, res) {
   conexion.query(
     `SELECT * FROM tokens WHERE token='${req.body.token}'`,
@@ -320,12 +356,12 @@ function activarUsuario(req, res) {
       return res.status(500).send({ message: 'ERROR', error: error });
     }
     if (result) {
-      conexion.query(`SELECT * FROM usuarios WHERE id=${id}`, function(err, resul){
-        if(err){
+      conexion.query(`SELECT * FROM usuarios WHERE id=${id}`, function (err, resul) {
+        if (err) {
           return res.status(500).send({ message: 'ERROR', error: error, sms: 'usuario activado pero no pudimos obtener sus datos' });
         }
-        if(resul){
-          return res.status(200).send({ message: 'OK', success: 'usuario activado correctamente',usuario: resul[0]});
+        if (resul) {
+          return res.status(200).send({ message: 'OK', success: 'usuario activado correctamente', usuario: resul[0] });
         }
       });
     }
@@ -336,6 +372,8 @@ module.exports = {
   saveUsuario,
   getUsuarios,
   getUsuario,
+  getUsuarioByUser,
+  getUsuarioByEmail,
   updateUsuario,
   updateUsuarioWithOutPass,
   deleteUsuario,

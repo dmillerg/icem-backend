@@ -35,6 +35,7 @@ function saveCarrito(req, res) {
             let precio = req.body.precio;
             var cantidad = req.body.cantidad;
             var fecha = new Date();
+            console.log(fecha);
             let query_add = `INSERT INTO carrito(id, user_id, precio, cantidad, producto_id, fecha) VALUES (NULL, ${user_id}, ${precio}, ${cantidad}, ${producto_id}, "${fecha}") `
             let query_update = `UPDATE carrito SET cantidad`;
             let query_test = `SELECT * FROM carrito WHERE producto_id=${producto_id}`;

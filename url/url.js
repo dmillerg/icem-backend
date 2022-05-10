@@ -17,6 +17,7 @@ var respuesta_controller = require('../controllers/respuesta');
 var pedidos_controller = require('../controllers/pedidos');
 var carritos_controller = require('../controllers/carritos');
 var configuracion_controller = require('../controllers/configuracion');
+var link_controller = require('../controllers/links');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -29,6 +30,8 @@ var api = express.Router();
 api.post('/saveUsuario', usuario_controller.saveUsuario);
 api.get('/usuarios/:limit', usuario_controller.getUsuarios);
 api.get('/usuario/:id', usuario_controller.getUsuario);
+api.get('/usuariobyuser/:usuario', usuario_controller.getUsuarioByUser);
+api.get('/usuariobyemail/:email', usuario_controller.getUsuarioByEmail);
 api.post('/usuarios/:id', usuario_controller.updateUsuario);
 api.post('/usuario/:id', usuario_controller.updateUsuarioWithOutPass);
 api.post('/adminreset', usuario_controller.adminResetPassword);
@@ -141,6 +144,9 @@ api.post('/carritotimerestante', carritos_controller.getFechaCarritoRestante);
 api.get('/configuracion', configuracion_controller.getConfiguraciones);
 api.post('/configuracion', configuracion_controller.getConfiguracion);
 api.post('/configuraciones', configuracion_controller.saveConfigs);
+
+// Rutas para los links
+api.post('/links', link_controller.checkLink);
 
 // Exportamos la configuración
 module.exports = api;

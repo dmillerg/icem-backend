@@ -1,12 +1,18 @@
 const { query } = require("../database/database");
 const conexion = require("../database/database");
+const links = require("./links");
 const bcrypt = require("bcrypt");
 
 function login(req, res) {
   var body = req.body;
   var usuario = body.usuario;
   var password = body.password;
-  let query = `SELECT * FROM usuarios WHERE usuario="${usuario}" AND activo=true`;
+  let query = '';
+  if(usuario.match(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i) != null){
+    query = `SELECT * FROM usuarios WHERE correo="${usuario}" AND activo=true`
+  }else{
+    query = `SELECT * FROM usuarios WHERE usuario="${usuario}" AND activo=true`;
+  }
   const isoDate = new Date();
   const date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
   conexion.query(query, function (error, result, field) {
@@ -92,6 +98,7 @@ function ultimaFechaActualizacion(req, res) {
 }
 
 function sendEmail(req, res) {
+  console.log(req.query);
   let correo = req.query.correo;
   let asunto = req.query.asunto;
   let mensaje = req.query.mensaje;
@@ -116,6 +123,9 @@ function sendEmail(req, res) {
       console.log('Error al enviar: ' + error);
       return res.status(500).send({ message: 'ERROR', error: error });
     } else {
+      let tipo = mensaje[mensaje.indexOf('=')-1]=='t'?'reset':'link';
+      let link = mensaje.substring(mensaje.indexOf('=')+1, mensaje.length);
+      links.createLink({tipo: tipo, link: link})
       console.log('Mensaje enviado: ' + info.response);
       return res.status(200).send({ message: 'OK', result: 'Mensaje enviado satisfactoriamente' })
     }
