@@ -14,8 +14,8 @@ function saveUsuario(req, res) {
   var telefono = body.telefono;
   var direccion = body.direccion;
   var rol = body.rol;
-  const isoDate = new Date();
-  const date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
+  const MOMENT = require('moment');
+  let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
   conexion.query(`SELECT * FROM usuarios WHERE usuario='${usuario}'`, function (errr, ress) {
     if (errr) {
       return res.status(500).send({ message: error });

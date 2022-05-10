@@ -8,13 +8,13 @@ function login(req, res) {
   var usuario = body.usuario;
   var password = body.password;
   let query = '';
-  if(usuario.match(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i) != null){
+  if (usuario.match(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i) != null) {
     query = `SELECT * FROM usuarios WHERE correo="${usuario}" AND activo=true`
-  }else{
+  } else {
     query = `SELECT * FROM usuarios WHERE usuario="${usuario}" AND activo=true`;
   }
-  const isoDate = new Date();
-  const date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
+  const MOMENT = require('moment');
+  let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
   conexion.query(query, function (error, result, field) {
     if (error)
       return res
@@ -23,7 +23,6 @@ function login(req, res) {
     if (result.length > 0) {
       if (bcrypt.compareSync(password, result[0].password)) {
         let token = generarToken(usuario);
-        console.log(result)
         conexion.query(`UPDATE usuarios SET ultsession='${date}' WHERE id=${result[0].id}`)
         saveToken(token, result[0].id);
         return res.status(200).json({
@@ -98,7 +97,6 @@ function ultimaFechaActualizacion(req, res) {
 }
 
 function sendEmail(req, res) {
-  console.log(req.query);
   let correo = req.query.correo;
   let asunto = req.query.asunto;
   let mensaje = req.query.mensaje;
@@ -119,15 +117,15 @@ function sendEmail(req, res) {
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log('Error al enviar: ' + error);
-      return res.status(500).send({ message: 'ERROR', error: error });
-    } else {
-      let tipo = mensaje[mensaje.indexOf('=')-1]=='t'?'reset':'link';
-      let link = mensaje.substring(mensaje.indexOf('=')+1, mensaje.length);
-      links.createLink({tipo: tipo, link: link})
+    if (info) {
+      let tipo = mensaje[mensaje.indexOf('=') - 1] == 't' ? 'reset' : 'link';
+      let link = mensaje.substring(mensaje.indexOf('=') + 1, mensaje.length);
+      links.createLink({ tipo: tipo, link: link })
       console.log('Mensaje enviado: ' + info.response);
       return res.status(200).send({ message: 'OK', result: 'Mensaje enviado satisfactoriamente' })
+    } else {
+      console.log('Error al enviar: ' + error);
+      return res.status(500).send({ message: 'ERROR', error: error });
     }
   });
 }

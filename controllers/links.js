@@ -1,9 +1,9 @@
 const conexion = require("../database/database");
 
 function createLink(link) {
-    const isoDate = new Date();
-    console.log(isoDate);
-    const date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
+    const MOMENT = require('moment');
+    let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
+    console.log(link.link);
     let query = `INSERT INTO links(id, tipo, link, fecha) VALUES (NULL, '${link.tipo}', '${link.link}', '${date}')`;
     conexion.query(query, function (error, result) {
         if (error) {
@@ -16,8 +16,10 @@ function createLink(link) {
 }
 
 function checkLink(req, res) {
-    console.log(`DELETE FROM links WHERE SELECT TIMESTAMPDIFF(MIN,fecha,NOW()) < 5`);
-    conexion.query(`DELETE FROM links WHERE SELECT TIMESTAMPDIFF(MIN,fecha,NOW()) < 5`, function (er, re) {
+    const MOMENT = require('moment');
+    let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
+    console.log(`DELETE FROM links WHERE SELECT TIMESTAMPDIFF(MINUTE,fecha,"${date}") < 15`);
+    conexion.query(`DELETE FROM links WHERE (SELECT TIMESTAMPDIFF(MINUTE,fecha,"${date}")) < 5`, function (er, re) {
         if (er) {
             return res.status(500).send({ message: 'ERROR', error: er });
         }

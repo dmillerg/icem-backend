@@ -35,9 +35,9 @@ function savePedido(req, res) {
             let cantidad = req.body.cantidad;
             let estado = req.body.estado;
             let id_carrito = req.body.id_carrito;
-            const isoDate = new Date();
-            const fecha = isoDate.toJSON().slice(0, 19).replace('T', ' ');
-            let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${fecha}') `
+            const MOMENT = require('moment');
+            let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
+            let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${date}') `
             console.log(query);
             conexion.query(query, function (err, result) {
                 if (err) {

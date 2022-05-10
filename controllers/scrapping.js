@@ -44,16 +44,16 @@ async function recogida() {
                         });
                     });
                     scrape.forEach((e, index, array) => {
-                        console.log('fecha ',e.fecha);
+                        console.log('fecha ', e.fecha);
                         let date = '';
                         if (e.fecha) {
                             let isoDate = new Date(e.fecha);
-                           date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
-                        } else {
-                            let isoDate = new Date();
                             date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
+                        } else {
+                            const MOMENT = require('moment');
+                            date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
                         }
-                        
+
                         conexion.query(`INSERT INTO noticias(id, titulo, descripcion, fecha, imagen, enlace, fuente, logo) VALUES (NULL, '${e.titulo}', '${e.descripcion}', '${date}', '${e.imagen}', '${e.enlace}', '${e.fuente}', '${e.logo}')`, function (error, resultado, fieldss) {
                             if (index === array.length - 1) return;
                             if (resultado) {
