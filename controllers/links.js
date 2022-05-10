@@ -18,8 +18,8 @@ function createLink(link) {
 function checkLink(req, res) {
     const MOMENT = require('moment');
     let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
-    console.log(`DELETE FROM links WHERE SELECT TIMESTAMPDIFF(MINUTE,fecha,"${date}") < 15`);
-    conexion.query(`DELETE FROM links WHERE (SELECT TIMESTAMPDIFF(MINUTE,fecha,"${date}")) < 5`, function (er, re) {
+    console.log(`DELETE FROM links WHERE SELECT TIMESTAMPDIFF(MINUTE,fecha,"${date}") > 15`);
+    conexion.query(`DELETE FROM links WHERE (SELECT TIMESTAMPDIFF(MINUTE,fecha,"${date}")) > 15`, function (er, re) {
         if (er) {
             return res.status(500).send({ message: 'ERROR', error: er });
         }
