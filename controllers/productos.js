@@ -216,7 +216,7 @@ function getProductoById(req, res) {
 
 function searchProductos(req, res) {
     let titulo = req.params.titulo;
-    let query = `SELECT * FROM productos WHERE titulo like"%${titulo}%"`;
+    let query = `SELECT * FROM productos WHERE titulo like"%${titulo}%" OR descripcion LIKE "%${titulo}%" OR categoria LIKE "%${titulo}%" OR especificaciones LIKE "%${titulo}%" OR garantia LIKE "%${titulo}%" OR usos LIKE "%${titulo}%"`;
     console.log(query);
     conexion.query(query, function (err, result) {
         if (err) return res.status(500).send({ message: err });

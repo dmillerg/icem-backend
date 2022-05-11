@@ -97,6 +97,7 @@ function ultimaFechaActualizacion(req, res) {
 }
 
 function sendEmail(req, res) {
+  console.log(req.query);
   let correo = req.query.correo;
   let asunto = req.query.asunto;
   let mensaje = req.query.mensaje;
@@ -104,8 +105,8 @@ function sendEmail(req, res) {
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'dmillergg@gmail.com',
-      pass: 'mqvwoenxlwhrvyge'
+      user: 'empresaicem@gmail.com',
+      pass: 'vtxhpnacyllesobf'
     }
   });
 

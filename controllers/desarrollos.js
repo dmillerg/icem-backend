@@ -196,7 +196,7 @@ function updateDesarrollo(req, res) {
 
 function searchDesarrollos(req, res) {
     let titulo = req.params.titulo;
-    let query = `SELECT * FROM desarrollos WHERE titulo like"%${titulo}%"`;
+    let query = `SELECT * FROM desarrollos WHERE titulo like"%${titulo}%" OR descripcion LIKE "%${titulo}%"`;
     console.log(query);
     conexion.query(query, function(err, result) {
         if (err) return res.status(500).send({ message: err });
