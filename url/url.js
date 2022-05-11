@@ -18,6 +18,7 @@ var pedidos_controller = require('../controllers/pedidos');
 var carritos_controller = require('../controllers/carritos');
 var configuracion_controller = require('../controllers/configuracion');
 var link_controller = require('../controllers/links');
+var venta_controller = require('../controllers/ventas');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -131,6 +132,7 @@ api.get('/pedidos/:id_user', pedidos_controller.getPedidos);
 api.post('/pedidos', pedidos_controller.savePedido);
 api.delete('/pedidos/:id_pedido', pedidos_controller.deletePedido);
 api.put('/pedidos/:id_pedido', pedidos_controller.updatePedido);
+api.put('/cambiarestadopedidos/:id_pedido', pedidos_controller.cambiarEstado);
 
 //Rutas para los carritos
 api.get('/carrito/:id_user', carritos_controller.getCarritos);
@@ -147,6 +149,9 @@ api.post('/configuraciones', configuracion_controller.saveConfigs);
 
 // Rutas para los links
 api.post('/links', link_controller.checkLink);
+
+// Rutas para las ventas
+api.get('/ventas', venta_controller.getVentas);
 
 // Exportamos la configuración
 module.exports = api;

@@ -152,7 +152,38 @@ function disponibilidad(action, id_producto, cant_productos) {
 
             break;
     }
+}
 
+function cambiarEstado(req, res) {
+    console.log('asas');
+    conexion.query(`SELECT * FROM tokens WHERE token = "${req.body.token}"`, function (error, result) {
+        if (error) {
+            return res.status(500).send({ message: error });
+        }
+        if (result) {
+            conexion.query(`SELECT * FROM pedidos WHERE id = ${req.params.id_pedido}`, function (err, resul) {
+                if (err) {
+                    return res.status(500).send({ message: err })
+                }
+                if (resul) {
+                    conexion.query(`UPDATE pedidos SET estado = "${req.body.estado}" WHERE id = ${req.params.id_pedido}`,
+                        function (er, resultado) {
+                            if (er) {
+                                return res.status(500).send({ message: er })
+                            }
+                            if (resultado) {
+                                if (req.body.estado == 'finalizado') {
+                                    const MOMENT = require('moment');
+                                    let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
+                                    conexion.query(`INSERT INTO ventas (id, user_id, producto_id, cantidad, fecha) VALUES (NULL, ${resul[0].user_id}, ${resul[0].producto_id}, ${resul[0].cantidad}, "${date}")`)
+                                }
+                                return res.status(200).send(resultado);
+                            }
+                        })
+                }
+            })
+        }
+    })
 }
 
 module.exports = {
@@ -160,4 +191,5 @@ module.exports = {
     savePedido,
     deletePedido,
     updatePedido,
+    cambiarEstado,
 }
