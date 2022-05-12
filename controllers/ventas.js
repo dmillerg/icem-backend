@@ -1,4 +1,7 @@
 const conexion = require("../database/database");
+const excelJS = require("exceljs");
+const path = require("path");
+
 
 function getVentas(req, res) {
     conexion.query(`SELECT * FROM tokens WHERE token = "${req.query.token}"`, function (error, resul) {
@@ -36,32 +39,26 @@ function getVentas(req, res) {
     })
 }
 
- function createReporte(req, res){
-    var fs = require('fs');
+function createReporte(req, res) {
+    const ventas = req.body.ventas;
+    const workbook = new excelJS.Workbook();  // Create a new workbook 
+    const worksheet = workbook.addWorksheet("My Users"); // New Worksheet 
+    const paths = "./public";  // Path to download excel  // Column for data in excel. key must match data key
+    worksheet.columns = [{ header: "S no.", key: "s_no", width: 10 },
+    { header: "ID", key: "id", width: 10 },
+    { header: "ID USUARIO", key: "user_id", width: 10 },
+    { header: "PRODUCTO Id", key: "producto_id", width: 10 },
+    { header: "FECHA", key: "fecha", width: 10 },
+    { header: "CANTIDAD", key: "cantidad", width: 10 },];// Looping through User data
+    let counter = 1; ventas.forEach((venta) => {
+        venta.s_no = counter; worksheet.addRow(venta); // Add data in worksheet  counter++;});// Making first line in excel bold
+        worksheet.getRow(1).eachCell((cell) => { cell.font = { bold: true }; });
+        const data = workbook.xlsx.writeFile(`${paths}/ventas.xlsx`).then(() => {
+            return res.sendFile(path.resolve(`${paths}/ventas.xlsx`))
+        })
+    });
+    // res.send({ status: "success", message: "file successfully downloaded", path: `${path}/users.xlsx`, });
 
-    var jsn = [{
-        "name": "Nilesh",
-        "school": "RDTC",
-        "marks": "77"
-       },{
-        "name": "Sagar",
-        "school": "RC",
-        "marks": "99.99"
-       },{
-        "name": "Prashant",
-        "school": "Solapur",
-        "marks": "100"
-     }];
-    
-    var data='';
-    for (var i = 0; i < jsn.length; i++) {
-        data=data+jsn[i].name+'\t'+jsn[i].school+'\t'+jsn[i].marks+'\n';
-     }
-    fs.appendFile('Filename.xls', data, (err) => {
-        if (err) throw err;
-        console.log('File created');
-     });
-     return res.send(fs);
 }
 
 module.exports = {
