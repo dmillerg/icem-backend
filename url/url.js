@@ -53,6 +53,7 @@ api.post('/saveProducto', productos_controller.saveProducto);
 api.post('/productos/:id', productos_controller.updateProducto);
 api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
 api.get('/producto/:id', productos_controller.getProductoById);
+api.get('/activarproducto/:id', productos_controller.activarProducto);
 api.get('/searchProductos/:titulo', productos_controller.searchProductos);
 
 // Rutas para las Categorias
@@ -152,6 +153,7 @@ api.post('/links', link_controller.checkLink);
 
 // Rutas para las ventas
 api.get('/ventas', venta_controller.getVentas);
+api.get('/ventasa', venta_controller.createReporte);
 
 // Exportamos la configuración
 module.exports = api;

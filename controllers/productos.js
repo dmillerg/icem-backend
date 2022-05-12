@@ -25,7 +25,7 @@ function getProductos(req, res) {
         function (error, results, fields) {
             if (error) {
                 console.log(error);
-                return res.status(500).send({error: error});
+                return res.status(500).send({ error: error });
             }
             if (results.length > 0) {
                 return res.status(200).json(results);
@@ -141,6 +141,30 @@ function deleteProducto(req, res) {
     );
 }
 
+function activarProducto(req, res) {
+    conexion.query(
+        `SELECT * FROM tokens WHERE token='${req.query.token}'`,
+        function (err, result) {
+            if (err) {
+                return res.status(405).send({ message: "usuario no autenticado" });
+            }
+            if (result.length > 0) {
+                const id = req.params.id;
+                const activo = req.query.activo;
+
+                conexion.query(
+                    `UPDATE productos SET activo=${activo} WHERE id=${id}`,
+                    function (error, results, fields) {
+                        if (error) return error;
+                        if (results) {
+                            return res.status(200).send({ results });
+                        }
+                    });
+            }
+        }
+    );
+}
+
 function deleteFoto(imagen) {
     const pathViejo = `./public/productos/${imagen}`;
     // console.log(pathViejo);
@@ -233,5 +257,6 @@ module.exports = {
     deleteProducto,
     updateProducto,
     getProductoById,
-    searchProductos
+    searchProductos,
+    activarProducto,
 };

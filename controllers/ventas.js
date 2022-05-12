@@ -6,9 +6,10 @@ function getVentas(req, res) {
             return res.status(500).send({ message: error });
         }
         if (resul.length > 0) {
-            let id_user = req.params.id_user;
-            let fecha = req.params.fecha;
-            let producto_id = req.params.producto_id;
+            console.log(req.query);
+            let id_user = req.query.id_user;
+            let fecha = req.query.fecha;
+            let producto_id = req.query.producto_id;
 
             let query = `SELECT * FROM ventas WHERE 1`;
 
@@ -16,13 +17,13 @@ function getVentas(req, res) {
                 query += ` AND user_id=${id_user}`;
             }
             if (fecha) {
-                query += ` AND fecha="${fecha}"`;
+                query += ` AND fecha LIKE"%${fecha}%"`;
             }
-            if (producto_id>-1) {
+            if (producto_id > -1) {
                 query += ` AND producto_id=${producto_id}`;
             }
-            query+= ` ORDER BY fecha DESC`;
-
+            query += ` ORDER BY fecha DESC`;
+            console.log(query);
             conexion.query(query, function (err, result) {
                 if (err) {
                     return res.status(500).send({ message: err })
@@ -35,6 +36,35 @@ function getVentas(req, res) {
     })
 }
 
-module.exports={
+ function createReporte(req, res){
+    var fs = require('fs');
+
+    var jsn = [{
+        "name": "Nilesh",
+        "school": "RDTC",
+        "marks": "77"
+       },{
+        "name": "Sagar",
+        "school": "RC",
+        "marks": "99.99"
+       },{
+        "name": "Prashant",
+        "school": "Solapur",
+        "marks": "100"
+     }];
+    
+    var data='';
+    for (var i = 0; i < jsn.length; i++) {
+        data=data+jsn[i].name+'\t'+jsn[i].school+'\t'+jsn[i].marks+'\n';
+     }
+    fs.appendFile('Filename.xls', data, (err) => {
+        if (err) throw err;
+        console.log('File created');
+     });
+     return res.send(fs);
+}
+
+module.exports = {
     getVentas,
+    createReporte,
 }
