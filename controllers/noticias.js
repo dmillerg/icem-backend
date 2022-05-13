@@ -35,7 +35,7 @@ function getNoticiaFoto(req, res) {
                 if (error) throw error;
                 if (results.length > 0) {
                     var path = require("path");
-                    res.sendFile(path.resolve("public/noticias/" + results[0].imagen));
+                    return res.sendFile(path.resolve("public/noticias/" + results[0].imagen));
                 } else {
                     return res
                         .status(404)
