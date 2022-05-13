@@ -153,7 +153,8 @@ api.post('/links', link_controller.checkLink);
 
 // Rutas para las ventas
 api.get('/ventas', venta_controller.getVentas);
-api.post('/reportes', venta_controller.createReporte);
+api.get('/reportes', venta_controller.createReporte);
+api.delete('/reportes', venta_controller.deleteFILE);
 
 // Exportamos la configuración
 module.exports = api;

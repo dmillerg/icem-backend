@@ -161,7 +161,7 @@ function cambiarEstado(req, res) {
             return res.status(500).send({ message: error });
         }
         if (result) {
-            conexion.query(`SELECT * FROM pedidos WHERE id = ${req.params.id_pedido}`, function (err, resul) {
+            conexion.query(`SELECT pedidos.*, usuarios.usuario, usuarios.nombre, usuarios.correo, productos.titulo, productos.precio FROM pedidos INNER JOIN usuarios ON pedidos.user_id = usuarios.id INNER JOIN productos ON pedidos.producto_id=productos.id WHERE pedidos.id = ${req.params.id_pedido}`, function (err, resul) {
                 if (err) {
                     return res.status(500).send({ message: err })
                 }
@@ -175,7 +175,7 @@ function cambiarEstado(req, res) {
                                 if (req.body.estado == 'finalizado') {
                                     const MOMENT = require('moment');
                                     let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
-                                    conexion.query(`INSERT INTO ventas (id, user_id, producto_id, cantidad, fecha) VALUES (NULL, ${resul[0].user_id}, ${resul[0].producto_id}, ${resul[0].cantidad}, "${date}")`)
+                                    conexion.query(`INSERT INTO ventas (id, user_id, usuario, nombre, correo, producto_id, titulo, precio, cantidad, fecha) VALUES (NULL, ${resul[0].user_id}, "${resul[0].usuario}", "${resul[0].nombre}", "${resul[0].correo}", ${resul[0].producto_id}, "${resul[0].titulo}", "${resul[0].precio}", ${resul[0].cantidad}, "${date}")`)
                                 }
                                 return res.status(200).send(resultado);
                             }
