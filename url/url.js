@@ -89,7 +89,7 @@ api.post('/saveChat', mensaje_controller.saveMensaje);
 api.post('/chat/:id', mensaje_controller.updateMensaje);
 api.delete('/deleteChat/:id', mensaje_controller.deleteMensaje);
 api.get('/chats/:id', mensaje_controller.getMensajeById);
-api.get('/download/:nombre', mensaje_controller.downloadFile);
+api.get('/download', mensaje_controller.downloadFile);
 api.get('/chat', mensaje_controller.getChatbyID);
 
 // Rutas para login and logout

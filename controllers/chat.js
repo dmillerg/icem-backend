@@ -65,14 +65,17 @@ function saveMensaje(req, res) {
         var body = req.body;
         var nombre = body.nombre;
         var sms = body.sms;
-        var fecha = body.fecha;
         var respondido = body.respondido;
         var id_respondido = body.id_respondido;
         var foto_name = "";
         var foto = { name: null };
+        const MOMENT = require('moment');
+        let fecha = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
         if (req.files) {
           foto = req.files.foto;
-          foto_name = fecha.toString() + ".jpg";
+          let d = new Date();
+          let t = d.getFullYear()+d.getMonth()+d.getDate()+d.getHours()+d.getMinutes()+d.getSeconds();
+          foto_name = t.toString()+ '.' + req.body.extension;
           console.log(foto_name);
         }
 
@@ -215,10 +218,11 @@ function getMensajeById(req, res) {
 }
 
 function downloadFile(req, res) {
+  console.log('dasdsda', req.query);
   let nombre = req.query.nombre;
   var path = require("path");
   var file = path.resolve("public/chat/" + nombre);
-  res.status(200).download(file); // Set disposition and send it.
+  return res.download(file, nombre); // Set disposition and send it.
 };
 
 module.exports = {
