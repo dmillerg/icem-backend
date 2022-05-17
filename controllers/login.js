@@ -9,9 +9,9 @@ function login(req, res) {
   var password = body.password;
   let query = '';
   if (usuario.match(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i) != null) {
-    query = `SELECT * FROM usuarios WHERE correo="${usuario}" AND activo=true`
+    query = `SELECT * FROM usuarios WHERE correo="${usuario}"`
   } else {
-    query = `SELECT * FROM usuarios WHERE usuario="${usuario}" AND activo=true`;
+    query = `SELECT * FROM usuarios WHERE usuario="${usuario}"`;
   }
   const MOMENT = require('moment');
   let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
@@ -21,21 +21,25 @@ function login(req, res) {
         .status(500)
         .send({ message: "error en el servidor", status: 500, err: error });
     if (result.length > 0) {
-      if (bcrypt.compareSync(password, result[0].password)) {
-        let token = generarToken(usuario);
-        conexion.query(`UPDATE usuarios SET ultsession='${date}' WHERE id=${result[0].id}`)
-        saveToken(token, result[0].id);
-        return res.status(200).json({
-          message: "usuario autenticado correctamente",
-          status: 200,
-          usuario: result,
-          token: token,
-        });
+      if (!result[0].activo) {
+        return res.status(400).send({ message: 'Este usuario no esta activo', id: result[0].id, correo: result[0].correo });
       } else {
-        return res.status(404).send({
-          message: "no existe ningun usuario con ese user y pass",
-          status: 400,
-        });
+        if (bcrypt.compareSync(password, result[0].password)) {
+          let token = generarToken(usuario);
+          conexion.query(`UPDATE usuarios SET ultsession='${date}' WHERE id=${result[0].id}`)
+          saveToken(token, result[0].id);
+          return res.status(200).json({
+            message: "usuario autenticado correctamente",
+            status: 200,
+            usuario: result,
+            token: token,
+          });
+        } else {
+          return res.status(404).send({
+            message: "no existe ningun usuario con ese user y pass",
+            status: 400,
+          });
+        }
       }
     } else {
       return res.status(404).send({

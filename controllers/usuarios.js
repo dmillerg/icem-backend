@@ -18,36 +18,43 @@ function saveUsuario(req, res) {
   let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
   conexion.query(`SELECT * FROM usuarios WHERE usuario='${usuario}'`, function (errr, ress) {
     if (errr) {
-      return res.status(500).send({ message: error });
+      return res.status(500).send({ message: errr });
     }
     if (ress.length > 0) {
-      return res.status(405).send({ message: 'usuario ya existe' });
+      return res.status(405).send({ message: 'Este usuario ya esta siendo utilizado' });
     } else {
-      bcrypt.hash(password, 10, (err, encrypted) => {
-        if (err) {
-          console.log(err);
+      conexion.query(`SELECT * FROM usuarios WHERE correo='${correo}'`, function (errrt, resst) {
+        if (errrt) {
+          return res.status(500).send({ message: errrt });
+        }
+        if (resst.length > 0) {
+          return res.status(405).send({ message: 'Este correo ya esta siendo utlizado' });
         } else {
-          conexion.query(
-            `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol, activo) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}", false)`,
-            function (error, results, fields) {
-              if (error) return res.status(500).send({ message: error });
-              if (results) {
-                return res
-                  .status(201)
-                  .send({ message: "agregado correctamente", result: results });
-              } else {
-                return res
-                  .status(400)
-                  .send({ message: "Datos mal insertados" });
-              }
+          bcrypt.hash(password, 10, (err, encrypted) => {
+            if (err) {
+              console.log(err);
+            } else {
+              conexion.query(
+                `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol, activo) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}", false)`,
+                function (error, results, fields) {
+                  if (error) return res.status(500).send({ message: error });
+                  if (results) {
+                    return res
+                      .status(201)
+                      .send({ message: "agregado correctamente", result: results });
+                  } else {
+                    return res
+                      .status(400)
+                      .send({ message: "Datos mal insertados" });
+                  }
+                }
+              );
             }
-          );
+          });
         }
       });
     }
   })
-
-
 }
 
 function getUsuarios(req, res) {
