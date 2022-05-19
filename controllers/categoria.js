@@ -37,8 +37,9 @@ function saveCategoria(req, res) {
         var id = -1;
         console.log(req.body);
         var nombre = req.body.nombre;
+        var descripcion = req.body.documents;
         conexion.query(
-          `INSERT INTO categorias(id, nombre) VALUES (NULL,"${nombre}")`,
+          `INSERT INTO categorias(id, nombre, descripcion) VALUES (NULL,"${nombre}", "${descripcion}")`,
           function (error, results, fields) {
             if (error) return res.status(500).send({ message: error });
             if (results) {
@@ -98,9 +99,10 @@ function updateCategoria(req, res) {
         // Recogemos los datos que nos llegen en el body de la petición
         var update = req.body;
         var nombre = update.nombre;
+        var descripcion = update.descripcion;
 
         // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-        var query = `UPDATE categorias SET nombre="${nombre}"`;
+        var query = `UPDATE categorias SET nombre="${nombre}", descripcion="${descripcion}"`;
         query += `WHERE id = ${id}`;
 
         conexion.query(query, function (error, results, fields) {
