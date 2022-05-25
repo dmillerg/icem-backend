@@ -59,6 +59,13 @@ function getProductoFoto(req, res) {
     }
 }
 
+function getProductoFotoByName(req, res) {
+    var name = req.query.name;
+    console.log(name);
+    var path = require("path");
+    return res.sendFile(path.resolve("public/productos/" +name));
+}
+
 function saveProducto(req, res) {
     conexion.query(
         `SELECT * FROM tokens WHERE token='${req.body.token}'`,
@@ -79,19 +86,29 @@ function saveProducto(req, res) {
                 var precio = body.precio;
                 var disponibilidad = body.disponibilidad;
                 var foto = { name: null };
+                var imagenes = [];
                 if (req.files) {
-                    foto = req.files.foto;
-                    foto_name = titulo.replace(/ /g, "-") + ".jpg";
-                    console.log(foto_name);
+                    // console.log(req.files);
+                    foto_name = titulo.replace(/ /g, "-");
+                    req.files.foto.forEach((e, i) => {
+                        console.log(e);
+                        imagenes.push(foto_name + i + ".jpg");
+                    });
+                    console.log(imagenes);
                 }
                 let fecha = new Date();
 
                 conexion.query(
-                    `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${foto_name}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
+                    `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
                     function (error, results, fields) {
                         if (error) return res.status(500).send({ message: error });
                         if (results) {
-                            if (req.files) saveFoto(foto, foto_name);
+                            if (req.files) {
+                                req.files.foto.forEach((e, i) => {
+                                    foto = e;
+                                    saveFoto(foto, foto_name + i + ".jpg");
+                                });
+                            }
                             return res
                                 .status(201)
                                 .send({ message: "producto guardado correctamente" });
@@ -166,13 +183,15 @@ function activarProducto(req, res) {
 }
 
 function deleteFoto(imagen) {
-    const pathViejo = `./public/productos/${imagen}`;
-    // console.log(pathViejo);
-    const fs = require("fs");
-    if (fs.existsSync(pathViejo)) {
-        console.log("borrado");
-        fs.unlinkSync(pathViejo);
-    }
+    let arr = imagen.split(',');
+    const pathViejo = `./public/productos/`;
+    arr.forEach((e, i) => {
+        const fs = require("fs");
+        if (fs.existsSync(pathViejo + e)) {
+            console.log("borrado");
+            fs.unlinkSync(pathViejo + e);
+        }
+    });
     return "borrardo correctamente";
 }
 
@@ -253,6 +272,7 @@ function searchProductos(req, res) {
 module.exports = {
     getProductos,
     getProductoFoto,
+    getProductoFotoByName,
     saveProducto,
     deleteProducto,
     updateProducto,

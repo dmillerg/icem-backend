@@ -49,6 +49,7 @@ api.get('/loadSQL', managedb_controller.loadSQL);
 // Rutas para los productos
 api.get('/productos/:limit', productos_controller.getProductos);
 api.get('/productoFoto/:id', productos_controller.getProductoFoto);
+api.get('/productoFoto/', productos_controller.getProductoFotoByName);
 api.post('/saveProducto', productos_controller.saveProducto);
 api.post('/productos/:id', productos_controller.updateProducto);
 api.delete('/deleteProducto/:id', productos_controller.deleteProducto);
