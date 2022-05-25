@@ -63,7 +63,7 @@ function getProductoFotoByName(req, res) {
     var name = req.query.name;
     console.log(name);
     var path = require("path");
-    return res.sendFile(path.resolve("public/productos/" +name));
+    return res.sendFile(path.resolve("public/productos/" + name));
 }
 
 function saveProducto(req, res) {
@@ -101,7 +101,9 @@ function saveProducto(req, res) {
                 conexion.query(
                     `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
                     function (error, results, fields) {
-                        if (error) return res.status(500).send({ message: error });
+                        if (error) { 
+                            console.log(error);
+                            return res.status(500).send({ message: error }); }
                         if (results) {
                             if (req.files) {
                                 req.files.foto.forEach((e, i) => {
