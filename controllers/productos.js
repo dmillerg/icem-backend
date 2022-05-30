@@ -101,9 +101,10 @@ function saveProducto(req, res) {
                 conexion.query(
                     `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
                     function (error, results, fields) {
-                        if (error) { 
+                        if (error) {
                             console.log(error);
-                            return res.status(500).send({ message: error }); }
+                            return res.status(500).send({ message: error });
+                        }
                         if (results) {
                             if (req.files) {
                                 req.files.foto.forEach((e, i) => {
@@ -216,23 +217,34 @@ function updateProducto(req, res) {
                 var especificaciones = update.especificaciones;
                 var garantia = update.garantia;
                 var precio = update.precio;
+                var eliminadas = update.eliminadas;
+                var imagen = update.imagen;
+                var position = update.position;
                 var foto = { name: null };
+                let imagenes = imagen.length>0?imagen.split(','):[];
                 if (req.files) {
-                    foto = req.files.foto;
-                    foto_name = titulo.replace(/ /g, "-") + ".jpg";
-                    console.log(foto_name);
+                    req.files.foto.forEach((rr, ind) => {
+                        imagenes.push(titulo.replace(/ /g, "-") + (ind + position) + ".jpg");
+                    });
+                    // foto_name = titulo.replace(/ /g, "-") + ".jpg";
+                    // console.log(foto_name);
                 }
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${foto_name}' `;
+                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${imagenes}' `;
                 query += `WHERE id = ${id}`;
                 console.log(query)
                 conexion.query(query, function (error, results, fields) {
                     if (error)
                         return res.status(500).send({ message: "error en el servidor" + error });
                     if (results) {
-                        if (foto.name != null) {
-                            deleteFoto(titulo.replace(/ /g, "-") + ".jpg");
-                            saveFoto(foto, titulo.replace(/ /g, "-") + ".jpg");
+                        if(eliminadas.length>0){
+                            deleteFoto(eliminadas);
+                        }
+                        if (req.files) {
+                            req.files.foto.forEach((e, i) => {
+                                foto = e;
+                                saveFoto(foto, titulo.replace(/ /g, "-") + (i + position) + ".jpg");
+                            });
                         }
                         return res
                             .status(201)
