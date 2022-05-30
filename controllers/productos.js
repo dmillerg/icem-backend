@@ -224,11 +224,12 @@ function updateProducto(req, res) {
                 let imagenes = imagen.length>0?imagen.split(','):[];
                 if (req.files) {
                     req.files.foto.forEach((rr, ind) => {
-                        imagenes.push(titulo.replace(/ /g, "-") + (ind + position) + ".jpg");
+                        imagenes.push(titulo.replace(/ /g, "-") + (Number(ind) + Number(position)) + ".jpg");
                     });
                     // foto_name = titulo.replace(/ /g, "-") + ".jpg";
                     // console.log(foto_name);
                 }
+                console.log(imagenes, imagen);
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
                 var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${imagenes}' `;
                 query += `WHERE id = ${id}`;
@@ -243,7 +244,7 @@ function updateProducto(req, res) {
                         if (req.files) {
                             req.files.foto.forEach((e, i) => {
                                 foto = e;
-                                saveFoto(foto, titulo.replace(/ /g, "-") + (i + position) + ".jpg");
+                                saveFoto(foto, titulo.replace(/ /g, "-") + (i +  Number(position)) + ".jpg");
                             });
                         }
                         return res
