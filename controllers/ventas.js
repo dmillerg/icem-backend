@@ -64,7 +64,7 @@ function createReporte(req, res) {
         }
         if (ventas) {
             const workbook = new excelJS.Workbook();  // Create a new workbook 
-            const worksheet = workbook.addWorksheet("My Users"); // New Worksheet 
+            const worksheet = workbook.addWorksheet("Ventas ICEM"); // New Worksheet 
             const paths = "./public";  // Path to download excel  // Column for data in excel. key must match data key
             worksheet.columns = [
                 { header: "ID", key: "id", width: 10 },

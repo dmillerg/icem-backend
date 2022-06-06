@@ -4,15 +4,19 @@ const { json } = require("body-parser");
 
 function getNoticias(req, res) {
     var limit = req.params.limit;
+    var search = req.query.search;
     var query = ``;
+    if (search.length > 0) {
+        query += ` WHERE titulo LIKE "%${search}%" OR descripcion LIKE "%${search}%" OR fuente LIKE "%${search}%" `
+    }
     query += ` ORDER BY id DESC`;
     if (limit > 0) {
         query += ` LIMIT ${limit}`;
     }
-
+    console.log(`SELECT * FROM noticias ` + query);
     conexion.query(
         `SELECT * FROM noticias ` + query,
-        function(error, results, fields) {
+        function (error, results, fields) {
             if (error) {
                 console.log(error);
                 return res.status(500).send(error);
@@ -31,7 +35,7 @@ function getNoticiaFoto(req, res) {
         var id = req.params.id;
         conexion.query(
             `SELECT * FROM noticias WHERE id = ${id}`,
-            function(error, results, fields) {
+            function (error, results, fields) {
                 if (error) throw error;
                 if (results.length > 0) {
                     var path = require("path");
@@ -51,7 +55,7 @@ function getNoticiaFoto(req, res) {
 function saveNoticia(req, res) {
     conexion.query(
         `SELECT * FROM tokens WHERE token='${req.body.token}'`,
-        function(err, result) {
+        function (err, result) {
             if (err) {
                 return res.status(405).send({ message: "usuario no autenticado" });
             }
@@ -83,7 +87,7 @@ function saveNoticia(req, res) {
 
                 conexion.query(
                     `INSERT INTO noticias(id, titulo, descripcion, fecha, imagen) VALUES (NULL,"${titulo}","${descripcion}","${fecha}", "${foto_name}")`,
-                    function(error, results, fields) {
+                    function (error, results, fields) {
                         if (error) return res.status(500).send({ message: error });
                         if (results) {
                             if (req.files) saveFoto(foto, foto_name);
@@ -100,14 +104,14 @@ function saveNoticia(req, res) {
 
 function saveFoto(foto, titulo) {
     if (foto.name != null) {
-        foto.mv(`./public/noticias/${titulo}`, function(err) {});
+        foto.mv(`./public/noticias/${titulo}`, function (err) { });
     }
 }
 
 function deleteNoticia(req, res) {
     conexion.query(
         `SELECT * FROM tokens WHERE token='${req.query.token}'`,
-        function(err, result) {
+        function (err, result) {
             if (err) {
                 return res.status(405).send({ message: "usuario no autenticado" });
             }
@@ -115,13 +119,13 @@ function deleteNoticia(req, res) {
                 const id = req.params.id;
                 conexion.query(
                     `SELECT * FROM noticias WHERE id=${id}`,
-                    function(err, result) {
+                    function (err, result) {
                         if (err) return res.status(500).send({ message: err });
                         if (result) {
                             deleteFoto(result[0].imagen);
                             conexion.query(
                                 `DELETE FROM noticias WHERE id = ${id}`,
-                                function(error, results, fields) {
+                                function (error, results, fields) {
                                     if (error) return error;
                                     if (results) {
                                         return res.status(200).send({ results });
@@ -150,7 +154,7 @@ function deleteFoto(imagen) {
 function updateNoticia(req, res) {
     conexion.query(
         `SELECT * FROM tokens WHERE token='${req.body.token}'`,
-        function(err, result) {
+        function (err, result) {
             if (err) {
                 return res.status(405).send({ message: "usuario no autenticado" });
             }
@@ -174,7 +178,7 @@ function updateNoticia(req, res) {
                 if (foto.name != null) query += `,imagen="${foto_name}"`;
                 query += `WHERE id = ${id}`;
 
-                conexion.query(query, function(error, results, fields) {
+                conexion.query(query, function (error, results, fields) {
                     if (error)
                         return res.status(500).send({ message: "error en el servidor" });
                     if (results) {
@@ -199,7 +203,7 @@ function updateNoticia(req, res) {
 function getNoticiaById(req, res) {
     let id = req.params.id;
     let query = `SELECT * FROM noticias WHERE id=${id}`;
-    conexion.query(query, function(err, result) {
+    conexion.query(query, function (err, result) {
         if (err) return res.status(500).send({ message: err });
         if (result) {
             return res.status(200).send({ result });
@@ -211,7 +215,7 @@ function searchNoticias(req, res) {
     let titulo = req.params.titulo;
     let query = `SELECT * FROM noticias WHERE titulo like"%${titulo}%" OR descripcion LIKE "%${titulo}%"`;
     console.log(query);
-    conexion.query(query, function(err, result) {
+    conexion.query(query, function (err, result) {
         if (err) return res.status(500).send({ message: err });
         if (result) {
             return res.status(200).send({ result });
