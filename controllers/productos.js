@@ -8,10 +8,13 @@ function getProductos(req, res) {
     var limit = req.params.limit;
     var categoria = req.query.categoria;
     var excluir = req.query.excluir;
+    var activo = req.query.activo;
     var query = ``;
     // if (query > -1) {
     //     query += ` AND id <> ${excluir}`;
     // }
+    console.log(activo);
+    if (activo=='true') query += ` AND activo=${activo}`;
     if (categoria > -1) {
         query += ` AND categoria=${categoria}`;
     }
@@ -19,6 +22,8 @@ function getProductos(req, res) {
     if (limit > 0) {
         query += ` LIMIT ${limit}`;
     }
+    console.log(`SELECT * FROM productos WHERE 1` + query);
+
 
     conexion.query(
         `SELECT * FROM productos WHERE 1` + query,
@@ -86,18 +91,23 @@ function saveProducto(req, res) {
                 var precio = body.precio;
                 var disponibilidad = body.disponibilidad;
                 var foto = { name: null };
+                titulo = titulo.replace(/"/g,"'")
+                descripcion = descripcion.replace(/"/g,"'")
+                especificaciones = especificaciones.replace(/"/g,"'")
+                garantia = garantia.replace(/"/g,"'")
                 var imagenes = [];
                 if (req.files) {
                     // console.log(req.files);
                     foto_name = titulo.replace(/ /g, "-");
                     req.files.foto.forEach((e, i) => {
-                        console.log(e);
+                        // console.log(e);
                         imagenes.push(foto_name + i + ".jpg");
                     });
-                    console.log(imagenes);
+                    // console.log(imagenes);
                 }
-                let fecha = new Date();
-
+                const MOMENT = require('moment');
+                let fecha = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
+                console.log(`INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`);
                 conexion.query(
                     `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
                     function (error, results, fields) {
@@ -221,7 +231,7 @@ function updateProducto(req, res) {
                 var imagen = update.imagen;
                 var position = update.position;
                 var foto = { name: null };
-                let imagenes = imagen.length>0?imagen.split(','):[];
+                let imagenes = imagen.length > 0 ? imagen.split(',') : [];
                 if (req.files) {
                     req.files.foto.forEach((rr, ind) => {
                         imagenes.push(titulo.replace(/ /g, "-") + (Number(ind) + Number(position)) + ".jpg");
@@ -238,13 +248,13 @@ function updateProducto(req, res) {
                     if (error)
                         return res.status(500).send({ message: "error en el servidor" + error });
                     if (results) {
-                        if(eliminadas.length>0){
+                        if (eliminadas.length > 0) {
                             deleteFoto(eliminadas);
                         }
                         if (req.files) {
                             req.files.foto.forEach((e, i) => {
                                 foto = e;
-                                saveFoto(foto, titulo.replace(/ /g, "-") + (i +  Number(position)) + ".jpg");
+                                saveFoto(foto, titulo.replace(/ /g, "-") + (i + Number(position)) + ".jpg");
                             });
                         }
                         return res
