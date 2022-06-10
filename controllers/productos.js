@@ -80,6 +80,7 @@ function saveProducto(req, res) {
             }
             if (result.length > 0) {
                 var id = -1;
+                const MOMENT = require('moment');
                 console.log(req.body);
                 var body = req.body;
                 var titulo = body.titulo;
@@ -92,20 +93,21 @@ function saveProducto(req, res) {
                 var disponibilidad = body.disponibilidad;
                 var foto = { name: null };
                 titulo = titulo.replace(/"/g,"'")
+                usos = usos.replace(/"/g,"'")
                 descripcion = descripcion.replace(/"/g,"'")
                 especificaciones = especificaciones.replace(/"/g,"'")
                 garantia = garantia.replace(/"/g,"'")
                 var imagenes = [];
                 if (req.files) {
                     // console.log(req.files);
-                    foto_name = titulo.replace(/ /g, "-");
+                    foto_name = MOMENT().format('YYYYMMDDHHmmss')+'';
                     req.files.foto.forEach((e, i) => {
                         // console.log(e);
                         imagenes.push(foto_name + i + ".jpg");
                     });
                     // console.log(imagenes);
                 }
-                const MOMENT = require('moment');
+                
                 let fecha = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
                 console.log(`INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`);
                 conexion.query(
