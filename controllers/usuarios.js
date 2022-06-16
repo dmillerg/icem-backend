@@ -35,7 +35,7 @@ function saveUsuario(req, res) {
               console.log(err);
             } else {
               conexion.query(
-                `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol, activo) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}", false)`,
+                `INSERT INTO usuarios(id, usuario, password, nombre, fecha, correo, pais, direccion, telefono, rol, activo, cant_visitas) VALUES (NULL,"${usuario}","${encrypted}","${nombre}","${date}", "${correo}", "${pais}", "${direccion}", "${telefono}", "${rol}", false, 0)`,
                 function (error, results, fields) {
                   if (error) return res.status(500).send({ message: error });
                   if (results) {

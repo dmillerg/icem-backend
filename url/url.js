@@ -98,6 +98,7 @@ api.post('/login', login_controller.login);
 api.post('/logout/:id', login_controller.logout);
 api.get('/ultimaAct', login_controller.ultimaFechaActualizacion);
 api.get('/send', login_controller.sendEmail);
+api.get('/useronline/:id', login_controller.getUserOnlineByID);
 
 // Rutas para buscar noticias(scrap)
 api.get('/scrapping', scrape_controller.recogidaNoticia);

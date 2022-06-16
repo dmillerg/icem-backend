@@ -26,7 +26,8 @@ function login(req, res) {
       } else {
         if (bcrypt.compareSync(password, result[0].password)) {
           let token = generarToken(usuario);
-          conexion.query(`UPDATE usuarios SET ultsession='${date}' WHERE id=${result[0].id}`)
+          conexion.query(`UPDATE usuarios SET ultsession='${date}', cant_visitas=(cant_visitas + 1) WHERE id=${result[0].id}`)
+          conexion.query(`INSERT INTO usuarios_online (id, user_id, fecha) VALUES (NULL, ${result[0].id}, '${date}') `);
           saveToken(token, result[0].id);
           return res.status(200).json({
             message: "usuario autenticado correctamente",
@@ -135,9 +136,22 @@ function sendEmail(req, res) {
   });
 }
 
+function getUserOnlineByID(req, res) {
+  let id = req.params.id;
+  conexion.query(`SELECT * FROM usuarios_online WHERE id=${id}`, function (error, result) {
+    if (error) {
+      return res.status(500).send({ message: 'error', error: error });
+    }
+    if (result) {
+      return res.status(200).send(result);
+    }
+  });
+}
+
 module.exports = {
   login,
   logout,
   ultimaFechaActualizacion,
   sendEmail,
+  getUserOnlineByID,
 };
