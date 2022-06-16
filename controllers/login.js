@@ -83,7 +83,7 @@ function logout(req, res) {
       });
     }
     if (result) {
-      // console.log(result);
+      conexion.query(`DELETE FROM usuarios_online WHERE user_id=${id}`);
       return res.status(200).send(result);
     }
   });
