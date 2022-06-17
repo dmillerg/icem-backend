@@ -37,8 +37,13 @@ function savePedido(req, res) {
             let id_carrito = req.body.id_carrito;
             const MOMENT = require('moment');
             let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
-            let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${date}') `
-            console.log(query);
+            let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${date}') `;
+            conexion.query(`SELECT * FROM productos WHERE id=${producto_id}`, function(err, rest){
+                if(rest){
+                    conexion.query(`UPDATE usuarios SET ultima_compra_id=${rest[0].categoria} WHERE id=${user_id}`);
+                }
+            })
+           
             conexion.query(query, function (err, result) {
                 if (err) {
                     return res.status(500).send({ message: err });

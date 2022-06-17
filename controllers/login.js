@@ -106,6 +106,7 @@ function sendEmail(req, res) {
   let correo = req.query.correo;
   let asunto = req.query.asunto;
   let mensaje = req.query.mensaje;
+  let infoadd = req.query.infoadd;
   var nodemailer = require('nodemailer');
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -116,7 +117,7 @@ function sendEmail(req, res) {
   });
 
   var mailOptions = {
-    from: 'ICEM',
+    from: 'Empresa Cubana de Equipos Médicos(ICEM)',
     to: correo,
     subject: asunto,
     text: mensaje,
@@ -124,9 +125,11 @@ function sendEmail(req, res) {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (info) {
-      let tipo = mensaje[mensaje.indexOf('=') - 1] == 't' ? 'reset' : 'link';
-      let link = mensaje.substring(mensaje.indexOf('=') + 1, mensaje.length);
-      links.createLink({ tipo: tipo, link: link })
+      if (infoadd == '') {
+        let tipo = mensaje[mensaje.indexOf('=') - 1] == 't' ? 'reset' : 'link';
+        let link = mensaje.substring(mensaje.indexOf('=') + 1, mensaje.length);
+        links.createLink({ tipo: tipo, link: link })
+      }
       console.log('Mensaje enviado: ' + info.response);
       return res.status(200).send({ message: 'OK', result: 'Mensaje enviado satisfactoriamente' })
     } else {

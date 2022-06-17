@@ -13,7 +13,7 @@ function getProductos(req, res) {
     // if (query > -1) {
     //     query += ` AND id <> ${excluir}`;
     // }
-    console.log(activo);
+    // console.log(activo);
     if (activo=='true') query += ` AND activo=${activo}`;
     if (categoria > -1) {
         query += ` AND categoria=${categoria}`;
@@ -22,7 +22,7 @@ function getProductos(req, res) {
     if (limit > 0) {
         query += ` LIMIT ${limit}`;
     }
-    console.log(`SELECT * FROM productos WHERE 1` + query);
+    // console.log(`SELECT * FROM productos WHERE 1` + query);
 
 
     conexion.query(
@@ -66,7 +66,7 @@ function getProductoFoto(req, res) {
 
 function getProductoFotoByName(req, res) {
     var name = req.query.name;
-    console.log(name);
+    // console.log(name);
     var path = require("path");
     return res.sendFile(path.resolve("public/productos/" + name));
 }
@@ -81,7 +81,7 @@ function saveProducto(req, res) {
             if (result.length > 0) {
                 var id = -1;
                 const MOMENT = require('moment');
-                console.log(req.body);
+                // console.log(req.body);
                 var body = req.body;
                 var titulo = body.titulo;
                 var descripcion = body.descripcion;
@@ -109,7 +109,7 @@ function saveProducto(req, res) {
                 }
                 
                 let fecha = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
-                console.log(`INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`);
+                // console.log(`INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`);
                 conexion.query(
                     `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
                     function (error, results, fields) {
@@ -241,11 +241,9 @@ function updateProducto(req, res) {
                     // foto_name = titulo.replace(/ /g, "-") + ".jpg";
                     // console.log(foto_name);
                 }
-                console.log(imagenes, imagen);
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
                 var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${imagenes}' `;
                 query += `WHERE id = ${id}`;
-                console.log(query)
                 conexion.query(query, function (error, results, fields) {
                     if (error)
                         return res.status(500).send({ message: "error en el servidor" + error });
@@ -287,7 +285,7 @@ function getProductoById(req, res) {
 function searchProductos(req, res) {
     let titulo = req.params.titulo;
     let query = `SELECT * FROM productos WHERE titulo like"%${titulo}%" OR descripcion LIKE "%${titulo}%" OR categoria LIKE "%${titulo}%" OR especificaciones LIKE "%${titulo}%" OR garantia LIKE "%${titulo}%" OR usos LIKE "%${titulo}%"`;
-    console.log(query);
+    // console.log(query);
     conexion.query(query, function (err, result) {
         if (err) return res.status(500).send({ message: err });
         if (result) {
