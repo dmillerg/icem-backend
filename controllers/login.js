@@ -138,7 +138,7 @@ function sendEmail(req, res) {
 
 function getUserOnlineByID(req, res) {
   let id = req.params.id;
-  conexion.query(`SELECT * FROM usuarios_online WHERE id=${id}`, function (error, result) {
+  conexion.query(`SELECT * FROM usuarios_online WHERE user_id=${id}`, function (error, result) {
     if (error) {
       return res.status(500).send({ message: 'error', error: error });
     }
