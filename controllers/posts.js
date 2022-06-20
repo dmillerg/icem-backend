@@ -30,11 +30,13 @@ function savePosts(req, res) {
   var id = -1;
   var alias = req.body.alias;
   var correo = req.body.correo;
+  var calificacion = req.body.calificacion;
   var comentario = req.body.comentario;
-  var fecha = new Date();
+  const MOMENT = require('moment');
+  let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
   var id_producto = req.body.id_producto;
   conexion.query(
-    `INSERT INTO posts(id, alias, correo, comentario, fecha, id_producto, cant_resp) VALUES (NULL,"${alias}", "${correo}", "${comentario}", "${fecha}", "${id_producto}", 0)`,
+    `INSERT INTO posts(id, alias, correo, comentario, fecha, id_producto, cant_resp, calificacion) VALUES (NULL,"${alias}", "${correo}", "${comentario}", "${date}", "${id_producto}", 0, ${calificacion})`,
     function (error, results, fields) {
       if (error) return res.status(500).send({ message: error });
       if (results) {
