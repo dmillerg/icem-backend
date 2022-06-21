@@ -37,7 +37,7 @@ function saveCategoria(req, res) {
         var id = -1;
         console.log(req.body);
         var nombre = req.body.nombre;
-        var descripcion = req.body.documents;
+        var descripcion = req.body.descripcion;
         conexion.query(
           `INSERT INTO categorias(id, nombre, descripcion) VALUES (NULL,"${nombre}", "${descripcion}")`,
           function (error, results, fields) {
