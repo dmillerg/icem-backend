@@ -9,7 +9,7 @@ var productos_controller = require('../controllers/productos');
 var categorias_controller = require('../controllers/categoria');
 var noticias_controller = require('../controllers/noticias');
 var desarrollos_controller = require('../controllers/desarrollos');
-var mensaje_controller = require('../controllers/chat');
+var chat_controller = require('../controllers/chat');
 var scrape_controller = require('../controllers/scrapping');
 var quienes_controller = require('../controllers/quienes');
 var posts_controller = require('../controllers/posts');
@@ -19,6 +19,7 @@ var carritos_controller = require('../controllers/carritos');
 var configuracion_controller = require('../controllers/configuracion');
 var link_controller = require('../controllers/links');
 var venta_controller = require('../controllers/ventas');
+var mensajes_controller = require('../controllers/mensaje');
 
 var managedb_controller = require('../database/manageDB');
 var login_controller = require('../controllers/login');
@@ -84,14 +85,14 @@ api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
 api.get('/searchDesarrollos/:titulo', desarrollos_controller.searchDesarrollos);
 
 // Rutas para los Mensajes
-api.get('/chats', mensaje_controller.getMensajes);
-api.get('/chatFoto/:id', mensaje_controller.getMensajeFoto);
-api.post('/saveChat', mensaje_controller.saveMensaje);
-api.post('/chat/:id', mensaje_controller.updateMensaje);
-api.delete('/deleteChat/:id', mensaje_controller.deleteMensaje);
-api.get('/chats/:id', mensaje_controller.getMensajeById);
-api.get('/download', mensaje_controller.downloadFile);
-api.get('/chat', mensaje_controller.getChatbyID);
+api.get('/chats', chat_controller.getMensajes);
+api.get('/chatFoto/:id', chat_controller.getMensajeFoto);
+api.post('/saveChat', chat_controller.saveMensaje);
+api.post('/chat/:id', chat_controller.updateMensaje);
+api.delete('/deleteChat/:id', chat_controller.deleteMensaje);
+api.get('/chats/:id', chat_controller.getMensajeById);
+api.get('/download', chat_controller.downloadFile);
+api.get('/chat', chat_controller.getChatbyID);
 
 // Rutas para login and logout
 api.post('/login', login_controller.login);
@@ -157,6 +158,11 @@ api.post('/links', link_controller.checkLink);
 api.get('/ventas', venta_controller.getVentas);
 api.get('/reportes', venta_controller.createReporte);
 api.delete('/reportes', venta_controller.deleteFILE);
+
+// Rutas para los mensajes
+api.post('/mensajes', mensajes_controller.saveMensaje);
+api.get('/mensajes', mensajes_controller.getMensajes);
+api.put('/mensajes/:id', mensajes_controller.updateMensaje);
 
 // Exportamos la configuración
 module.exports = api;

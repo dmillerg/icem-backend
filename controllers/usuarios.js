@@ -330,6 +330,7 @@ function changePassword(req, res) {
               .send({ message: "error en el servidor", status: 500, err: error });
           if (result.length > 0) {
             if (bcrypt.compareSync(req.body.pass_old, result[0].password)) {
+              console.log('Intento valido de cambio de contraseña');
               let id_usuario = req.body.id_usuario;
               let new_password = req.body.new_password;
 
