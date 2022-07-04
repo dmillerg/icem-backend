@@ -30,36 +30,42 @@ function savePedido(req, res) {
             return res.status(500).send({ message: error });
         }
         if (resul.length > 0) {
-            let user_id = req.body.user_id;
-            let producto_id = req.body.producto_id;
-            let cantidad = req.body.cantidad;
-            let estado = req.body.estado;
-            let id_carrito = req.body.id_carrito;
-            const MOMENT = require('moment');
-            let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
-            let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${date}') `;
-            conexion.query(`SELECT * FROM productos WHERE id=${producto_id}`, function(err, rest){
-                if(rest){
-                    conexion.query(`UPDATE usuarios SET ultima_compra_id=${rest[0].categoria} WHERE id=${user_id}`);
-                }
-            })
-           
-            conexion.query(query, function (err, result) {
-                if (err) {
-                    return res.status(500).send({ message: err });
-                }
-                if (result) {
-                    let query2 = `DELETE FROM carrito WHERE id=${id_carrito}`;
-                    conexion.query(query2, function (er, rets) {
-                        if (er) {
-                            return res.status(500).send({ message: er });
+            conexion.query(`SELECT * FROM productos WHERE id=${req.body.producto_id}`, function(e,r){
+                if(r){
+                    let precio_total = r[0].precio * req.body.cantidad;
+                    let user_id = req.body.user_id;
+                    let producto_id = req.body.producto_id;
+                    let cantidad = req.body.cantidad;
+                    let estado = req.body.estado;
+                    let id_carrito = req.body.id_carrito;
+                    const MOMENT = require('moment');
+                    let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
+                    let query = `INSERT INTO pedidos(id, user_id, producto_id, cantidad, estado, fecha, precio_total) VALUES (NULL, ${user_id}, ${producto_id}, ${cantidad}, '${estado}', '${date}', ${precio_total}) `;
+                    conexion.query(`SELECT * FROM productos WHERE id=${producto_id}`, function(err, rest){
+                        if(rest){
+                            conexion.query(`UPDATE usuarios SET ultima_compra_id=${rest[0].categoria} WHERE id=${user_id}`);
                         }
-                        if (rets) {
-                            return res.status(200).send(result);
+                    })
+                   
+                    conexion.query(query, function (err, result) {
+                        if (err) {
+                            return res.status(500).send({ message: err });
+                        }
+                        if (result) {
+                            let query2 = `DELETE FROM carrito WHERE id=${id_carrito}`;
+                            conexion.query(query2, function (er, rets) {
+                                if (er) {
+                                    return res.status(500).send({ message: er });
+                                }
+                                if (rets) {
+                                    return res.status(200).send(result);
+                                }
+                            })
                         }
                     })
                 }
             })
+            
         }
     })
 }
