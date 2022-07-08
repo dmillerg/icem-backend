@@ -61,32 +61,23 @@ function saveNoticia(req, res) {
             }
             if (result.length > 0) {
                 var id = -1;
+                const MOMENT = require('moment');
                 console.log(req.body);
                 var body = req.body;
                 var titulo = body.titulo;
                 var descripcion = body.descripcion;
+                var fuente = body.fuente;
+                var logo = body.logo;
+                var enlace = body.enlace;
                 var foto = { name: null };
                 if (req.files) {
                     foto = req.files.foto;
-                    foto_name = titulo.replace(/ /g, "-") + ".jpg";
-                    console.log(foto_name);
+                    foto_name = MOMENT().format('YYYYMMDDHHmmss')+'';;
                 }
-                let date = new Date();
-                let fecha =
-                    date.getFullYear().toString() +
-                    "/" +
-                    (date.getMonth() + 1) +
-                    "/" +
-                    date.getDate() +
-                    " " +
-                    date.getHours() +
-                    ":" +
-                    date.getMinutes() +
-                    ":" +
-                    date.getSeconds();
+                let fecha = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
 
                 conexion.query(
-                    `INSERT INTO noticias(id, titulo, descripcion, fecha, imagen) VALUES (NULL,"${titulo}","${descripcion}","${fecha}", "${foto_name}")`,
+                    `INSERT INTO noticias(id, titulo, descripcion, fecha, imagen, logo, fuente, enlace) VALUES (NULL,"${titulo}","${descripcion}","${fecha}", "${foto_name}", "${logo}", "${fuente}", "${enlace}")`,
                     function (error, results, fields) {
                         if (error) return res.status(500).send({ message: error });
                         if (results) {
