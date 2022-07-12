@@ -88,6 +88,27 @@ function updateMensaje(req, res) {
 
 }
 
+function deleteMensaje(req, res) {
+  conexion.query(
+    `SELECT * FROM tokens WHERE token='${req.query.token}'`,
+    function (err, result) {
+      if (err) {
+        return res.status(405).send({ message: "usuario no autenticado" });
+      }
+      if (result.length > 0) {
+        let id = req.params.id;
+        conexion.query(`DELETE FROM mensajes WHERE id= ${id}`, function (error, result) {
+          if (result) {
+            return res.status(200).send({ message: 'OK' });
+          }
+          if (error) {
+            return res.status(500).send({ message: 'ERROR', error: error });
+          }
+        })
+      }
+    });
+}
+
 
 
 
@@ -95,4 +116,5 @@ module.exports = {
   saveMensaje,
   getMensajes,
   updateMensaje,
+  deleteMensaje,
 };

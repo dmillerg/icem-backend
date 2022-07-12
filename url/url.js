@@ -163,6 +163,7 @@ api.delete('/reportes', venta_controller.deleteFILE);
 api.post('/mensajes', mensajes_controller.saveMensaje);
 api.get('/mensajes', mensajes_controller.getMensajes);
 api.put('/mensajes/:id', mensajes_controller.updateMensaje);
+api.delete('/mensajes/:id', mensajes_controller.deleteMensaje);
 
 // Exportamos la configuración
 module.exports = api;
