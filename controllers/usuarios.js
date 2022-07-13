@@ -286,13 +286,16 @@ function deleteUsuario(req, res) {
 }
 
 function adminResetPassword(req, res) {
+  console.log('eee', req.body.token);
   conexion.query(
     `SELECT * FROM tokens WHERE token='${req.body.token}'`,
     function (err, result) {
       if (err) {
         return res.status(405).send({ message: "usuario no autenticado" });
       }
+      console.log(err, result);
       if (result.length > 0) {
+        console.log('eee');
         let id_usuario = req.body.id_usuario;
         let new_password = req.body.new_password;
         bcrypt.hash(new_password, 10, (err, encrypted) => {
