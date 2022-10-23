@@ -15,6 +15,7 @@ function createLink(link) {
 }
 
 function checkLink(req, res) {
+    console.log(req.body);
     const limit_time = req.body.time;
     const MOMENT = require('moment');
     let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
@@ -25,6 +26,7 @@ function checkLink(req, res) {
         }
         if (re) {
             let query = `SELECT * FROM links WHERE link="${req.body.link}"`;
+            console.log(query);
             conexion.query(query, function (error, result) {
                 if (error) {
                     return res.status(500).send({ message: 'ERROR', error: error });

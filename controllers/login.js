@@ -193,7 +193,7 @@ function sendEmail(req, res) {
             <p>${infoadd}</p>
         </div>
         <div class="row">
-            <a href="${url}" class="btn" style="color: #fff;">Presione para activar su cuenta</a>
+            <a href="${url}" class="btn" style="color: #fff;">${tipo=='link'?'Activar su cuenta':'Restablecer contraseña'}</a>
         </div>
     </div>
     
@@ -203,13 +203,11 @@ function sendEmail(req, res) {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (info) {
-      if (tipo == 'link') {
-        links.createLink({ tipo: tipo, link: link })
-      }
-      console.log('Mensaje enviado: ' + info.response);
+        links.createLink({ stipo: tipo, link: link })
+      // console.log('Mensaje enviado: ' + info.response);
       return res.status(200).send({ message: 'OK', result: 'Mensaje enviado satisfactoriamente' })
     } else {
-      console.log('Error al enviar: ' + error);
+      // console.log('Error al enviar: ' + error);
       return res.status(500).send({ message: 'ERROR', error: error });
     }
   });
