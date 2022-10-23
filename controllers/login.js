@@ -102,11 +102,14 @@ function ultimaFechaActualizacion(req, res) {
 }
 
 function sendEmail(req, res) {
-  console.log(req.query);
-  let correo = req.query.correo;
-  let asunto = req.query.asunto;
-  let mensaje = req.query.mensaje;
-  let infoadd = req.query.infoadd;
+  console.log(req.body);
+  let correo = req.body.correo;
+  let asunto = req.body.asunto;
+  let mensaje = req.body.mensaje;
+  let url = req.body.url;
+  let link = req.body.link;
+  let tipo = req.body.tipo;
+  let infoadd = req.body.infoadd;
   var nodemailer = require('nodemailer');
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -120,14 +123,87 @@ function sendEmail(req, res) {
     from: 'Empresa Cubana de Equipos Médicos(ICEM)',
     to: correo,
     subject: asunto,
-    text: mensaje,
+    text: '',
+    html: `
+    <html>
+
+    <head>
+        <style>
+            .container {
+                width: calc(100% - 20px);
+                padding-bottom: 30px;
+                border-radius: 10px;
+                border: 1px solid #414791;
+                position: relative;
+                margin-left: 10px;
+            }
+    
+            .row {
+                width: 100%;
+                text-align: center;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+    
+            .bg-blue {
+                background-color: #414791;
+            }
+    
+            .color-white {
+                color: #fff;
+            }
+    
+            .btn{
+                padding: 20px;
+                margin-bottom: 10px;
+                padding-left: 20px;
+                padding-right: 20px;
+                border: none;
+                text-decoration: none;
+                font-weight: bold;
+                background-color: #414791;
+                color: #fff;
+                border-radius: 10px;
+                transition: all .3s ease-in-out;
+            }
+    
+            h4, p{
+              width: calc( 100% - 20px);
+              margin-left: 10px;
+                color: #777777;
+            }
+    
+            .btn:hover{
+                background-color: #535bc5;
+                transition: all .3s ease-in-out;
+            }
+        </style>
+    </head>
+    <div class="container">
+        <div class="row bg-blue" style="border-top-left-radius: 10px;border-top-right-radius: 10px;">
+            <h1 class="h1 color-white">
+                Empresa Cubana de Equipos Médicos
+            </h1>
+            <h3 class="color-white">ICEM</h3>
+        </div>
+        <div class="row">
+            <h4>
+               ${mensaje}
+            </h4>
+            <p>${infoadd}</p>
+        </div>
+        <div class="row">
+            <a href="${url}" class="btn" style="color: #fff;">Presione para activar su cuenta</a>
+        </div>
+    </div>
+    
+    </html>
+    `,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (info) {
-      if (infoadd == '') {
-        let tipo = mensaje[mensaje.indexOf('=') - 1] == 't' ? 'reset' : 'link';
-        let link = mensaje.substring(mensaje.indexOf('=') + 1, mensaje.length);
+      if (tipo == 'link') {
         links.createLink({ tipo: tipo, link: link })
       }
       console.log('Mensaje enviado: ' + info.response);
