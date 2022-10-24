@@ -51,7 +51,6 @@ function saveCarrito(req, res) {
                         }
                         if (r) {
                             disponibilidad('agregar', producto_id, parseInt(cantidad));
-                            carritoInterval(user_id);
                             return res.status(200).send(r);
                         }
                     });
@@ -62,7 +61,6 @@ function saveCarrito(req, res) {
                         }
                         if (result) {
                             disponibilidad('agregar', producto_id, cantidad);
-                            carritoInterval(user_id);
                             return res.status(200).send(result);
                         }
                     })
@@ -102,18 +100,10 @@ function deleteCarrito(req, res) {
 function disponibilidad(action, id_producto, cant_productos) {
     switch (action) {
         case 'agregar':
-            conexion.query(`UPDATE productos SET disponibilidad = (disponibilidad - ${cant_productos}) WHERE id = ${id_producto}`,
-                function (err, result) {
-                    if (err) { }
-                    if (result) { }
-                })
+            conexion.query(`UPDATE productos SET disponibilidad = (disponibilidad - ${cant_productos}) WHERE id = ${id_producto}`)
             break;
         case 'delete':
-            conexion.query(`UPDATE productos SET disponibilidad = (disponibilidad + ${cant_productos}) WHERE id = ${id_producto}`,
-                function (err, result) {
-                    if (err) { }
-                    if (result) { }
-                })
+            conexion.query(`UPDATE productos SET disponibilidad = (disponibilidad + ${cant_productos}) WHERE id = ${id_producto}`)
             break;
         case 'update':
             break;
@@ -158,55 +148,12 @@ function getFechaCarritoRestante(req, res) {
     });
 }
 
-
-function carritoInterval(id_user) {
-    conexion.query(`SELECT * FROM configuraciones WHERE nombre='carrito_time'`, function (error, result) {
-        if (error) {
-            console.log(error);
-        }
-        if (result) {
-            
-            let intervalo = Number(result[0].config) * 3600;
-            console.log('intervalo=>', intervalo);
-            console.log('config=>', Number(result[0].config));
-            let interval = setInterval(() => {
-                console.log(intervalo);
-                if(intervalo==110) conexion.query(`SELECT * FROM carrito WHERE user_id=${id_user}`, function(et, ts){
-                    if(et) console.log(et);
-                    if(ts) {
-                        if(ts[0].intervalo!=null) clearInterval(Number(ts[0].interval))
-                    }
-                })
-                conexion.query(`UPDATE carrito SET intervalo=${interval} WHERE user_id=${id_user}`);
-                if (intervalo <= 1) {
-                    conexion.query(`SELECT * FROM carrito WHERE user_id=${id_user}`, function (err, res) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        if (res) {
-                            console.log(res);
-                            for (let i = 0; i < res.length; i++) {
-                                disponibilidad('delete', res[i].producto_id, res[i].cantidad);
-                                conexion.query(`DELETE FROM carrito WHERE id = ${res[i].id}`);
-                            }
-                            clearInterval(interval);
-                        }
-                    });
-                } else {
-                    intervalo--;
-                }
-
-            }, 1000)
-
-        }
-    })
-}
-
 module.exports = {
     getCarritos,
     saveCarrito,
     deleteCarrito,
     getCarritoByID,
     getFechaCarritoRestante,
+    disponibilidad,
     // updatePedido,
 }

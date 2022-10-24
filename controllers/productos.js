@@ -99,17 +99,17 @@ function saveProducto(req, res) {
                 garantia = garantia.replace(/"/g,"'")
                 var imagenes = [];
                 if (req.files) {
-                    // console.log(req.files);
                     foto_name = MOMENT().format('YYYYMMDDHHmmss')+'';
-                    req.files.foto.forEach((e, i) => {
-                        // console.log(e);
-                        imagenes.push(foto_name + i + ".jpg");
-                    });
-                    // console.log(imagenes);
+                    if(Array.isArray(req.files.foto)){
+                        req.files.foto.forEach((e, i) => {
+                            imagenes.push(foto_name + i + ".jpg");
+                        });
+                    }else{
+                        imagenes.push(foto_name+"0.jpg")
+                    }
                 }
                 
                 let fecha = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
-                // console.log(`INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`);
                 conexion.query(
                     `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
                     function (error, results, fields) {
@@ -118,11 +118,14 @@ function saveProducto(req, res) {
                             return res.status(500).send({ message: error });
                         }
                         if (results) {
-                            if (req.files) {
+                            console.log('cantidad de fotos',req.files.foto.length);
+                            if (req.files ) {
+                                if(Array.isArray( req.files.foto)){
                                 req.files.foto.forEach((e, i) => {
                                     foto = e;
                                     saveFoto(foto, foto_name + i + ".jpg");
                                 });
+                            }else saveFoto(req.files.foto, foto_name + '0.jpg')
                             }
                             return res
                                 .status(201)
