@@ -14,7 +14,7 @@ function getProductos(req, res) {
     //     query += ` AND id <> ${excluir}`;
     // }
     // console.log(activo);
-    if (activo=='true') query += ` AND activo=${activo}`;
+    if (activo == 'true') query += ` AND activo=${activo}`;
     if (categoria > -1) {
         query += ` AND categoria=${categoria}`;
     }
@@ -92,23 +92,23 @@ function saveProducto(req, res) {
                 var precio = body.precio;
                 var disponibilidad = body.disponibilidad;
                 var foto = { name: null };
-                titulo = titulo.replace(/"/g,"'")
-                usos = usos.replace(/"/g,"'")
-                descripcion = descripcion.replace(/"/g,"'")
-                especificaciones = especificaciones.replace(/"/g,"'")
-                garantia = garantia.replace(/"/g,"'")
+                titulo = titulo.replace(/"/g, "'")
+                usos = usos.replace(/"/g, "'")
+                descripcion = descripcion.replace(/"/g, "'")
+                especificaciones = especificaciones.replace(/"/g, "'")
+                garantia = garantia.replace(/"/g, "'")
                 var imagenes = [];
                 if (req.files) {
-                    foto_name = MOMENT().format('YYYYMMDDHHmmss')+'';
-                    if(Array.isArray(req.files.foto)){
+                    foto_name = MOMENT().format('YYYYMMDDHHmmss') + '';
+                    if (Array.isArray(req.files.foto)) {
                         req.files.foto.forEach((e, i) => {
-                            imagenes.push(foto_name + i + ".jpg");
+                            imagenes.push(foto_name + i.toString() + ".jpg");
                         });
-                    }else{
-                        imagenes.push(foto_name+"0.jpg")
+                    } else {
+                        imagenes.push(foto_name + "0.jpg")
                     }
                 }
-                
+
                 let fecha = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
                 conexion.query(
                     `INSERT INTO productos(id, titulo, descripcion, imagen, fecha, categoria, usos, especificaciones, garantia, precio, disponibilidad) VALUES (NULL,"${titulo}","${descripcion}","${imagenes}", "${fecha}", "${categoria}", "${usos}", "${especificaciones}", "${garantia}", ${precio}, ${disponibilidad})`,
@@ -118,14 +118,14 @@ function saveProducto(req, res) {
                             return res.status(500).send({ message: error });
                         }
                         if (results) {
-                            console.log('cantidad de fotos',req.files.foto.length);
-                            if (req.files ) {
-                                if(Array.isArray( req.files.foto)){
-                                req.files.foto.forEach((e, i) => {
-                                    foto = e;
-                                    saveFoto(foto, foto_name + i + ".jpg");
-                                });
-                            }else saveFoto(req.files.foto, foto_name + '0.jpg')
+                            console.log('cantidad de fotos', req.files.foto.length);
+                            if (req.files) {
+                                if (Array.isArray(req.files.foto)) {
+                                    req.files.foto.forEach((e, i) => {
+                                        foto = e;
+                                        saveFoto(foto, foto_name + i.toString() + ".jpg");
+                                    });
+                                } else saveFoto(req.files.foto, foto_name + '0.jpg')
                             }
                             return res
                                 .status(201)
@@ -224,6 +224,7 @@ function updateProducto(req, res) {
             if (result.length > 0) {
                 var id = req.params.id;
                 // Recogemos los datos que nos llegen en el body de la petición
+                const MOMENT = require('moment');
                 var update = req.body;
                 var titulo = update.titulo;
                 var descripcion = update.descripcion;
@@ -233,19 +234,22 @@ function updateProducto(req, res) {
                 var garantia = update.garantia;
                 var precio = update.precio;
                 var eliminadas = update.eliminadas;
-                var imagen = update.imagen;
-                var position = update.position;
                 var foto = { name: null };
-                let imagenes = imagen.length > 0 ? imagen.split(',') : [];
+                console.log(eliminadas);
+                let imagenes = update.imagen.length>0?update.imagen.split(','):[];
+                console.log(imagenes);
                 if (req.files) {
-                    req.files.foto.forEach((rr, ind) => {
-                        imagenes.push(titulo.replace(/ /g, "-") + (Number(ind) + Number(position)) + ".jpg");
-                    });
-                    // foto_name = titulo.replace(/ /g, "-") + ".jpg";
-                    // console.log(foto_name);
+                    foto_name = MOMENT().format('YYYYMMDDHHmmss') + '';
+                    if (Array.isArray(req.files.foto)) {
+                        req.files.foto.forEach((e, i) => {
+                            imagenes.push(foto_name + i.toString() + ".jpg");
+                        });
+                    } else {
+                        imagenes.push(foto_name + "0.jpg")
+                    }
                 }
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${imagenes}' `;
+                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${imagenes.filter(e=>eliminadas.indexOf(e)==-1)}' `;
                 query += `WHERE id = ${id}`;
                 conexion.query(query, function (error, results, fields) {
                     if (error)
@@ -255,10 +259,12 @@ function updateProducto(req, res) {
                             deleteFoto(eliminadas);
                         }
                         if (req.files) {
-                            req.files.foto.forEach((e, i) => {
-                                foto = e;
-                                saveFoto(foto, titulo.replace(/ /g, "-") + (i + Number(position)) + ".jpg");
-                            });
+                            if (Array.isArray(req.files.foto)) {
+                                req.files.foto.forEach((e, i) => {
+                                    foto = e;
+                                    saveFoto(foto, foto_name + i.toString() + ".jpg");
+                                });
+                            } else saveFoto(req.files.foto, foto_name + '0.jpg')
                         }
                         return res
                             .status(201)
