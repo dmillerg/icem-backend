@@ -31,7 +31,8 @@ const inicio = require('./controllers/apis');
 
 // Cargamos las rutas
 app.use('/apis', routes);
-app.get('/apis', inicio.getApis);
+// app.get('/apis', inicio.getApis);
+app.all('/apis', inicio.getApis);
 
 module.exports = app;
 
