@@ -193,7 +193,7 @@ function sendEmail(req, res) {
             <p>${infoadd}</p>
         </div>
         <div class="row">
-            <a href="${url}" class="btn" style="color: #fff;">${tipo=='link'?'Activar su cuenta':'Restablecer contraseña'}</a>
+            <a href="${url}" class="btn" style="color: #fff;">${tipo=='link'?'Activar su cuenta':tipo=='reset'?'Restablecer contraseña':'Visistenos pronto'}</a>
         </div>
     </div>
     

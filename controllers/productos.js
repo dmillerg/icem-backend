@@ -239,7 +239,7 @@ function updateProducto(req, res) {
                 let imagenes = update.anteriores.split(',');
                 // if (Array.isArray(update.imagen)) imagenes = update.imagen.length > 0 ? update.imagen.split(',') : [];
                 // console.log(imagenes);
-                
+
                 if (req.files) {
                     foto_name = MOMENT().format('YYYYMMDDHHmmss') + '';
                     if (Array.isArray(req.files.foto)) {
