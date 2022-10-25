@@ -236,8 +236,10 @@ function updateProducto(req, res) {
                 var eliminadas = update.eliminadas;
                 var foto = { name: null };
                 console.log(eliminadas);
-                let imagenes = update.imagen.length>0?update.imagen.split(','):[];
-                console.log(imagenes);
+                let imagenes = update.anteriores.split(',');
+                // if (Array.isArray(update.imagen)) imagenes = update.imagen.length > 0 ? update.imagen.split(',') : [];
+                // console.log(imagenes);
+                
                 if (req.files) {
                     foto_name = MOMENT().format('YYYYMMDDHHmmss') + '';
                     if (Array.isArray(req.files.foto)) {
@@ -249,7 +251,7 @@ function updateProducto(req, res) {
                     }
                 }
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${imagenes.filter(e=>eliminadas.indexOf(e)==-1)}' `;
+                var query = `UPDATE productos SET titulo="${titulo}",descripcion="${descripcion}", categoria="${categoria}" , usos="${usos}", especificaciones="${especificaciones}", garantia="${garantia}", precio=${precio}, imagen='${imagenes.filter(e => eliminadas.indexOf(e) == -1)}' `;
                 query += `WHERE id = ${id}`;
                 conexion.query(query, function (error, results, fields) {
                     if (error)
