@@ -40,13 +40,13 @@ function getVentas(req, res) {
 }
 
 function createReporte(req, res) {
-    let id_user = req.query.id_user;
+    let id_user = req.query.user_id;
     let fecha = req.query.fecha;
     let producto_id = req.query.producto_id;
     let name = req.query.name;
 
     let query = `SELECT * FROM ventas WHERE 1`;
-
+console.log(req.query);
     if (id_user > -1) {
         query += ` AND user_id=${id_user}`;
     }
