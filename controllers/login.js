@@ -7,6 +7,7 @@ function login(req, res) {
   var body = req.body;
   var usuario = body.usuario;
   var password = body.password;
+  var recordar = body.recordar;
   let query = '';
   if (usuario.match(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i) != null) {
     query = `SELECT * FROM usuarios WHERE correo="${usuario}"`
@@ -27,7 +28,7 @@ function login(req, res) {
         if (bcrypt.compareSync(password, result[0].password)) {
           let token = generarToken(usuario);
           conexion.query(`UPDATE usuarios SET ultsession='${date}', cant_visitas=(cant_visitas + 1) WHERE id=${result[0].id}`)
-          conexion.query(`INSERT INTO usuarios_online (id, user_id, fecha) VALUES (NULL, ${result[0].id}, '${date}') `);
+          conexion.query(`INSERT INTO usuarios_online (id, user_id, fecha, recordar) VALUES (NULL, ${result[0].id}, '${date}', ${recordar}) `);
           saveToken(token, result[0].id);
           return res.status(200).json({
             message: "usuario autenticado correctamente",
