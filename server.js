@@ -55,9 +55,9 @@ conexion.connect(function (err) {
 app.listen(port, () => console.log(`El servidor esta escuchando en el puerto ${port}!`));
 
 function checkCarrito() {
-    conexion.query(`SELECT * FROM configuraciones WHERE nombre ='check_carrito_time'`, function (e, r) {
-        if (e) console.log(e);
-        if (r) {
+    // conexion.query(`SELECT * FROM configuraciones WHERE nombre ='check_carrito_time'`, function (e, r) {
+    //     if (e) console.log(e);
+    //     if (r) {
             setInterval(() => {
                 conexion.query(`SELECT config*3600 as config FROM configuraciones WHERE nombre='carrito_time'`, function (edb, rdb) {
                     if (edb) console.log(edb);
@@ -83,9 +83,9 @@ function checkCarrito() {
                             }
                         });
                 });
-            }, parseInt(r[0].config * 3600000));
-        }
-    })
+            }, 6000);
+    //     }
+    // })
 
 }
 

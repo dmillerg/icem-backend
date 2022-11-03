@@ -135,15 +135,27 @@ function getFechaCarritoRestante(req, res) {
             return res.status(500).send({ message: error });
         }
         if (resultado.length > 0) {
-            let query = `SELECT TIMESTAMPDIFF(SECOND,'${req.body.fecha}',NOW()) as tiempo`
-            conexion.query(query, function (err, result) {
-                if (err) {
-                    return res.status(500).send({ message: 'ERROR', error: err });
-                }
-                if (result) {
-                    return res.status(200).send(result[0])
+            const query_config = `SELECT * FROM configuraciones WHERE nombre='carrito_time'`;
+            conexion.query(query_config, function (e, r) {
+                if (e) console.log(e);
+                if (r) {
+                    const query = `SELECT(SELECT TIMESTAMPDIFF(HOUR,'${req.body.fecha}',NOW())) hora, (SELECT TIMESTAMPDIFF(SECOND,'${req.body.fecha}',NOW())) minuto, (SELECT TIMESTAMPDIFF(SECOND,'${req.body.fecha}',NOW())) segundo`
+                    conexion.query(query, function (err, result) {
+                        if (err) {
+                            return res.status(500).send({ message: 'ERROR', error: err });
+                        }
+                        if (result) {
+                            const resp = {
+                                segundo: parseInt(((r[0].config * 3600) - result[0].segundo) % 60) >= 0 ? parseInt(((r[0].config * 3600) - result[0].segundo) % 60) : 0,
+                                minuto: parseInt((((r[0].config * 3600)-result[0].segundo)/60)%60) >= 0 ? parseInt((((r[0].config * 3600)-result[0].segundo)/60)%60): 0,
+                                hora: parseInt((((r[0].config * 3600)-result[0].segundo)/3600)%60) >= 0 ? parseInt((((r[0].config * 3600)-result[0].segundo)/3600)%60): 0,
+                            }
+                            return res.status(200).send(resp)
+                        }
+                    })
                 }
             })
+
         }
     });
 }
