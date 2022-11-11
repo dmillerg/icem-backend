@@ -530,4 +530,5 @@ module.exports = {
   all,
   loadSQL,
   fechaUltima,
+  insertAdmin
 };

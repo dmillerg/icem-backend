@@ -40,6 +40,7 @@ module.exports = app;
 
 
 const conexion = require('./database/database');
+const { insertAdmin } = require('./database/manageDB');
 
 conexion.connect(function (err) {
     if (err) {
@@ -48,42 +49,39 @@ conexion.connect(function (err) {
     }
     checkUsuariosOnline();
     checkCarrito();
-
+    firstTimeAdmin();
     console.log('Estado de conexion conectado');
 });
 
 app.listen(port, () => console.log(`El servidor esta escuchando en el puerto ${port}!`));
 
 function checkCarrito() {
-    // conexion.query(`SELECT * FROM configuraciones WHERE nombre ='check_carrito_time'`, function (e, r) {
-    //     if (e) console.log(e);
-    //     if (r) {
-            setInterval(() => {
-                conexion.query(`SELECT config*3600 as config FROM configuraciones WHERE nombre='carrito_time'`, function (edb, rdb) {
-                    if (edb) console.log(edb);
-                    if (rdb)
-                        conexion.query(`SELECT user_id, MAX(fecha) as fecha, (IF ((SELECT TIMESTAMPDIFF(SECOND,MAX(fecha),NOW()))>${rdb[0].config}, TRUE, FALSE)) as tiempo FROM carrito GROUP BY user_id`, function (error, result) {
-                            if (error) console.log('error en la primera=>', error, rdb[0].config);
-                            if (result && result.length > 0) {
-                                for (let i = 0; i < result.length; i++) {
-                                    // console.log('result[i].tiempo', result[i].tiempo);
-                                    if (result[i].tiempo) {
-                                        conexion.query(`SELECT * FROM carrito WHERE user_id=${result[i].user_id}`, function (err, res) {
-                                            if (err) console.log(err);
-                                            if (res && res.length > 0) {
-                                                // console.log('res', res);
-                                                for (let j = 0; j < res.length; j++) {
-                                                    disponibilidad('delete', res[j].producto_id, res[j].cantidad);
-                                                    conexion.query(`DELETE FROM carrito WHERE id = ${res[j].id}`);
-                                                }
-                                            }
-                                        });
+    setInterval(() => {
+        conexion.query(`SELECT config*3600 as config FROM configuraciones WHERE nombre='carrito_time'`, function (edb, rdb) {
+            if (edb) console.log(edb);
+            if (rdb)
+                conexion.query(`SELECT user_id, MAX(fecha) as fecha, (IF ((SELECT TIMESTAMPDIFF(SECOND,MAX(fecha),NOW()))>${rdb[0].config}, TRUE, FALSE)) as tiempo FROM carrito GROUP BY user_id`, function (error, result) {
+                    if (error) console.log('error en la primera=>', error, rdb[0].config);
+                    if (result && result.length > 0) {
+                        for (let i = 0; i < result.length; i++) {
+                            // console.log('result[i].tiempo', result[i].tiempo);
+                            if (result[i].tiempo) {
+                                conexion.query(`SELECT * FROM carrito WHERE user_id=${result[i].user_id}`, function (err, res) {
+                                    if (err) console.log(err);
+                                    if (res && res.length > 0) {
+                                        // console.log('res', res);
+                                        for (let j = 0; j < res.length; j++) {
+                                            disponibilidad('delete', res[j].producto_id, res[j].cantidad);
+                                            conexion.query(`DELETE FROM carrito WHERE id = ${res[j].id}`);
+                                        }
                                     }
-                                }
+                                });
                             }
-                        });
+                        }
+                    }
                 });
-            }, 6000);
+        });
+    }, 600000);
     //     }
     // })
 
@@ -91,27 +89,31 @@ function checkCarrito() {
 
 function checkUsuariosOnline() {
     const query_config_session = `SELECT * FROM configuraciones WHERE nombre ='close_sesion_time'`;
-    const query_config_check = `SELECT * FROM configuraciones WHERE nombre ='check_sesion_time'`;
-    conexion.query(query_config_check, function (e, r) {
-        if (e) console.log(e);
-        if (r) {
-            conexion.query(query_config_session, function (err, res) {
-                if (err) console.log(err);
-                if (res) {
-                    setInterval(() => {
-                        const query_usuarios_no_recordados = `SELECT * FROM usuarios_online WHERE recordar=0 AND (SELECT TIMESTAMPDIFF(MINUTE,fecha,NOW()))>=${parseInt(res[0].config * 60)}`
-                        conexion.query(query_usuarios_no_recordados, function (error, result) {
-                            if (error) console.log(error)
-                            if (result) {
-                                for (let i = 0; i < result.length; i++) {
-                                    conexion.query(`DELETE FROM tokens WHERE usuario_id=${result[i].user_id}`);
-                                    conexion.query(`DELETE FROM usuarios_online WHERE user_id=${result[i].user_id}`);
-                                }
-                            }
-                        })
-                    }, parseInt(r[0].config * 3600000))
-                }
-            })
+    setInterval(() => {
+        console.log('comprobando usuarios online');
+        conexion.query(query_config_session, function (err, res) {
+            if (err) console.log(err);
+            if (res) {
+                const query_usuarios_no_recordados = `SELECT * FROM usuarios_online WHERE recordar=0 AND (SELECT TIMESTAMPDIFF(MINUTE,fecha,NOW()))>=${parseInt(res[0].config * 60)}`
+                conexion.query(query_usuarios_no_recordados, function (error, result) {
+                    if (error) console.log(error)
+                    if (result) {
+                        for (let i = 0; i < result.length; i++) {
+                            conexion.query(`DELETE FROM tokens WHERE usuario_id=${result[i].user_id}`);
+                            conexion.query(`DELETE FROM usuarios_online WHERE user_id=${result[i].user_id}`);
+                        }
+                    }
+                })
+            }
+        })
+    }, 60000)
+}
+
+function firstTimeAdmin() {
+    conexion.query(`SELECT * FROM usuarios`, function (err, res) {
+        if (err) console.log(err);
+        if (res && res.length == 0) {
+            insertAdmin();
         }
     })
 }
