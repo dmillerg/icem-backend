@@ -5,7 +5,7 @@ let interval = 0;
 
 function recogidaNoticia(req, res) {
     conexion.query(
-        `SELECT * FROM noticias `,
+        `SELECT * FROM noticias order by fecha DESC`,
         function (error, results, fields) {
             if (error) {
                 console.log(error);
