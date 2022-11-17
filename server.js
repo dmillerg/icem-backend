@@ -18,7 +18,7 @@ const multiPartMiddleware = multipart({
 const app = express();
 const port = 9707;
 
-var whitelist = ["http://localhost", "http://nuevo.icem.cu", "http://localhost:4200"];
+var whitelist = ["https://localhost", "http://nuevo.icem.cu", "http://localhost:4200"];
 var corst = {
     origin: function (origin, callback) {
         console.log(origin);
@@ -50,7 +50,7 @@ const inicio = require('./controllers/apis');
 
 
 // Cargamos las rutas
-app.use('/apis', cors(corst), routes);
+app.use('/apis', cors(), routes);
 app.get('/pictures/:id', cors(), pictures);
 
 app.get('/api', cors(), inicio.getApis);
