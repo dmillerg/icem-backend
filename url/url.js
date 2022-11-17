@@ -1,5 +1,19 @@
 'use strict'
-
+var cors = require('cors');
+var whitelist = ["http://localhost", "http://nuevo.icem.cu", "http://localhost:4200"];
+var corst = {
+    origin: function (origin, callback) {
+        console.log(origin);
+        if (origin && whitelist.indexOf(origin)>-1) {
+            callback(null, true)
+        } else {
+            console.log("CORS not allowed");
+            // callback(new Error("Not allowed by cors"))
+        }
+    },
+    optionsSuccessStatus: 200,
+    credentials: true
+};
 // Cargamos el módulo de express para poder crear rutas
 var express = require('express');
 
@@ -48,7 +62,7 @@ api.get('/fechaultima', managedb_controller.fechaUltima);
 api.get('/loadSQL', managedb_controller.loadSQL);
 
 // Rutas para los productos
-api.get('/productos/:limit', productos_controller.getProductos);
+api.get('/productos/:limit',cors(corst), productos_controller.getProductos);
 api.get('/productoFoto/:id', productos_controller.getProductoFoto);
 api.get('/productoFoto/', productos_controller.getProductoFotoByName);
 api.post('/saveProducto', productos_controller.saveProducto);

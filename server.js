@@ -7,6 +7,8 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const multipart = require('connect-multiparty');
 const disponibilidad = require('./controllers/carritos').disponibilidad;
+const conexion = require('./database/database');
+const { insertAdmin, pictures } = require('./database/manageDB');
 
 const multiPartMiddleware = multipart({
     uploadDir: './public/images-avatar'
@@ -16,7 +18,24 @@ const multiPartMiddleware = multipart({
 const app = express();
 const port = 9707;
 
-app.use(cors());
+var whitelist = ["http://localhost", "http://nuevo.icem.cu", "http://localhost:4200"];
+var corst = {
+    origin: function (origin, callback) {
+        console.log(origin);
+        if (origin && whitelist.indexOf(origin) > -1) {
+            callback(null, true)
+        } else {
+            console.log("CORS not allowed");
+            // callback(new Error("Not allowed by cors"))
+        }
+    },
+    optionsSuccessStatus: 200,
+    credentials: true
+}
+
+// app.use(cors(corst));
+
+
 
 // Configuring body parser middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -31,16 +50,16 @@ const inicio = require('./controllers/apis');
 
 
 // Cargamos las rutas
-app.use('/apis', routes);
-// app.get('/apis', inicio.getApis);
-app.all('/apis', inicio.getApis);
+app.use('/apis', cors(corst), routes);
+app.get('/pictures/:id', cors(), pictures);
+
+app.get('/api', cors(), inicio.getApis);
 
 module.exports = app;
 
 
 
-const conexion = require('./database/database');
-const { insertAdmin } = require('./database/manageDB');
+
 
 conexion.connect(function (err) {
     if (err) {
@@ -117,3 +136,5 @@ function firstTimeAdmin() {
         }
     })
 }
+
+

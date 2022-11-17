@@ -524,11 +524,34 @@ function loadSQL(req, res) {
   });
 }
 
+function pictures(req, res) {
+  const path = require("path");
+  console.log('Obteniendo imagen', req.query);
+  const tipo = req.query.tipo;
+  const name = req.query.name;
+  const query = `SELECT * FROM ${tipo} WHERE id=${req.params.id}`;
+  if (name) {
+    return res.status(200).sendFile(path.resolve(`public/${tipo}/${name}`));
+  } else {
+    conexion.query(query, function (error, result) {
+      if (error) {
+        return res.status(400).send(`no hay ${tipo} con este id`);
+      }
+      if (result.length>0) {
+        return res.status(200).sendFile(path.resolve(`public/${tipo}/` + (tipo=='chat'?result[0].archivo.split(',')[0]:result[0].imagen.split(',')[0])));
+      }else{
+        return res.status(400).send(`no hay ${tipo} con este id`);
+      }
+    })
+  }
+}
+
 module.exports = {
   createTables,
   isAuthenticated,
   all,
   loadSQL,
   fechaUltima,
-  insertAdmin
+  insertAdmin,
+  pictures
 };

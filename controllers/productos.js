@@ -51,7 +51,7 @@ function getProductoFoto(req, res) {
                 if (error) throw error;
                 if (results.length > 0) {
                     var path = require("path");
-                    return res.sendFile(path.resolve("public/productos/" + results[0].imagen.split(',')[0]));
+                    return res.status(200).sendFile(path.resolve("public/productos/" + results[0].imagen.split(',')[0]));
                 } else {
                     return res
                         .status(404)
