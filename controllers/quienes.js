@@ -8,7 +8,7 @@ function getQuienes(req, res) {
   if (limit > 0) {
     query += ` LIMIT ${limit}`;
   }
-  query +=` ORDER BY orden ASC`;
+  query += ` ORDER BY orden ASC`;
 
   conexion.query(
     `SELECT * FROM quienes ` + query,
@@ -157,8 +157,8 @@ function updateQuienes(req, res) {
         var query = `UPDATE quienes SET nombre="${nombre}", cargo="${cargo}", orden=${orden}`;
         if (foto.name != null)
           query += `,imagen="${nombre.replace(/ /g, "-") + ".jpg"}"`;
-        query += `WHERE id = ${id}`;
-
+        query += ` WHERE id = ${id}`;
+        console.log(query);
         conexion.query(query, function (error, results, fields) {
           if (error)
             return res.status(500).send({ message: "error en el servidor" });
