@@ -21,12 +21,12 @@ const port = 9707;
 var whitelist = ["https://localhost", "http://nuevo.icem.cu", "http://localhost:4200"];
 var corst = {
     origin: function (origin, callback) {
-        console.log(origin);
+        // console.log(origin);
         if (origin && (whitelist.indexOf(origin) > -1 || origin.toString().toLowerCase()    .indexOf('dvelox')>-1)) {
             callback(null, true)
         } else {
             console.log("CORS not allowed");
-            // callback(new Error("Not allowed by cors"))
+            callback("Acceso denegado por favor use nuestro sitio oficial para acceder a la información")
         }
     },
     optionsSuccessStatus: 200,

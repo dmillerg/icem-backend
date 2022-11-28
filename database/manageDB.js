@@ -871,15 +871,25 @@ function createDataBase() {
  ) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
  
  SET FOREIGN_KEY_CHECKS = 1;
- `
-  conexion.query(backup, function (error, res) {
-    if (error) console.error(error);
-    if (res) {
-      checkCarrito();
-      checkUsuariosOnline();
-      // console.log(res);
+ `;
+  conexion.query(`SELECT * FROM usuarios`, function (error1, result1) {
+    if (error1) {
+      console.log('Creando Base de Datos');
+      conexion.query(backup, function (error, res) {
+        if (error) console.error(error);
+        if (res) {
+          console.log('Base de Datos creada correctamente');
+          checkCarrito();
+          checkUsuariosOnline();
+          // console.log(res);
+        }
+      })
+    }
+    if (result1) {
+    console.log('Base de Datos ya existente');
     }
   })
+
 }
 
 function checkCarrito() {
