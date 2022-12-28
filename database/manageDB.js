@@ -529,8 +529,9 @@ function pictures(req, res) {
   console.log('Obteniendo imagen', req.query);
   const tipo = req.query.tipo;
   const name = req.query.name;
+  console.log(req.query);
   const query = `SELECT * FROM ${tipo} WHERE id=${req.params.id}`;
-  if (name) {
+  if (name && name != 'undefined') {
     return res.status(200).sendFile(path.resolve(`public/${tipo}/${name}`));
   } else {
     conexion.query(query, function (error, result) {

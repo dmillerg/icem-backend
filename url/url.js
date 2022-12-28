@@ -146,9 +146,11 @@ api.post('/carritotimerestante', carritos_controller.getFechaCarritoRestante);
 // api.put('/carrito/:id_pedido', carritos_controller.updateCarrito);
 
 // Rutas para las configuraciones
-api.get('/configuracion', configuracion_controller.getConfiguraciones);
-api.post('/configuracion', configuracion_controller.getConfiguracion);
+api.get('/configuraciones', configuracion_controller.getConfiguraciones);
+api.get('/configuracion', configuracion_controller.getConfiguracion);
 api.post('/configuraciones', configuracion_controller.saveConfigs);
+api.post('/configuracion', configuracion_controller.addConfiguracion);
+api.delete('/configuracion', configuracion_controller.deleteConfiguracion);
 
 // Rutas para los links
 api.post('/links', link_controller.checkLink);

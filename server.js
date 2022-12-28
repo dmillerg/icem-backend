@@ -50,7 +50,7 @@ const inicio = require('./controllers/apis');
 
 
 // Cargamos las rutas
-app.use('/apis', cors(corst), routes);
+app.use('/apis', cors(), routes);
 app.get('/pictures/:id', cors(), pictures);
 
 app.get('/api', cors(), inicio.getApis);

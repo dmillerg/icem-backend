@@ -66,6 +66,7 @@ function saveUsuario(req, res) {
 }
 
 function getUsuarios(req, res) {
+  console.log('asdasd');
   var body = req.query;
   var limit = req.params.limit;
   var usuario = body.usuario;
