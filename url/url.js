@@ -124,6 +124,7 @@ api.get('/postsByID/:idpost', posts_controller.getPostsById);
 api.post('/savePosts', posts_controller.savePosts);
 api.delete('/deletePosts/:id', posts_controller.deletePosts);
 api.get('/respbypost/:idpost', posts_controller.searchRespuestas);
+api.put('/posts/:id', posts_controller.updatePost);
 
 // Rutas para las respuestas
 api.get('/respuesta/:id_post', respuesta_controller.getRespuesta);

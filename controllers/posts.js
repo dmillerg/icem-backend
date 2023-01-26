@@ -79,55 +79,6 @@ function deletePosts(req, res) {
   );
 }
 
-// function updateCategoria(req, res) {
-//   conexion.query(
-//     `SELECT * FROM tokens WHERE token='${req.body.token}'`,
-//     function (err, result) {
-//       if (err) {
-//         return res.status(405).send({ message: "usuario no autenticado" });
-//       }
-//       if (result.length > 0) {
-//         // Recogemos un parámetro por la url
-//         var id = req.params.id;
-
-//         // Recogemos los datos que nos llegen en el body de la petición
-//         var update = req.body;
-//         var nombre = update.nombre;
-
-//         // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-//         var query = `UPDATE categorias SET nombre="${nombre}"`;
-//         query += `WHERE id = ${id}`;
-
-//         conexion.query(query, function (error, results, fields) {
-//           if (error)
-//             return res.status(500).send({ message: "error en el servidor" });
-//           if (results) {
-//             return res
-//               .status(201)
-//               .send({ message: "actualizado correctamente" });
-//           } else {
-//             return res
-//               .status(404)
-//               .send({ message: "no existe ninguna categoria con ese id" });
-//           }
-//         });
-//       }
-//     }
-//   );
-// }
-
-// function getCategoriaById(req, res) {
-//   let id = req.params.id;
-//   let query = `SELECT * FROM categorias WHERE id=${id}`;
-//   conexion.query(query, function (err, result) {
-//     if (err) return res.status(500).send({ message: err });
-//     if (result) {
-//       return res
-//         .status(200)
-//         .send({ id: result[0].id, nombre: result[0].nombre });
-//     }
-//   });
-// }
 
 function getPostsById(req, res) {
   let idpost = req.params.idpost;
@@ -148,10 +99,28 @@ function searchRespuestas(req, res) {
   })
 }
 
+function updatePost(req, res){
+  const comentario = req.body.comentario;
+  const id_producto = req.body.id_producto;
+  const correo = req.body.correo;
+  const alias = req.body.alias;
+  const calificacion = req.body.calificacion;
+  const id = req.params.id;
+  conexion.query(`UPDATE posts SET comentario='${comentario}', id_producto=${id_producto}, correo='${correo}', alias='${alias}', calificacion=${calificacion} WHERE id=${id}`, function (error, result, field) {
+    if (error) {
+      return res.status(500).send({ message: error });
+    }
+    if (result) {
+      return res.status(200).send(result);
+    }
+  })
+}
+
 module.exports = {
   getPosts,
   savePosts,
   deletePosts,
   searchRespuestas,
   getPostsById,
+  updatePost,
 };
