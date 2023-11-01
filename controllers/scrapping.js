@@ -48,7 +48,7 @@ async function recogida() {
                         let date = '';
                         if (e.fecha) {
                             let isoDate = new Date(e.fecha);
-                            date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
+                            // date = isoDate.toJSON().slice(0, 19).replace('T', ' ');
                         } else {
                             const MOMENT = require('moment');
                             date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');

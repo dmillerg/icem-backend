@@ -8,14 +8,18 @@ function login(req, res) {
   var usuario = body.usuario;
   var password = body.password;
   var recordar = body.recordar;
-  let query = '';
-  if (usuario.match(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i) != null) {
-    query = `SELECT * FROM usuarios WHERE correo="${usuario}"`
+  let query = "";
+  if (
+    usuario.match(
+      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+    ) != null
+  ) {
+    query = `SELECT * FROM usuarios WHERE correo="${usuario}"`;
   } else {
     query = `SELECT * FROM usuarios WHERE usuario="${usuario}"`;
   }
-  const MOMENT = require('moment');
-  let date = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
+  const MOMENT = require("moment");
+  let date = MOMENT().format("YYYY-MM-DD  HH:mm:ss");
   conexion.query(query, function (error, result, field) {
     if (error)
       return res
@@ -23,12 +27,20 @@ function login(req, res) {
         .send({ message: "error en el servidor", status: 500, err: error });
     if (result.length > 0) {
       if (!result[0].activo) {
-        return res.status(400).send({ message: 'Este usuario no esta activo', id: result[0].id, correo: result[0].correo });
+        return res.status(400).send({
+          message: "Este usuario no esta activo",
+          id: result[0].id,
+          correo: result[0].correo,
+        });
       } else {
         if (bcrypt.compareSync(password, result[0].password)) {
           let token = generarToken(usuario);
-          conexion.query(`UPDATE usuarios SET ultsession='${date}', cant_visitas=(cant_visitas + 1) WHERE id=${result[0].id}`)
-          conexion.query(`INSERT INTO usuarios_online (id, user_id, fecha, recordar) VALUES (NULL, ${result[0].id}, '${date}', ${recordar}) `);
+          conexion.query(
+            `UPDATE usuarios SET ultsession='${date}', cant_visitas=(cant_visitas + 1) WHERE id=${result[0].id}`
+          );
+          conexion.query(
+            `INSERT INTO usuarios_online (id, user_id, fecha, recordar) VALUES (NULL, ${result[0].id}, '${date}', ${recordar}) `
+          );
           saveToken(token, result[0].id);
           return res.status(200).json({
             message: "usuario autenticado correctamente",
@@ -69,7 +81,7 @@ function generarToken(usuario) {
 
 function saveToken(token, id) {
   conexion.query(
-    `INSERT INTO tokens(id, token, usuario_id) VALUES (NULL, '${token}', ${id})`
+    `INSERT INTO tokens(id, token, usuario_id, fecha) VALUES (NULL, '${token}', ${id}, NOW())`
   );
 }
 
@@ -91,15 +103,16 @@ function logout(req, res) {
 }
 
 function ultimaFechaActualizacion(req, res) {
-  const query = 'SELECT ultsession FROM usuarios WHERE usuario<>"kuroko" ORDER BY ultsession DESC';
+  const query =
+    'SELECT ultsession FROM usuarios WHERE usuario<>"kuroko" ORDER BY ultsession DESC';
   conexion.query(query, function (error, result) {
     if (error) {
-      return res.status(500).send({ message: 'Error interno del servidor' });
+      return res.status(500).send({ message: "Error interno del servidor" });
     }
     if (result) {
       return res.status(200).send(result);
     }
-  })
+  });
 }
 
 function sendEmail(req, res) {
@@ -111,20 +124,20 @@ function sendEmail(req, res) {
   let link = req.body.link;
   let tipo = req.body.tipo;
   let infoadd = req.body.infoadd;
-  var nodemailer = require('nodemailer');
+  var nodemailer = require("nodemailer");
   var transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
-      user: 'empresaicem@gmail.com',
-      pass: 'vtxhpnacyllesobf'
-    }
+      user: "empresaicem@gmail.com",
+      pass: "vtxhpnacyllesobf",
+    },
   });
 
   var mailOptions = {
-    from: 'Empresa Cubana de Equipos Médicos(ICEM)',
+    from: "Empresa Cubana de Equipos Médicos(ICEM)",
     to: correo,
     subject: asunto,
-    text: '',
+    text: "",
     html: `
     <html>
 
@@ -194,36 +207,71 @@ function sendEmail(req, res) {
             <p>${infoadd}</p>
         </div>
         <div class="row">
-            <a href="${url}" class="btn" style="color: #fff;">${tipo=='link'?'Activar su cuenta':tipo=='reset'?'Restablecer contraseña':'Visistenos pronto'}</a>
+        <button id="dd" >ALERT</button>
+            <a href="${url}" class="btn" style="color: #fff;">${
+      tipo == "link"
+        ? "Activar su cuenta"
+        : tipo == "reset"
+        ? "Restablecer contraseña"
+        : "Visistenos pronto"
+    }</a>
         </div>
     </div>
-    
+    <script>
+    function copy(){
+      alert('HOLA MUNDO')
+    }
+    document.getElementById("dd").addEventListener("click", copy);
+    </script>
     </html>
     `,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (info) {
-        links.createLink({ tipo: tipo, link: link })
-      console.log('Mensaje enviado: ' + info.response);
-      return res.status(200).send({ message: 'OK', result: 'Mensaje enviado satisfactoriamente' })
+      links.createLink({ tipo: tipo, link: link });
+      console.log("Mensaje enviado: " + info.response);
+      return res
+        .status(200)
+        .send({ message: "OK", result: "Mensaje enviado satisfactoriamente" });
     } else {
-      console.log('Error al enviar: ' + error);
-      return res.status(500).send({ message: 'ERROR', error: error });
+      console.log("Error al enviar: " + error);
+      return res.status(500).send({ message: "ERROR", error: error });
     }
   });
 }
 
 function getUserOnlineByID(req, res) {
   let id = req.params.id;
-  conexion.query(`SELECT * FROM usuarios_online WHERE user_id=${id}`, function (error, result) {
-    if (error) {
-      return res.status(500).send({ message: 'error', error: error });
+  conexion.query(
+    `SELECT * FROM usuarios_online WHERE user_id=${id}`,
+    function (error, result) {
+      if (error) {
+        return res.status(500).send({ message: "error", error: error });
+      }
+      if (result) {
+        return res.status(200).send(result);
+      }
     }
-    if (result) {
-      return res.status(200).send(result);
+  );
+}
+
+function checkToken(req, res) {
+  let token = req.query.token;
+  conexion.query(
+    `SELECT * FROM tokens WHERE token='${token}' AND TIMESTAMPDIFF(MINUTE,fecha,NOW()) < 30`,
+    function (error, result) {
+      if (error) {
+        return res.status(500).send({ message: "error", error: error });
+      }
+      if (result) {
+        console.log(result);
+        return result.length > 0
+          ? res.status(200).send({ mensaje: "Token válido" })
+          : res.status(401).send({ mensaje: "Token vencido" });
+      }
     }
-  });
+  );
 }
 
 module.exports = {
@@ -232,4 +280,5 @@ module.exports = {
   ultimaFechaActualizacion,
   sendEmail,
   getUserOnlineByID,
+  checkToken,
 };

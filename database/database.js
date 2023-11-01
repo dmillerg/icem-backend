@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const host = 'localhost';
-const database = 'icem';
+const database = 'icem3';
 const user = 'root';
 const password = '';
 
