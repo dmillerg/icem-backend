@@ -1,6 +1,7 @@
 const conexion = require("../database/database");
 const bcrypt = require("bcrypt");
 const { json } = require("body-parser");
+const usuario = require('./login');
 
 function saveUsuario(req, res) {
   // Recogemos los parametros del body
@@ -141,88 +142,83 @@ function getUsuarioByEmail(req, res) {
   );
 }
 
-function updateUsuario(req, res) {
-  conexion.query(
-    `SELECT * FROM tokens WHERE token='${req.body.token}'`,
-    function (err, result) {
-      if (err) {
-        return res.status(405).send({ message: "usuario no autenticado" });
-      }
-      if (result.length > 0) {
-        // Recogemos un parámetro por la url
-        var id = req.params.id;
+async function updateUsuario(req, res) {
+  if (await usuario.isLogin(req.query.token)) {
 
-        // Recogemos los datos que nos llegen en el body de la petición
-        var update = req.body;
-        var usuario = update.usuario;
-        var pass_old = update.pass_old;
-        var password = update.password;
-        var nombre = update.nombre;
-        var correo = update.correo;
-        var pais = update.pais;
-        var direccion = update.direccion;
-        var telefono = update.telefono;
-        var rol = update.rol;
+    // Recogemos un parámetro por la url
+    var id = req.params.id;
 
-        // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
-        conexion.query(
-          `SELECT password FROM usuarios WHERE id=${id}`,
-          function (err, succ) {
-            if (err) {
-              res.status(500).send({ message: "error en el servidor" });
-            }
-            if (succ) {
-              if (bcrypt.compareSync(pass_old, succ[0])) {
-                bcrypt.hash(password, 10, (err, encrypted) => {
-                  if (err) {
-                  } else {
-                    conexion.query(
-                      `UPDATE usuarios SET usuario="${usuario}",password="${encrypted}",nombre="${nombre}", correo="${correo}", pais="${pais}", direccion="${direccion}", telefono="${telefono}", rol="${rol}" WHERE id = ${id}`,
-                      function (error, results, fields) {
-                        if (error)
-                          return res
-                            .status(500)
-                            .send({ message: "error en el servidor" });
-                        if (results) {
-                          return res
-                            .status(201)
-                            .send({ message: "agregado correctamente" });
-                        } else {
-                          return res.status(404).send({
-                            message: "no existe ningun usuario con ese id",
-                          });
-                        }
-                      }
-                    );
-                  }
-                });
+    // Recogemos los datos que nos llegen en el body de la petición
+    var update = req.body;
+    var usuario = update.usuario;
+    var pass_old = update.pass_old;
+    var password = update.password;
+    var nombre = update.nombre;
+    var correo = update.correo;
+    var pais = update.pais;
+    var direccion = update.direccion;
+    var telefono = update.telefono;
+    var rol = update.rol;
+
+    // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
+    conexion.query(
+      `SELECT password FROM usuarios WHERE id=${id}`,
+      function (err, succ) {
+        if (err) {
+          res.status(500).send({ message: "error en el servidor" });
+        }
+        if (succ) {
+          if (bcrypt.compareSync(pass_old, succ[0])) {
+            bcrypt.hash(password, 10, (err, encrypted) => {
+              if (err) {
               } else {
-                res
-                  .status(500)
-                  .send({ message: "no hay ningun usuario con ese id" });
+                conexion.query(
+                  `UPDATE usuarios SET usuario="${usuario}",password="${encrypted}",nombre="${nombre}", correo="${correo}", pais="${pais}", direccion="${direccion}", telefono="${telefono}", rol="${rol}" WHERE id = ${id}`,
+                  function (error, results, fields) {
+                    if (error)
+                      return res
+                        .status(500)
+                        .send({ message: "error en el servidor" });
+                    if (results) {
+                      return res
+                        .status(201)
+                        .send({ message: "agregado correctamente" });
+                    } else {
+                      return res.status(404).send({
+                        message: "no existe ningun usuario con ese id",
+                      });
+                    }
+                  }
+                );
               }
-            }
+            });
+          } else {
+            res
+              .status(500)
+              .send({ message: "no hay ningun usuario con ese id" });
           }
-        );
+        }
       }
-    })
-
+    );
+  } else {
+    return res.status(401).send({ message: usuario.tokenInvalido })
+  }
 }
 
 
 function updateUsuarioWithOutPass(req, res) {
-   // Recogemos un parámetro por la url
-   var id = req.params.id;
+  // Recogemos un parámetro por la url
+  var id = req.params.id;
 
-   // Recogemos los datos que nos llegen en el body de la petición
-   var update = req.body;
-   var usuario = update.usuario;
-   var nombre = update.nombre;
-   var correo = update.correo;
-   var pais = update.pais;
-   var direccion = update.direccion;
-   var telefono = update.telefono;
-   var rol = update.rol;
+  // Recogemos los datos que nos llegen en el body de la petición
+  var update = req.body;
+  var usuario = update.usuario;
+  var nombre = update.nombre;
+  var correo = update.correo;
+  var pais = update.pais;
+  var direccion = update.direccion;
+  var telefono = update.telefono;
+  var rol = update.rol;
   conexion.query(
     `SELECT * FROM tokens WHERE token='${req.body.token}'`,
     function (err, result) {

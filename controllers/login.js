@@ -68,9 +68,20 @@ function generarToken(usuario) {
 }
 
 function saveToken(token, id) {
-  conexion.query(
-    `INSERT INTO tokens(id, token, usuario_id) VALUES (NULL, '${token}', ${id})`
-  );
+  conexion.query(`SELECT * FROM tokens WHERE token='${token}'`, function (error, result) {
+    if (error) {
+      return 'error'
+    }
+    if (result.length > 0) {
+      conexion.query(
+        `UPDATE tokens SET token='${token}' WHERE usuario_id=${id}`
+      );
+    } else {
+      conexion.query(
+        `INSERT INTO tokens(id, token, usuario_id) VALUES (NULL, '${token}', ${id})`
+      );
+    }
+  });
 }
 
 function logout(req, res) {
@@ -194,7 +205,7 @@ function sendEmail(req, res) {
             <p>${infoadd}</p>
         </div>
         <div class="row">
-            <a href="${url}" class="btn" style="color: #fff;">${tipo=='link'?'Activar su cuenta':tipo=='reset'?'Restablecer contraseña':'Visistenos pronto'}</a>
+            <a href="${url}" class="btn" style="color: #fff;">${tipo == 'link' ? 'Activar su cuenta' : tipo == 'reset' ? 'Restablecer contraseña' : 'Visistenos pronto'}</a>
         </div>
     </div>
     
@@ -204,7 +215,7 @@ function sendEmail(req, res) {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (info) {
-        links.createLink({ tipo: tipo, link: link })
+      links.createLink({ tipo: tipo, link: link })
       console.log('Mensaje enviado: ' + info.response);
       return res.status(200).send({ message: 'OK', result: 'Mensaje enviado satisfactoriamente' })
     } else {
@@ -226,10 +237,27 @@ function getUserOnlineByID(req, res) {
   });
 }
 
+function isLogin(token) {
+  return new Promise((resolve, reject) => {
+    conexion.query(`SELECT * FROM tokens WHERE token='${token}'`, function (error, result) {
+      if (error) {
+        return reject(error);
+      }
+      if (result) {
+        return resolve(result);
+      }
+    });
+  })
+}
+
+const tokenInvalido = 'Su token venció o no existe.'
+
 module.exports = {
   login,
   logout,
   ultimaFechaActualizacion,
   sendEmail,
   getUserOnlineByID,
+  isLogin,
+  tokenInvalido
 };

@@ -431,8 +431,8 @@ async function tableVentas() {
   ) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
   `;
   conexion.query(query, function (error, results, fields) {
-    if (error) return errores++;
-    if (results) return success++;
+    if (error) resolve(error);
+    if (results) resolve(success);
   });
 }
 
@@ -887,7 +887,7 @@ function createDataBase() {
       })
     }
     if (result1) {
-    console.log('Base de Datos ya existente');
+      console.log('Base de Datos ya existente');
     }
   })
 
@@ -919,7 +919,7 @@ function checkCarrito() {
           }
         });
     });
-  }, 600000);
+  }, 60000);
   //     }
   // })
 
