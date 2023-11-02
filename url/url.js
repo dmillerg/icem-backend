@@ -8,7 +8,7 @@ var productos_controller = require('../controllers/productos');
 var categorias_controller = require('../controllers/categoria');
 var noticias_controller = require('../controllers/noticias');
 var desarrollos_controller = require('../controllers/desarrollos');
-var chat_controller = require('../controllers/chat');
+// var chat_controller = require('../controllers/chat');
 var scrape_controller = require('../controllers/scrapping');
 var quienes_controller = require('../controllers/quienes');
 var posts_controller = require('../controllers/posts');
@@ -84,14 +84,14 @@ api.get('/desarrollo/:id', desarrollos_controller.getDesarrolloById);
 api.get('/searchDesarrollos/:titulo', desarrollos_controller.searchDesarrollos);
 
 // Rutas para los Mensajes
-api.get('/chats', chat_controller.getMensajes);
-api.get('/chatFoto/:id', chat_controller.getMensajeFoto);
-api.post('/saveChat', chat_controller.saveMensaje);
-api.post('/chat/:id', chat_controller.updateMensaje);
-api.delete('/deleteChat/:id', chat_controller.deleteMensaje);
-api.get('/chats/:id', chat_controller.getMensajeById);
-api.get('/download', chat_controller.downloadFile);
-api.get('/chat', chat_controller.getChatbyID);
+// api.get('/chats', chat_controller.getMensajes);
+// api.get('/chatFoto/:id', chat_controller.getMensajeFoto);
+// api.post('/saveChat', chat_controller.saveMensaje);
+// api.post('/chat/:id', chat_controller.updateMensaje);
+// api.delete('/deleteChat/:id', chat_controller.deleteMensaje);
+// api.get('/chats/:id', chat_controller.getMensajeById);
+// api.get('/download', chat_controller.downloadFile);
+// api.get('/chat', chat_controller.getChatbyID);
 
 // Rutas para login and logout
 api.post('/login', login_controller.login);
@@ -99,6 +99,7 @@ api.post('/logout/:id', login_controller.logout);
 api.get('/ultimaAct', login_controller.ultimaFechaActualizacion);
 api.post('/send', login_controller.sendEmail);
 api.get('/useronline/:id', login_controller.getUserOnlineByID);
+api.get('/checktoken', login_controller.checkToken);
 
 // Rutas para buscar noticias(scrap)
 api.get('/scrapping', scrape_controller.recogidaNoticia);

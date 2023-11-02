@@ -18,10 +18,10 @@ const multiPartMiddleware = multipart({
 const app = express();
 const port = 9707;
 
-var whitelist = ["https://localhost", "http://nuevo.icem.cu", "http://localhost:4200"];
+var whitelist = ["https://localhost", "http://nuevo.icem.cu", "http://localhost:4200", "http://192.168.104.145"];
 var corst = {
     origin: function (origin, callback) {
-        // console.log(origin);
+        console.log(origin);
         if (origin && (whitelist.indexOf(origin) > -1 || origin.toString().toLowerCase()    .indexOf('dvelox')>-1)) {
             callback(null, true)
         } else {

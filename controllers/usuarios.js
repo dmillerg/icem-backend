@@ -74,10 +74,11 @@ function getUsuarios(req, res) {
   var nombre = body.nombre;
   var fecha = body.fecha;
 
-  var query = `SELECT * FROM usuarios WHERE 1 `;
+  var query = `SELECT usuarios.*, usuarios_online.id AS online  FROM usuarios LEFT JOIN usuarios_online ON usuarios.id = usuarios_online.user_id WHERE 1 `;
   if (limit > 0) {
-    query += ` LIMIT ${limit}`;
+    query += ` LIMIT ${limit} `;
   }
+  query += ` GROUP BY usuarios.usuario`
   conexion.query(query, function (error, results, fields) {
     if (error) return res.status(500).send({ message: "Error en el servidor" });
     if (results.length > 0) {

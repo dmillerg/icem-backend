@@ -172,6 +172,7 @@ async function tableTokens() {
     id int NOT NULL AUTO_INCREMENT,
     token varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
     usuario_id text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+    fecha datetime NULL DEFAULT NULL,
     PRIMARY KEY (id) USING BTREE
   ) ENGINE = InnoDB AUTO_INCREMENT = 395 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;`;
   conexion.query(query, function (error, results, fields) {
@@ -440,7 +441,8 @@ async function tableVentas() {
  * Inerta al usuario admin de la pagina
  */
 async function insertAdmin() {
-  var query = `INSERT INTO usuarios VALUES (1, 'kuroko', '$2b$10$LI863BACFHlKeL9SPTwDz.0hSypbQ0HPrFe5f.E73bGTbFtt3e1xq', 'Daniel Miller Gonzalez', '2022-02-05 19:11:36', '2022-07-13 13:32:58', 'dmillergg@gmail.com', 'Cuba', 'Calle 3ra #121 e/B y Camino de la Virgen', 54600851, 'admin', 1, 43, 1);
+  // INSERT INTO usuarios VALUES (1, 'kuroko', '$2b$10$LI863BACFHlKeL9SPTwDz.0hSypbQ0HPrFe5f.E73bGTbFtt3e1xq', 'Daniel Miller Gonzalez', '2022-02-05 19:11:36', '2022-07-13 13:32:58', 'dmillergg@gmail.com', 'Cuba', 'Calle 3ra #121 e/B y Camino de la Virgen', 54600851, 'admin', 1, 43, 1);
+  var query = `
   INSERT INTO usuarios VALUES (2, 'admin', '$2b$10$6UZnYAWZnLT7OvsStQlN2eQL/dg0KEk24BokCfZeBC7IJTwo4qcqi', 'Admin', '2021-11-25 20:55:10', '2022-07-13 09:15:15', 'admin@gmail.com', NULL, NULL, NULL, 'admin', 1, 12, 1);`;
   conexion.query(query, function (error, results, fields) {
     if (error) return errores++;
@@ -633,7 +635,8 @@ function createDataBase() {
  INSERT INTO configuraciones VALUES (1, 'carrito_time', 'Tiempo que demoran los productos en el carrito antes de ser puestos a la venta de nuevo en caso de no pagarse', '0.16666666666666666');
  INSERT INTO configuraciones VALUES (2, 'scrap_time', 'Tiempo que demora en actualizar las noticias en el sitio', '1');
  INSERT INTO configuraciones VALUES (3, 'valido_time_link', 'Tiempo valido de un link de reseteo o activacion de una cuenta', '0.16666666666666666');
- INSERT INTO configuraciones VALUES (13, 'close_sesion_time', 'Tiempo activo de un usuario en el sistema', '2');
+ INSERT INTO configuraciones VALUES (4, 'close_sesion_time', 'Tiempo activo de un usuario en el sistema', '2');
+ INSERT INTO configuraciones VALUES (5, 'inactivity_time', 'Tiempo inactividad del usuario', '120000');
  
  -- ----------------------------
  -- Table structure for desarrollos
@@ -805,13 +808,14 @@ function createDataBase() {
    id int NOT NULL AUTO_INCREMENT,
    token varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
    usuario_id text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+   fecha datetime NULL DEFAULT NULL,
    PRIMARY KEY (id) USING BTREE
  ) ENGINE = InnoDB AUTO_INCREMENT = 481 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;
  
  -- ----------------------------
  -- Records of tokens
  -- ----------------------------
- INSERT INTO tokens VALUES (1, '9e-7l-0a-6i-9n-6e-0y-8p-23g', '0');
+ INSERT INTO tokens VALUES (1, '9e-7l-0a-6i-9n-6e-0y-8p-23g', '0', NOW());
  
  -- ----------------------------
  -- Table structure for usuarios
