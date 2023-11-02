@@ -1,7 +1,7 @@
 const conexion = require("../database/database");
 const bcrypt = require("bcrypt");
 const { json } = require("body-parser");
-const usuario = require('./login');
+const login = require('./login');
 
 function saveUsuario(req, res) {
   // Recogemos los parametros del body
@@ -144,7 +144,8 @@ function getUsuarioByEmail(req, res) {
 }
 
 async function updateUsuario(req, res) {
-  if (await usuario.isLogin(req.query.token)) {
+  console.log('Update Usuario',await login.isLogin(req.query.token));
+  if (await login.isLogin(req.query.token)) {
 
     // Recogemos un parámetro por la url
     var id = req.params.id;
@@ -207,55 +208,60 @@ async function updateUsuario(req, res) {
 }
 
 
-function updateUsuarioWithOutPass(req, res) {
-  // Recogemos un parámetro por la url
-  var id = req.params.id;
+async function updateUsuarioWithOutPass(req, res) {
+  console.log('Update Usuario without pass');
+  if (await login.isLogin(req.query.token)) {
+    // Recogemos un parámetro por la url
+    var id = req.params.id;
 
-  // Recogemos los datos que nos llegen en el body de la petición
-  var update = req.body;
-  var usuario = update.usuario;
-  var nombre = update.nombre;
-  var correo = update.correo;
-  var pais = update.pais;
-  var direccion = update.direccion;
-  var telefono = update.telefono;
-  var rol = update.rol;
-  conexion.query(
-    `SELECT * FROM tokens WHERE token='${req.body.token}'`,
-    function (err, result) {
-      if (err) {
-        return res.status(405).send({ message: "usuario no autenticado" });
-      }
-      if (result.length > 0) {
-        conexion.query(`SELECT * FROM usuarios WHERE correo='${correo}' AND id<>${id}`, function (ec, suc) {
-          console.log('succes', suc);
-          if (ec) res.status(500).send({ message: "error en el servidor en la verificacion del correo" });
-          if (suc.length > 0) res.status(500).send({ message: "el correo ya esta siendo utilizado" });
-          else {
-            // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
+    // Recogemos los datos que nos llegen en el body de la petición
+    var update = req.body;
+    var usuario = update.usuario;
+    var nombre = update.nombre;
+    var correo = update.correo;
+    var pais = update.pais;
+    var direccion = update.direccion;
+    var telefono = update.telefono;
+    var rol = update.rol;
+    conexion.query(
+      `SELECT * FROM tokens WHERE token='${req.body.token}'`,
+      function (err, result) {
+        if (err) {
+          return res.status(405).send({ message: "usuario no autenticado" });
+        }
+        if (result.length > 0) {
+          conexion.query(`SELECT * FROM usuarios WHERE correo='${correo}' AND id<>${id}`, function (ec, suc) {
+            console.log('succes', suc);
+            if (ec) res.status(500).send({ message: "error en el servidor en la verificacion del correo" });
+            if (suc.length > 0) res.status(500).send({ message: "el correo ya esta siendo utilizado" });
+            else {
+              // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
 
-            conexion.query(
-              `UPDATE usuarios SET usuario="${usuario}",nombre="${nombre}", correo="${correo}", pais="${pais}", direccion="${direccion}", telefono="${telefono}", rol="${rol}" WHERE id = ${id}`,
-              function (error, results, fields) {
-                if (error)
-                  return res
-                    .status(500)
-                    .send({ message: "error en el servidor" });
-                if (results) {
-                  return res
-                    .status(201)
-                    .send({ message: "actualizado correctamente" });
-                } else {
-                  return res.status(404).send({
-                    message: "no existe ningun usuario con ese id",
-                  });
+              conexion.query(
+                `UPDATE usuarios SET usuario="${usuario}",nombre="${nombre}", correo="${correo}", pais="${pais}", direccion="${direccion}", telefono="${telefono}", rol="${rol}" WHERE id = ${id}`,
+                function (error, results, fields) {
+                  if (error)
+                    return res
+                      .status(500)
+                      .send({ message: "error en el servidor" });
+                  if (results) {
+                    return res
+                      .status(201)
+                      .send({ message: "actualizado correctamente" });
+                  } else {
+                    return res.status(404).send({
+                      message: "no existe ningun usuario con ese id",
+                    });
+                  }
                 }
-              }
-            );
-          }
-        });
-      }
-    });
+              );
+            }
+          });
+        }
+      });
+  } else {
+    return res.status(401).send({ message: usuario.tokenInvalido })
+  }
 }
 
 function deleteUsuario(req, res) {

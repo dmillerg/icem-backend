@@ -291,7 +291,7 @@ function isLogin(token) {
         return reject(error);
       }
       if (result) {
-        return resolve(result);
+        setTimeout(() => { return resolve(result); }, 3000)
       }
     });
   })
