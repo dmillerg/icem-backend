@@ -284,7 +284,8 @@ function checkToken(req, res) {
   );
 }
 
-function isLogin(token) {
+function isLogin(req) {
+  const token = req.headers['authorization'].split(' ')[1];
   return new Promise((resolve, reject) => {
     conexion.query(`SELECT * FROM tokens WHERE token='${token}'`, function (error, result) {
       if (error) {

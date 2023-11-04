@@ -59,9 +59,10 @@ function deleteCategoria(req, res) {
     `SELECT * FROM tokens WHERE token='${req.query.token}'`,
     function (err, result) {
       if (err) {
-        return res.status(405).send({ message: "usuario no autenticado" });
+        return res.status(401).send({ message: "usuario no autenticado" });
       }
       if (result.length > 0) {
+
         const id = req.params.id;
         conexion.query(
           `SELECT * FROM categorias WHERE id=${id}`,
@@ -80,6 +81,9 @@ function deleteCategoria(req, res) {
             }
           }
         );
+
+
+        
       }
     }
   );

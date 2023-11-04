@@ -17,10 +17,8 @@ function getDesarrollos(req, res) {
                 console.log(error);
                 return res.status(500).send(error);
             }
-            if (results.length > 0) {
+            if (results) {
                 return res.status(200).json(results);
-            } else {
-                return res.status(200).send({ documents: "no hay desarrollos" });
             }
         }
     );
@@ -56,33 +54,17 @@ function saveDesarrollo(req, res) {
                 return res.status(405).send({ message: "usuario no autenticado" });
             }
             if (result.length > 0) {
-                var id = -1;
-                console.log(req.body);
+                const MOMENT = require('moment');
                 var body = req.body;
                 var titulo = body.titulo;
                 var descripcion = body.descripcion;
                 var foto = { name: null };
                 if (req.files) {
                     foto = req.files.foto;
-                    foto_name = titulo.replace(/ /g, "-") + ".jpg";
-                    console.log(foto_name);
+                    foto_name = MOMENT().format('YYYYMMDDHHmmss') + ".jpg";
                 }
-                let date = new Date();
-                let fecha =
-                    date.getFullYear().toString() +
-                    "/" +
-                    (date.getMonth() + 1) +
-                    "/" +
-                    date.getDate() +
-                    " " +
-                    date.getHours() +
-                    ":" +
-                    date.getMinutes() +
-                    ":" +
-                    date.getSeconds();
-
                 conexion.query(
-                    `INSERT INTO desarrollos(id, titulo, descripcion, fecha, imagen) VALUES (NULL,"${titulo}","${descripcion}","${fecha}", "${foto_name}")`,
+                    `INSERT INTO desarrollos(id, titulo, descripcion, fecha, imagen) VALUES (NULL,"${titulo}","${descripcion}",NOW(), "${foto_name}")`,
                     function(error, results, fields) {
                         if (error) return res.status(500).send({ message: error });
                         if (results) {
@@ -149,6 +131,7 @@ function deleteFoto(imagen) {
 }
 
 function updateDesarrollo(req, res) {
+    const MOMENT = require('moment');
     conexion.query(
         `SELECT * FROM tokens WHERE token='${req.body.token}'`,
         function(err, result) {
@@ -169,7 +152,7 @@ function updateDesarrollo(req, res) {
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado
                 var query = `UPDATE desarrollos SET titulo="${titulo}",descripcion="${descripcion}"`;
                 if (foto.name != null)
-                query += `,imagen="${titulo.replace(/ /g, "-") + ".jpg"}"`;
+                query += `,imagen="${ MOMENT().format('YYYYMMDDHHmmss') + ".jpg"}"`;
                 query += `WHERE id = ${id}`;
 
                 conexion.query(query, function(error, results, fields) {
