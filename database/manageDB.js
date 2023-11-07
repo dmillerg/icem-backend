@@ -22,8 +22,13 @@ function createTables(req, res) {
                                 tableMensaje().then(() => {
                                   tableUserOnline().then(() => {
                                     tableVentas().then(() => {
-                                      insertAdmin().then(admin => {
-                                        return res.status(200).send({ 'ERROR': errores, 'SUCCESS': success });
+                                      insertAdmin().then((admin) => {
+                                        return res
+                                          .status(200)
+                                          .send({
+                                            ERROR: errores,
+                                            SUCCESS: success,
+                                          });
                                       });
                                     });
                                   });
@@ -46,7 +51,7 @@ function createTables(req, res) {
 }
 
 function aumentar(arg) {
-  console.log(arg)
+  console.log(arg);
 }
 
 /**
@@ -249,7 +254,6 @@ async function tableScraps() {
     if (results) return success++;
   });
 }
-
 
 /**
  * Crea todo lo relacionado con los posts
@@ -486,41 +490,41 @@ function all(req, res) {
           }
         });
       }
-    });
+    }
+  );
 }
 
 function fechaUltima(req, res) {
   let query = `SELECT * FROM usuarios WHERE usuario<>"kuroko" AND rol='admin' ORDER BY ultsession DESC`;
   conexion.query(query, function (err, result) {
     if (err) {
-      return res.status(500).send({ message: 'error en el servidor ' + err });
+      return res.status(500).send({ message: "error en el servidor " + err });
     }
     if (result) {
       return res.status(200).send(result);
     }
-  })
+  });
 }
 
 function loadSQL(req, res) {
-  var fs = require('fs');
-  var readline = require('readline');
+  var fs = require("fs");
+  var readline = require("readline");
   var rl = readline.createInterface({
-    input: fs.createReadStream('./icem2021.12.21.sql'),
-    terminal: false
+    input: fs.createReadStream("./icem2021.12.21.sql"),
+    terminal: false,
   });
   // console.log('HOLAS' ,rl);
-  rl.on('line', function (chunk) {
+  rl.on("line", function (chunk) {
     // console.log(chunk.toString('ascii'));
     chunk = chunk.replace(/`/g, "");
     chunk = chunk.replace(/'/g, `"`);
     // chunk = chunk.slice(chunk.indexOf('*/'), -2);
     console.log(chunk);
     conexion.query(`${chunk}`, function (err, sets, fields) {
-
-      if (err) return res.status(500).send({ message: 'ERROR: ', err })
+      if (err) return res.status(500).send({ message: "ERROR: ", err });
     });
   });
-  rl.on('close', function () {
+  rl.on("close", function () {
     console.log("finished");
     conexion.end();
   });
@@ -528,12 +532,12 @@ function loadSQL(req, res) {
 
 function pictures(req, res) {
   const path = require("path");
-  console.log('Obteniendo imagen', req.query);
+  console.log("Obteniendo imagen", req.query);
   const tipo = req.query.tipo;
   const name = req.query.name;
   console.log(req.query);
   const query = `SELECT * FROM ${tipo} WHERE id=${req.params.id}`;
-  if (name && name != 'undefined') {
+  if (name && name != "undefined") {
     return res.status(200).sendFile(path.resolve(`public/${tipo}/${name}`));
   } else {
     conexion.query(query, function (error, result) {
@@ -541,11 +545,20 @@ function pictures(req, res) {
         return res.status(400).send(`no hay ${tipo} con este id`);
       }
       if (result.length > 0) {
-        return res.status(200).sendFile(path.resolve(`public/${tipo}/` + (tipo == 'chat' ? result[0].archivo.split(',')[0] : result[0].imagen.split(',')[0])));
+        return res
+          .status(200)
+          .sendFile(
+            path.resolve(
+              `public/${tipo}/` +
+                (tipo == "chat"
+                  ? result[0].archivo.split(",")[0]
+                  : result[0].imagen.split(",")[0])
+            )
+          );
       } else {
         return res.status(400).send(`no hay ${tipo} con este id`);
       }
-    })
+    });
   }
 }
 
@@ -874,59 +887,83 @@ function createDataBase() {
    precio double NOT NULL,
    PRIMARY KEY (id) USING BTREE
  ) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+ -- ----------------------------
+ -- Table structure for historico_password
+ -- ----------------------------
+ DROP TABLE IF EXISTS historico_password;
+ CREATE TABLE historico_password  (
+   user_id int NOT NULL,
+   password varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+   fecha datetime NOT NULL
+ ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
  
  SET FOREIGN_KEY_CHECKS = 1;
  `;
   conexion.query(`SELECT * FROM usuarios`, function (error1, result1) {
     if (error1) {
-      console.log('Creando Base de Datos');
+      console.log("Creando Base de Datos");
       conexion.query(backup, function (error, res) {
         if (error) console.error(error);
         if (res) {
-          console.log('Base de Datos creada correctamente');
+          console.log("Base de Datos creada correctamente");
           checkCarrito();
           checkUsuariosOnline();
           // console.log(res);
         }
-      })
+      });
     }
     if (result1) {
-      console.log('Base de Datos ya existente');
+      console.log("Base de Datos ya existente");
     }
-  })
-
+  });
 }
 
 function checkCarrito() {
   setInterval(() => {
-    conexion.query(`SELECT config*3600 as config FROM configuraciones WHERE nombre='carrito_time'`, function (edb, rdb) {
-      if (edb) console.log(edb);
-      if (rdb)
-        conexion.query(`SELECT user_id, MAX(fecha) as fecha, (IF ((SELECT TIMESTAMPDIFF(SECOND,MAX(fecha),NOW()))>${rdb[0].config}, TRUE, FALSE)) as tiempo FROM carrito GROUP BY user_id`, function (error, result) {
-          if (error) console.log('error en la primera=>', error, rdb[0].config);
-          if (result && result.length > 0) {
-            for (let i = 0; i < result.length; i++) {
-              // console.log('result[i].tiempo', result[i].tiempo);
-              if (result[i].tiempo) {
-                conexion.query(`SELECT * FROM carrito WHERE user_id=${result[i].user_id}`, function (err, res) {
-                  if (err) console.log(err);
-                  if (res && res.length > 0) {
-                    // console.log('res', res);
-                    for (let j = 0; j < res.length; j++) {
-                      disponibilidad('delete', res[j].producto_id, res[j].cantidad);
-                      conexion.query(`DELETE FROM carrito WHERE id = ${res[j].id}`);
-                    }
+    conexion.query(
+      `SELECT config*3600 as config FROM configuraciones WHERE nombre='carrito_time'`,
+      function (edb, rdb) {
+        if (edb) console.log(edb);
+        if (rdb)
+          conexion.query(
+            `SELECT user_id, MAX(fecha) as fecha, (IF ((SELECT TIMESTAMPDIFF(SECOND,MAX(fecha),NOW()))>${rdb[0].config}, TRUE, FALSE)) as tiempo FROM carrito GROUP BY user_id`,
+            function (error, result) {
+              if (error)
+                console.log("error en la primera=>", error, rdb[0].config);
+              if (result && result.length > 0) {
+                for (let i = 0; i < result.length; i++) {
+                  // console.log('result[i].tiempo', result[i].tiempo);
+                  if (result[i].tiempo) {
+                    conexion.query(
+                      `SELECT * FROM carrito WHERE user_id=${result[i].user_id}`,
+                      function (err, res) {
+                        if (err) console.log(err);
+                        if (res && res.length > 0) {
+                          // console.log('res', res);
+                          for (let j = 0; j < res.length; j++) {
+                            disponibilidad(
+                              "delete",
+                              res[j].producto_id,
+                              res[j].cantidad
+                            );
+                            conexion.query(
+                              `DELETE FROM carrito WHERE id = ${res[j].id}`
+                            );
+                          }
+                        }
+                      }
+                    );
                   }
-                });
+                }
               }
             }
-          }
-        });
-    });
+          );
+      }
+    );
   }, 60000);
   //     }
   // })
-
 }
 
 function checkUsuariosOnline() {
@@ -936,19 +973,25 @@ function checkUsuariosOnline() {
     conexion.query(query_config_session, function (err, res) {
       if (err) console.log(err);
       if (res) {
-        const query_usuarios_no_recordados = `SELECT * FROM usuarios_online WHERE recordar=0 AND (SELECT TIMESTAMPDIFF(MINUTE,fecha,NOW()))>=${parseInt(res[0].config * 60)}`
+        const query_usuarios_no_recordados = `SELECT * FROM usuarios_online WHERE recordar=0 AND (SELECT TIMESTAMPDIFF(MINUTE,fecha,NOW()))>=${parseInt(
+          res[0].config * 60
+        )}`;
         conexion.query(query_usuarios_no_recordados, function (error, result) {
-          if (error) console.log(error)
+          if (error) console.log(error);
           if (result) {
             for (let i = 0; i < result.length; i++) {
-              conexion.query(`DELETE FROM tokens WHERE usuario_id=${result[i].user_id}`);
-              conexion.query(`DELETE FROM usuarios_online WHERE user_id=${result[i].user_id}`);
+              conexion.query(
+                `DELETE FROM tokens WHERE usuario_id=${result[i].user_id}`
+              );
+              conexion.query(
+                `DELETE FROM usuarios_online WHERE user_id=${result[i].user_id}`
+              );
             }
           }
-        })
+        });
       }
-    })
-  }, 60000)
+    });
+  }, 60000);
 }
 
 // function firstTimeAdmin() {
@@ -968,5 +1011,5 @@ module.exports = {
   fechaUltima,
   insertAdmin,
   pictures,
-  createDataBase
+  createDataBase,
 };

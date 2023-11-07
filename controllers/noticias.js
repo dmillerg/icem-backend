@@ -1,6 +1,7 @@
 const conexion = require("../database/database");
 const bcrypt = require("bcrypt");
 const { json } = require("body-parser");
+const MOMENT = require('moment');
 
 function getNoticias(req, res) {
     var limit = req.params.limit;
@@ -61,7 +62,6 @@ function saveNoticia(req, res) {
             }
             if (result.length > 0) {
                 var id = -1;
-                const MOMENT = require('moment');
                 console.log(req.body);
                 var body = req.body;
                 var titulo = body.titulo;
@@ -72,7 +72,7 @@ function saveNoticia(req, res) {
                 var foto = { name: null };
                 if (req.files) {
                     foto = req.files.foto;
-                    foto_name = MOMENT().format('YYYYMMDDHHmmss')+'';;
+                    foto_name = MOMENT().format('YYYYMMDDHHmmss')+'';
                 }
                 let fecha = MOMENT().format('YYYY-MM-DD  HH:mm:ss');
 
@@ -161,7 +161,7 @@ function updateNoticia(req, res) {
                 var foto_name = "";
                 if (req.files) {
                     foto = req.files.foto;
-                    foto_name = titulo.replace(/ /g, "-") + ".jpg";
+                    foto_name = MOMENT().format('YYYYMMDDHHmmss')+'';
                 }
                 console.log(foto.name, "foto");
                 // Buscamos por id y actualizamos el objeto y devolvemos el objeto actualizado

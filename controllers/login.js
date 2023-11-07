@@ -49,16 +49,16 @@ function login(req, res) {
             token: token,
           });
         } else {
-          return res.status(404).send({
+          return res.status(401).send({
             message: "no existe ningun usuario con ese user y pass",
-            status: 400,
+            status: 401,
           });
         }
       }
     } else {
-      return res.status(404).send({
+      return res.status(401).send({
         message: "no existe ningun usuario con ese user y pass",
-        status: 400,
+        status: 401,
       });
     }
   });

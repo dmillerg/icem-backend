@@ -14,7 +14,7 @@ function getVentas(req, res) {
             let fecha = req.query.fecha;
             let producto_id = req.query.producto_id;
 
-            let query = `SELECT * FROM ventas WHERE 1`;
+            let query = `SELECT ventas.*, productos.titulo as producto_name FROM ventas INNER JOIN productos ON ventas.producto_id = productos.id WHERE 1`;
 
             if (id_user > -1) {
                 query += ` AND user_id=${id_user}`;

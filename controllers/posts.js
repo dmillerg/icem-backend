@@ -17,11 +17,9 @@ function getPosts(req, res) {
         console.log(error);
         return res.status(500).send(error);
       }
-      if (results.length > 0) {
+      if (results) {
         return res.status(200).json(results);
-      } else {
-        return res.status(200).send({ documents: "no hay posts" });
-      }
+      } 
     }
   );
 }

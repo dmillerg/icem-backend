@@ -103,13 +103,14 @@ api.get('/checktoken', login_controller.checkToken);
 
 // Rutas para buscar noticias(scrap)
 api.get('/scrapping', scrape_controller.recogidaNoticia);
-api.get('/iniciarScrap/:time', scrape_controller.iniciarScrapping);
+api.get('/iniciarScrap', scrape_controller.iniciarScrapping);
 api.get('/detenerScrap', scrape_controller.detenerScrapping);
 api.post('/saveScrap', scrape_controller.saveScrap);
 api.delete('/deleteScrap/:id', scrape_controller.deleteScrap);
 api.get('/scrap/:limit', scrape_controller.getScraps);
 api.post('/scrap/:id', scrape_controller.updateScrap);
 api.post('/probarScrap/:id', scrape_controller.probarScrap);
+api.get('/scraploop', scrape_controller.obtenerScrappingLoop);
 
 // Rutas para el quienes somos
 api.get('/quienes/:limit', quienes_controller.getQuienes);
